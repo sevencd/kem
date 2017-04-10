@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ImgValicode">
+
+	<resultMap id="ImgVailcodeEntityMap" type="cn.ilanhai.kem.domain.imgvalicode.ImgVailcodeEntity" >
+		<id column="id" property="id"/>
+		<result column="identityCode" property="identityCode"/>
+		<result column="userId" property="userId"/>
+		<result column="userType" property="userType" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result column="moduleCode" property="moduleCode"/>
+		<result column="workId" property="workId"/>
+		<result column="createtime" property="createtime"/>
+		<result column="deadline" property="deadline"/>
+		<result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+	</resultMap>
+	
+	<select id="selectidfromidentitycode"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.imgvalicode.ImgVailcodeEntity">
+	SELECT id FROM sys_identify_code WHERE id= #{id}
+	</select>
+	
+	<insert id="insertidentitycode"
+		parameterType="cn.ilanhai.kem.domain.imgvalicode.ImgVailcodeEntity"
+		useGeneratedKeys="true" keyProperty="id">
+INSERT INTO sys_identify_code (
+	identity_code,
+	user_id,
+	user_type,
+	module_code,
+	work_id,
+	createtime,
+	deadline,
+	status
+)
+VALUES
+	(#{identityCode},#{userId},#{userType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},#{moduleCode},#{workId},#{createtime},#{deadline},#{status,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler})
+	</insert>
+	
+	<update id="updateidentitycode"
+		parameterType="cn.ilanhai.kem.domain.imgvalicode.ImgVailcodeEntity"
+		useGeneratedKeys="true" keyProperty="id">
+UPDATE `sys_identify_code`
+SET 
+ `identity_code` = #{identityCode},
+ `user_id` = #{userId},
+ `user_type` = #{userType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+ `module_code` = #{moduleCode},
+ `work_id` = #{workId},
+ `status` = #{status,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+WHERE
+	(`id` = #{id});
+	</update>
+	
+	<select id="searchidentifycode"
+		resultMap="ImgVailcodeEntityMap"
+		parameterType="cn.ilanhai.kem.domain.IdDto">
+SELECT
+	ic.id,
+	ic.identity_code AS identityCode,
+	ic.user_id AS userId,
+	ic.user_type AS userType,
+	ic.module_code AS moduleCode,
+	ic.work_id AS workId,
+	ic.createtime AS createtime,
+	ic.deadline,
+	ic.`status`
+FROM
+	sys_identify_code ic
+WHERE
+	ic.id = #{id}
+	</select>
+</mapper>

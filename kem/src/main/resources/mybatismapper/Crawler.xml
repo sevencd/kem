@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.CrawlerRuleDao">
+	<resultMap id="CrawlerRuleDto" type="cn.ilanhai.kem.domain.crawler.CrawlerRuleDto">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="task_id" property="taskId" jdbcType="VARCHAR" />
+		<result column="type_id_one" property="typeIdOne" jdbcType="INTEGER" />
+		<result column="type_id_two" property="typeIdTwo" jdbcType="INTEGER" />
+		<result column="url" property="url" jdbcType="VARCHAR" />
+	</resultMap>
+	<!--插入采集规则 start -->
+	<insert id="insert" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerRuleDto">
+		INSERT INTO
+		crawler_rule(task_id,type_id_one,type_id_two,url)VALUES
+		(#{taskId},
+		#{typeIdOne},#{typeIdTwo},
+		#{url}
+		)
+	</insert>
+	<!--插入采集规则 end -->
+	<!--批量插入customermain start -->
+	<insert id="insertCustomerMainList" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerCustomerDto">
+		INSERT INTO
+		customer_main(customer_id,user_id,createtime)VALUES
+		<foreach item="item" index="index" collection="mainList"
+			separator=",">
+			(#{item.customerId},#{item.userId},#{item.createtime})
+		</foreach>
+	</insert>
+	<!--批量插入customermain end -->
+	<!--批量插入customerinfo start -->
+	<insert id="insertCustomerInfoList" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerCustomerDto">
+		INSERT INTO
+		customer_info(customer_id,customer_key,customer_value)VALUES
+		<foreach item="item" index="index" collection="infoList"
+			separator=",">
+			(#{item.customerId},#{item.customerKey},#{item.customerValue})
+		</foreach>
+	</insert>
+	<!--批量插入customerinfo end -->
+	<!--更新采集规则 start -->
+	<update id="update">
+		UPDATE crawler_rule
+		<trim prefix="set" prefixOverrides=",">
+			<if test="taskId!=null">
+				task_id= #{taskId}
+			</if>
+			<if test="url!=null">
+				,url=#{url}
+			</if>
+		</trim>
+		WHERE
+		id =#{id}
+	</update>
+	<!--更新采集规则 end -->
+	<!--根据主键id批量删除采集规则 start -->
+	<delete id="deleteByIdList" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerRuleDeleteDto">
+		DELETE FROM
+		crawler_rule
+		WHERE id in
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<!--根据主键id批量删除采集规则 end -->
+	<!--分页查询采集规则 start -->
+	<select id="selectCrawlerRuleForPage" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerRuleRequestDto"
+		resultMap="CrawlerRuleDto">
+		select * from crawler_rule
+		<trim prefix="where" prefixOverrides="and">
+			<if test="typeIdOne!=null and typeIdOne!='' ">
+				type_id_one=#{typeIdOne}
+			</if>
+			<if test="typeIdTwo!=null and typeIdTwo!='' ">
+				and type_id_two=#{typeIdTwo}
+			</if>
+			<if test="taskId!=null and taskId!='' ">
+				and task_id like '%${taskId}%'
+			</if>
+		</trim>
+		limit
+		${startCount},${pageSize}
+	</select>
+	<!--分页查询采集规则 end -->
+	<!--分页查询采集规则的记录数量 start -->
+	<select id="selectCrawlerRuleForTotalCount" parameterType="cn.ilanhai.kem.domain.crawler.CrawlerRuleRequestDto"
+		resultType="int">
+		select count(*) from crawler_rule
+		<trim prefix="where" prefixOverrides="and">
+			<if test="typeIdOne!=null and typeIdOne!='' ">
+				type_id_one=#{typeIdOne}
+			</if>
+			<if test="typeIdTwo!=null and typeIdTwo!='' ">
+				and type_id_two=#{typeIdTwo}
+			</if>
+			<if test="taskId!=null and taskId!='' ">
+				and task_id like '%${taskId}%'
+			</if>
+		</trim>
+	</select>
+	<!--分页查询采集规则的记录数量 end -->
+</mapper>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.userRelation">
+	<insert id="insertUserRelation"
+		parameterType="cn.ilanhai.kem.domain.userRelation.UserRelationEntity">
+		INSERT INTO
+		USER_RELATION_USER
+		(USER_ID,FATHER_USER_ID,USER_TYPE,USER_SMS,USER_EMAIL,USER_B2B,USER_CUSTOMER,CREATETIME,STATE,USER_WECHAT,user_subuser,user_publictime)
+		VALUES
+		(#{userId},#{fatherUserId},#{userType},#{userSms},#{userEmail},#{userB2b},#{userCustomer},now(),#{state},#{userWechat},#{userSubuser},#{userPublishTime});
+	</insert>
+	<delete id="deleteUserVoucher"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.DeleteUserRelationDto">
+		DELETE FROM USER_VOUCHER_USER WHERE USER_ID IN(
+		SELECT USER_ID FROM
+		USER_RELATION_USER WHERE ID IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND FATHER_USER_ID = #{userId}
+		);
+	</delete>
+
+	<delete id="deleteUserInfo"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.DeleteUserRelationDto">
+		DELETE FROM USER_INFO_USER WHERE
+		USER_ID
+		IN(
+		SELECT USER_ID FROM
+		USER_RELATION_USER WHERE ID IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND FATHER_USER_ID = #{userId}
+		);
+	</delete>
+
+
+	<delete id="deleteUserIdentify"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.DeleteUserRelationDto">
+		DELETE FROM USER_IDENTIFY_USER WHERE
+		USER_ID
+		IN(
+		SELECT USER_ID
+		FROM
+		USER_RELATION_USER WHERE ID IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND FATHER_USER_ID = #{userId}
+		);
+	</delete>
+
+	<delete id="deleteUserMain"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.DeleteUserRelationDto">
+		DELETE FROM USER_MAIN_USER WHERE
+		USER_ID
+		IN(
+		SELECT USER_ID FROM
+		USER_RELATION_USER WHERE ID IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND FATHER_USER_ID = #{userId}
+		);
+	</delete>
+
+	<delete id="deleteUserRelation"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.DeleteUserRelationDto">
+		DELETE FROM USER_RELATION_USER WHERE
+		ID
+		IN
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		AND FATHER_USER_ID = #{userId}
+		;
+	</delete>
+
+	<update id="updateUserRelation"
+		parameterType="cn.ilanhai.kem.domain.userRelation.UserRelationEntity">
+		UPDATE USER_RELATION_USER
+		SET USER_SMS =
+		#{userSms},USER_EMAIL=#{userEmail},USER_B2B=#{userB2b},USER_CUSTOMER=#{userCustomer},STATE=#{state},USER_WECHAT=#{userWechat},user_subuser=#{userSubuser},user_publictime=#{userPublishTime}
+		WHERE USER_ID = #{userId};
+	</update>
+
+	<select id="selectUserRelation"
+		resultType="cn.ilanhai.kem.domain.userRelation.UserRelationEntity"
+		parameterType="cn.ilanhai.kem.domain.userRelation.dto.SearchUserRelationDto">
+		SELECT a.ID AS id,a.USER_ID AS userId,a.FATHER_USER_ID AS
+		fatherUserId,a.USER_TYPE AS
+		userType ,a.USER_SMS as
+		userSms,a.USER_EMAIL AS
+		userEmail ,a.USER_B2B AS
+		userB2b
+		,a.USER_WECHAT
+		as userWechat,a.USER_CUSTOMER AS
+		userCustomer,a.CREATETIME AS
+		createtime ,c.state AS
+		state,b.identify as userPhone,
+		user_subuser as
+		userSubuser, user_publictime as userPublishTime
+		FROM
+		USER_RELATION_USER
+		a left join
+		user_identify_user b on a.USER_ID =
+		b.user_id and
+		b.identify_state = 1
+		left join
+		user_main_user c on a.USER_ID =
+		c.user_id
+		WHERE 1=1
+		<if test="userId !=null and userId !='' ">
+			AND a.USER_ID = #{userId}
+		</if>
+		<if test="fatherUserId !=null and fatherUserId !='' ">
+			AND a.FATHER_USER_ID = #{fatherUserId}
+		</if>
+		<if test="state !=null ">
+			AND c.STATE = #{state}
+		</if>
+		ORDER BY a.USER_TYPE ASC ,a.CREATETIME ASC
+		LIMIT
+		#{startCount},#{pageSize};
+	</select>
+</mapper>

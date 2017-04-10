@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="TemplateSql">
+	<select id="searchByBackuser"
+		resultType="cn.ilanhai.kem.domain.template.SearchTemplateDataEntity"
+		parameterType="cn.ilanhai.kem.domain.template.SearchTemplateDto">
+		SELECT DISTINCT
+		A.template_id AS templateId,
+		A.user_id,
+		A.cover_img AS templateImg,
+		A.template_name AS templateName,
+		A.main_color AS templateImg,
+		A.summary AS summary,
+		A.createtime,
+		A.template_state AS templateState,
+		A.publish_state AS publishState,
+		A.template_type AS templateType,
+		A.verify_name AS verifyName,
+		A.verify_time AS verifytime,
+		A.shelf_time AS shelftime,
+		( case c.user_name when null then c.user_phone else c.user_name end ) as user
+		FROM
+		prod_template A
+		LEFT JOIN user_front_user C ON A.user_id = C.user_id
+		WHERE
+		1 = 1
+	<if test="templateState == null">
+		AND A.template_state in(3,4,5)
+	</if>
+	<if test="templateState != null">
+		AND A.template_state = #{templateState}
+	</if>	
+	<if test="userId != null and userId != ''">
+		AND  A.user_id = #{userId}
+	</if>
+	<if test="templateType != null">
+		AND A.template_type = #{templateType}
+	</if>
+	<if test="timeStart != null">
+		AND A.createtime &gt;= #{timeStart}
+	</if>
+	<if test="timeEnd != null">
+		AND A.createtime &lt;= DATE_ADD(#{timeEnd},INTERVAL 1 DAY)
+	</if>
+	<if test="templateState != null and templateState == 2  and templateName != null and templateName != ''">
+		AND A.template_name like CONCAT('%',#{templateName},'%')	
+	</if>
+	<if test="templateState != null and templateState == 1 and templateName != null and templateName != ''">
+		AND A.template_name like CONCAT('%',#{templateName},'%')	
+	</if>
+	<if test="templateState != null and templateState != 2 and  templateState != 1 and templateName != null and templateName != ''">
+		AND A.verify_name like CONCAT('%',#{templateName},'%')	
+	</if>
+		ORDER BY
+		A.shelf_time DESC
+		LIMIT 
+		#{startCount},
+		#{pageSize};
+	</select>
+	
+	<select id="countByBackuser"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.template.SearchTemplateDto">
+		SELECT
+	count(DISTINCT A.template_id) AS count
+	FROM
+		prod_template A
+		LEFT JOIN user_front_user C ON A.user_id = C.user_id
+		WHERE
+		1 = 1
+	<if test="templateState == null">
+		AND A.template_state in(3,4,5)
+	</if>	
+	<if test="templateState != null">
+		AND A.template_state = #{templateState}
+	</if>	
+	<if test="userId != null and userId != ''">
+		AND  A.user_id = #{userId}
+	</if>
+	<if test="templateType != null">
+		AND A.template_type = #{templateType}
+	</if>
+	<if test="timeStart != null">
+		AND A.createtime &gt;= #{timeStart}
+	</if>
+	<if test="timeEnd != null">
+		AND A.createtime &lt;= DATE_ADD(#{timeEnd},INTERVAL 1 DAY)
+	</if>
+	<if test="templateState != null and templateState == 2  and templateName != null and templateName != ''">
+		AND A.template_name like CONCAT('%',#{templateName},'%')	
+	</if>
+	<if test="templateState != null and templateState == 1 and templateName != null and templateName != ''">
+		AND A.template_name like CONCAT('%',#{templateName},'%')	
+	</if>
+	<if test="templateState != null and templateState != 2 and  templateState != 1 and templateName != null and templateName != ''">
+		AND A.verify_name like CONCAT('%',#{templateName},'%')	
+	</if>
+	</select>
+	
+	<select id="searchByRand"
+		resultType="cn.ilanhai.kem.domain.template.SearchTemplateDataEntity"
+		parameterType="cn.ilanhai.kem.domain.template.SearchTemplateDto">
+		SELECT DISTINCT
+		A.template_id AS templateId,
+		A.user_id,
+		A.cover_img AS templateImg,
+		A.template_name AS templateName,
+		A.main_color AS templateImg,
+		A.summary AS summary,
+		A.createtime,
+		A.template_state AS templateState,
+		A.publish_state AS publishState,
+		A.template_type AS templateType,
+		A.verify_name AS verifyName,
+		A.verify_time AS verifytime,
+		A.shelf_time AS shelftime,
+		( case c.user_name when null then c.user_phone else c.user_name end ) as user
+	<if test="currentLoginUserId != null and currentLoginUserId != ''">
+		,D.collection_state AS isCollection
+	</if>	
+		FROM
+		prod_template A
+		LEFT JOIN user_front_user C ON A.user_id = C.user_id
+	<if test="currentLoginUserId != null and currentLoginUserId != ''">
+		LEFT JOIN template_collection D ON A.template_id = D.template_id AND D.user_id = #{currentLoginUserId}
+	</if>
+		WHERE
+		1 = 1
+	<if test="templateState != null">
+		AND A.template_state = #{templateState}
+	</if>	
+	<if test="templateType != null">
+		AND A.template_type = #{templateType}
+	</if>
+		ORDER BY
+		RAND()
+		LIMIT 
+		#{pageSize};
+	</select>
+	
+	<select id="searchrandcount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.template.SearchTemplateDto">
+	SELECT
+	count(DISTINCT A.template_id) AS count
+	FROM
+	prod_template A
+	LEFT JOIN user_front_user C ON A.user_id = C.user_id
+	<if test="currentLoginUserId != null and currentLoginUserId != ''">
+		LEFT JOIN template_collection D ON A.template_id = D.template_id AND D.user_id = #{currentLoginUserId}
+	</if>
+		WHERE
+		1 = 1
+	<if test="templateState != null">
+		AND A.template_state = #{templateState}
+	</if>	
+	<if test="templateType != null">
+		AND A.template_type = #{templateType}
+	</if>
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+	<id>kem</id>
+	<name>kem</name>
+	<jarFileName>kem.jar</jarFileName>
+	<packageName>cn.ilanhai.kem</packageName>
+	<enable>true</enable>
+	<beansConfPath>kem.xml</beansConfPath>
+	<startupClassName>cn.ilanhai.kem.App</startupClassName>
+	<mqs>
+		<mq>
+			<id>id</id>
+			<userName>userName</userName>
+			<password>password</password>
+			<brokerUrl>brokerUrl</brokerUrl>
+			<producerClassName>producerClassName</producerClassName>
+			<consumerClassName>consumerClassName</consumerClassName>
+		</mq>
+	</mqs>
+	<dss>
+		<dataSource>
+			<id>kem</id>
+			<name>kem</name>
+			<className><![CDATA[org.springframework.jdbc.datasource.DriverManagerDataSource]]></className>
+			<driverClassName>com.mysql.jdbc.Driver</driverClassName>
+			<url><![CDATA[jdbc:mysql://192.168.1.228:3306/kem_dev?user=root&password=123456&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]>
+							<!--<url><![CDATA[jdbc:mysql://mysql.rdsmnr8nsjn90nj.rds.gz.baidubce.com:3306/kem_release?user=kemroot&password=u7CtNLx1gQVE&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]> -->
+							<!--<url><![CDATA[jdbc:mysql://mysql.rdsmnr8nsjn90nj.rds.gz.baidubce.com/kem_release?user=kemroot&password=u7CtNLx1gQVE&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]> -->
+				  </url>
+			<dataBaseName><![CDATA[kem_dev]]></dataBaseName>
+		</dataSource>
+	</dss>
+	<settings>
+		<add key="preViewDeployUrl" value="http://192.168.1.228:9001/api/tpl/%s?type=%s" />
+		<add key="publishDeployUrl" value="http://192.168.1.228:9000/api/tpl/%s?type=%s" />
+		<add key="deployPreViewUrl" value="http://%s.%s.kem.pre.dev.cn:9001" />
+		<add key="deployPublishUrl" value="http://%s.%s.kem.dev.cn:9000" />
+		<add key="hostUrl" value="http://kemdesign.dev.cn" />
+		<add key="serviceName" value="http://image.kem.dev.cn" />
+		<add key="pcurl" value=".pc.kem.dev.cn" />
+		<add key="wapurl" value=".wap.kem.dev.cn" />
+		<add key="pcpreurl" value=".pc.kem.pre.dev.cn" />
+		<add key="wappreurl" value=".wap.kem.pre.dev.cn" />
+		<add key="apihost" value="192.168.1.228:8666" />
+	</settings>
+</context>
+

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="searchEmail">
+	<select id="queryEmails" parameterType="cn.ilanhai.kem.domain.email.dto.QueryEmailDto"
+		resultType="cn.ilanhai.kem.domain.email.dto.SearchEmailResponseDto">
+		select DISTINCT * from (
+		select main.email_id as emailId,
+		title.info_value as emailTitle ,main.createtime as createtime,
+		sendTime.info_value as sendtime , sendAmount.info_value as
+		sendAmount,emailState.info_value as state
+		from email_main as main
+		left
+		join email_info as title on title.email_id = main.email_id and
+		title.info_key = 'title'
+		left join email_info as sendTime on
+		sendTime.email_id = main.email_id and sendTime.info_key = 'sendTime'
+		left join email_info as sendAmount on sendAmount.email_id =
+		main.email_id and sendAmount.info_key = 'sendAmount'
+		left join
+		email_info as emailState on emailState.email_id = main.email_id and
+		emailState.info_key = 'emailState'
+		where main.user_id
+		= #{userId} and main.is_delete = 0 ORDER
+		BY
+		<if test="status ==1">
+			main.createtime desc
+		</if>
+		<if test="status ==2">
+			sendTime.info_value desc
+		</if>
+		) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and emailTitle like
+			concat('%',#{keyword},'%')
+		</if>
+		and state = #{status}
+		limit
+		#{startCount},#{pageSize};
+	</select>
+
+	<select id="queryEmailsCount" parameterType="cn.ilanhai.kem.domain.email.dto.QueryEmailDto"
+		resultType="cn.ilanhai.kem.domain.CountDto">
+		select count(1) as count from (
+		select main.email_id as emailId,
+		title.info_value as emailTitle ,main.createtime as createtime,
+		sendTime.info_value as sendtime , sendAmount.info_value as
+		sendAmount,emailState.info_value as state
+		from email_main as main
+		left
+		join email_info as title on title.email_id = main.email_id and
+		title.info_key = 'title'
+		left join email_info as sendTime on
+		sendTime.email_id = main.email_id and sendTime.info_key = 'sendTime'
+		left join email_info as sendAmount on sendAmount.email_id =
+		main.email_id and sendAmount.info_key = 'sendAmount'
+		left join
+		email_info as emailState on emailState.email_id = main.email_id and
+		emailState.info_key = 'emailState'
+		where main.user_id
+		= #{userId} and main.is_delete = 0 ORDER
+		BY
+		main.createtime desc) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and emailTitle like
+			concat('%',#{keyword},'%')
+		</if>
+		and state = #{status}
+		;
+	</select>
+	
+	<update id="deleteEmails" parameterType="cn.ilanhai.kem.domain.email.dto.DeleteEmailDto">
+		 <![CDATA[  
+		update email_main set is_delete = 1
+		where 
+		user_id = #{userId} and 
+		email_id in
+		 ]]>  
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+
+</mapper>

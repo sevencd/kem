@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<settings>
+		<add key="savePath" value="D:\install\apache-tomcat-7.0.70\webapps\httpserver"/>
+		<add key="serviceName" value="http://image.kem.dev.cn"/>
+		<add key="imgFile" value="files"/>
+		<add key="inputName" value="img"/>
+		<add key="svgFile" value="svgs"/>
+		<add key="svginputName" value="svg"/>
+	</settings>
+	<applications>
+		<application>
+			<settings>
+			</settings>
+		</application>
+
+	</applications>
+</configuration>

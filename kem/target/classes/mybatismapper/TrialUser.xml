@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.TrialUserDao">
+	<!--插入申请试用用户 start -->
+	<insert id="insert" parameterType="cn.ilanhai.kem.domain.user.trialuser.TrialUserDto">
+		INSERT INTO
+		user_trial_user(name,phoneNo,company,job)VALUES
+		(#{name},
+		#{phoneNo},#{company},
+		#{job}
+		)
+	</insert>
+	<!--插入申请试用用户 end -->
+</mapper>

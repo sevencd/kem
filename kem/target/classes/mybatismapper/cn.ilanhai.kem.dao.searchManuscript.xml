@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- author huangyi -->
+<mapper namespace="cn.ilanhai.mybatismapper.searchManuscript">
+	<!-- 查询自己的稿件 -->
+	<select id="queryFrontManuscript"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchFrontManuscriptDto"
+		resultType="cn.ilanhai.kem.domain.MapDto">
+		select DISTINCT
+		pd.manuscript_id as manuscriptId
+		,pd.user_id as userId
+		,pd.manuscript_type as manuscriptType
+		,pd.terminal_type as terminalType
+		,pd.state as state
+		,pd.createtime as createtime
+		,ppname.parameter as
+		manuscriptName
+		,ppimg.parameter
+		as manuscriptImg
+		,ppurl.parameter
+		as
+		manuscriptUrl
+		,pppubtime.parameter as publishTime
+		<if test="switchUser ==1">
+			,D.collection_state as
+			collectionState
+		</if>
+		from
+		<if test="used ==1">
+			prod_template_uselog pl left join prod_manuscript pd on
+			pd.manuscript_id = pl.template_id
+		</if>
+		<if test="used !=1">
+			prod_manuscript
+			pd
+		</if>
+
+		left JOIN
+		prod_parameter ppname
+		on
+		ppname.manuscript_id =
+		pd.manuscript_id
+		and
+		<if test="switchUser !=1">
+			ppname.parameter_type = 23
+		</if>
+		<if test="switchUser ==1">
+			ppname.parameter_type = 9
+		</if>
+		left JOIN prod_parameter
+		ppimg on
+		ppimg.manuscript_id =
+		pd.manuscript_id
+		and ppimg.parameter_type
+		= 24
+		left JOIN prod_parameter ppurl on
+		ppurl.manuscript_id =
+		pd.manuscript_id and ppurl.parameter_type = 21
+		left JOIN prod_parameter pppubtime on
+		pppubtime.manuscript_id =
+		pd.manuscript_id and pppubtime.parameter_type = 20
+		left JOIN
+		prod_template_tag pptag on pptag.template_id =
+		pd.manuscript_id
+		and
+		pptag.tag_type = 0
+
+		<if test="switchUser ==1">
+			LEFT JOIN template_collection D
+			ON pd.manuscript_id
+			=
+			D.template_id AND
+			D.user_id = #{userId}
+		</if>
+
+		where
+		pd.enable = 0
+		<if test="switchUser ==1 or userId == null or userId =='' ">
+			<if test="manuscriptType == 4 ">
+				and pd.state = 0
+			</if>
+			<if test="manuscriptType == 1 ">
+				and pd.state = 3
+			</if>
+		</if>
+		<if test="switchUser !=1 and userId !=null and userId !='' ">
+			<if test="used ==1">
+				and pl.user_id = #{userId}
+			</if>
+			<if test="used !=1">
+				and pd.user_id = #{userId}
+			</if>
+		</if>
+		<if test="manuscriptType !=null and manuscriptType !='' ">
+			AND pd.manuscript_type =#{manuscriptType}
+		</if>
+
+
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			and ppname.parameter like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+			AND pd.createtime >= #{startTime}
+		</if>
+		<if test="endTime !=null and endTime !='' ">
+			AND pd.createtime
+			&lt;=DATE_ADD(#{endTime},INTERVAL 1 DAY)
+		</if>
+		<if test="tagName !=null and tagName !='' ">
+			AND pptag.tag_name =#{tagName}
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND pd.terminal_type =#{terminalType}
+		</if>
+
+		<if test="byrand == 1">
+			ORDER BY
+			RAND()
+		</if>
+		<if test="byrand != 1">
+			ORDER BY pd.CREATETIME DESC
+		</if>
+
+		limit
+		#{startCount},#{pageSize};
+	</select>
+	<!-- 查询客户信息总量 -->
+	<select id="queryFrontManuscriptCount"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchFrontManuscriptDto"
+		resultType="java.lang.Integer">
+		select
+		count(1) as count
+		from
+		(select DISTINCT
+		pd.manuscript_id as
+		manuscriptId
+		,pd.user_id as userId
+		,pd.manuscript_type as manuscriptType
+		,pd.terminal_type as terminalType
+		,pd.state as state
+		,ppname.parameter
+		as manuscriptName
+		,ppimg.parameter
+		as manuscriptImg
+		,ppurl.parameter
+		as
+		manuscriptUrl
+		<if test="switchUser ==1">
+			,D.collection_state as
+			collectionState
+		</if>
+		from
+		<if test="used ==1">
+			prod_template_uselog pl left join prod_manuscript pd on
+			pd.manuscript_id = pl.template_id
+		</if>
+		<if test="used !=1">
+			prod_manuscript
+			pd
+		</if>
+		left JOIN
+		prod_parameter ppname
+		on
+		ppname.manuscript_id =
+		pd.manuscript_id
+		and
+		<if test="switchUser !=1">
+			ppname.parameter_type = 23
+		</if>
+		<if test="switchUser ==1">
+			ppname.parameter_type = 9
+		</if>
+		left JOIN prod_parameter
+		ppimg on
+		ppimg.manuscript_id =
+		pd.manuscript_id
+		and ppimg.parameter_type
+		= 24
+		left JOIN prod_parameter ppurl on
+		ppurl.manuscript_id =
+		pd.manuscript_id and ppurl.parameter_type = 21
+		left JOIN
+		prod_template_tag pptag on pptag.template_id =
+		pd.manuscript_id
+		and
+		pptag.tag_type = 0
+
+		<if test="switchUser ==1">
+			LEFT JOIN template_collection D
+			ON pd.manuscript_id
+			=
+			D.template_id AND
+			D.user_id = #{userId}
+		</if>
+
+		where
+		pd.enable = 0
+		<if test="switchUser ==1 or userId == null or userId =='' ">
+			<if test="manuscriptType == 4 ">
+				and pd.state = 0
+			</if>
+			<if test="manuscriptType == 1 ">
+				and pd.state = 3
+			</if>
+		</if>
+		<if test="switchUser !=1 and userId !=null and userId !='' ">
+			<if test="used ==1">
+				and pl.user_id = #{userId}
+			</if>
+			<if test="used !=1">
+				and pd.user_id = #{userId}
+			</if>
+		</if>
+		<if test="manuscriptType !=null and manuscriptType !='' ">
+			AND pd.manuscript_type =#{manuscriptType}
+		</if>
+
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			and ppname.parameter like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+			AND pd.createtime >= #{startTime}
+		</if>
+		<if test="endTime !=null and endTime !='' ">
+			AND pd.createtime
+			&lt;=DATE_ADD(#{endTime},INTERVAL 1 DAY)
+		</if>
+		<if test="tagName !=null and tagName !='' ">
+			AND pptag.tag_name =#{tagName}
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND pd.terminal_type =#{terminalType}
+		</if>
+		) a
+	</select>
+
+	<select id="queryBackManuscript"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchBackManuscriptDto"
+		resultType="cn.ilanhai.kem.domain.MapDto">
+		select DISTINCT
+		pd.manuscript_id as manuscriptId
+		,pd.user_id as userId
+		,pd.manuscript_type as manuscriptType
+		,pd.terminal_type as terminalType
+		,pd.state as state
+		,pd.createtime as createtime
+		,ppname.parameter as
+		manuscriptName
+		,ppimg.parameter
+		as manuscriptImg
+		,ppurl.parameter
+		as
+		manuscriptUrl
+		,ppshelftime.parameter as shelfTime
+		,pppubtime.parameter
+		as publishTime
+		from prod_manuscript
+		pd
+		left JOIN
+		prod_parameter ppname
+		on
+		ppname.manuscript_id =
+		pd.manuscript_id
+		and
+		<if test="manuscriptState == 3 and manuscriptType == 1">
+			ppname.parameter_type = 9
+		</if>
+		<if test="manuscriptType !=1 or manuscriptState != 3">
+			ppname.parameter_type = 23
+		</if>
+		left JOIN prod_parameter
+		ppimg on
+		ppimg.manuscript_id =
+		pd.manuscript_id
+		and ppimg.parameter_type
+		= 24
+		left
+		JOIN prod_parameter ppurl on
+		ppurl.manuscript_id =
+		pd.manuscript_id and
+		ppurl.parameter_type = 21
+		left JOIN prod_parameter ppshelftime on
+		ppshelftime.manuscript_id =
+		pd.manuscript_id and ppshelftime.parameter_type = 6
+		left JOIN
+		prod_parameter pppubtime on
+		pppubtime.manuscript_id =
+		pd.manuscript_id
+		and pppubtime.parameter_type = 5
+		left JOIN
+		prod_template_tag pptag on
+		pptag.template_id =
+		pd.manuscript_id
+		and
+		pptag.tag_type = 1
+
+		where
+		pd.enable = 0
+		and pd.state =
+		#{manuscriptState}
+		<if test="manuscriptType !=null and manuscriptType !='' ">
+			AND pd.manuscript_type =#{manuscriptType}
+		</if>
+
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			and ppname.parameter like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+			<if test="manuscriptState == 1 and manuscriptType == 1">
+				AND pd.createtime >= #{startTime}
+			</if>
+			<if test="manuscriptState == 2 and manuscriptType == 1">
+				AND pppubtime.parameter >= #{startTime}
+			</if>
+			<if
+				test="(manuscriptState == 3 or manuscriptState == 4)  and manuscriptType == 1">
+				AND ppshelftime.parameter >= #{startTime}
+			</if>
+			<if test="manuscriptType != 1">
+				AND pd.createtime >= #{startTime}
+			</if>
+		</if>
+		<if test="endTime !=null and endTime !='' ">
+			<if test="manuscriptState == 1 and manuscriptType == 1">
+				AND pd.createtime
+				&lt;=DATE_ADD(#{endTime},INTERVAL 1 DAY)
+			</if>
+			<if test="manuscriptState == 2 and manuscriptType == 1">
+				AND pppubtime.parameter
+				&lt;=DATE_ADD(#{endTime},INTERVAL
+				1 DAY)
+			</if>
+			<if
+				test="(manuscriptState == 3 or manuscriptState == 4)  and manuscriptType == 1">
+				AND ppshelftime.parameter
+				&lt;=DATE_ADD(#{endTime},INTERVAL 1
+				DAY)
+			</if>
+			<if test="manuscriptType != 1">
+				AND pd.createtime
+				&lt;=DATE_ADD(#{endTime},INTERVAL 1 DAY)
+			</if>
+		</if>
+		<if test="tagName !=null and tagName !='' ">
+			AND pptag.tag_name =#{tagName}
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND pd.terminal_type =#{terminalType}
+		</if>
+
+		<if test="manuscriptState == 1 and manuscriptType == 1">
+			ORDER BY pd.CREATETIME
+		</if>
+		<if test="manuscriptState == 2 and manuscriptType == 1">
+			ORDER BY pppubtime.parameter
+		</if>
+		<if
+			test="(manuscriptState == 3 or manuscriptState == 4)  and manuscriptType == 1">
+			ORDER BY ppshelftime.parameter
+		</if>
+		<if test="manuscriptType != 1">
+			AND pd.createtime
+			ORDER BY pd.CREATETIME
+		</if>
+		<if test="orderType == 'asc'">
+			ASC
+		</if>
+		<if test="orderType == 'desc' or orderType != 'asc'">
+			DESC
+		</if>
+
+		limit
+		#{startCount},#{pageSize};
+	</select>
+
+
+	<select id="queryBackManuscriptCount"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchBackManuscriptDto"
+		resultType="java.lang.Integer">
+		Select count(1) as count from (select DISTINCT
+		pd.manuscript_id as
+		manuscriptId
+		,pd.user_id as userId
+		,pd.manuscript_type as manuscriptType
+		,pd.terminal_type as terminalType
+		,pd.state as state
+		,ppname.parameter
+		as manuscriptName
+		,ppimg.parameter
+		as manuscriptImg
+		,ppurl.parameter
+		as
+		manuscriptUrl
+		from prod_manuscript
+		pd
+		left JOIN
+		prod_parameter ppname
+		on
+		ppname.manuscript_id =
+		pd.manuscript_id
+		and
+		<if test="manuscriptState == 3 and manuscriptType == 1">
+			ppname.parameter_type = 9
+		</if>
+		<if test="manuscriptType !=1 or manuscriptState != 3">
+			ppname.parameter_type = 23
+		</if>
+		left JOIN prod_parameter
+		ppimg on
+		ppimg.manuscript_id =
+		pd.manuscript_id
+		and ppimg.parameter_type
+		= 24
+		left
+		JOIN prod_parameter ppurl on
+		ppurl.manuscript_id =
+		pd.manuscript_id and
+		ppurl.parameter_type = 21
+		left JOIN
+		prod_template_tag pptag on
+		pptag.template_id =
+		pd.manuscript_id
+		and
+		pptag.tag_type = 1
+
+		where
+		pd.enable = 0
+		and pd.state =
+		#{manuscriptState}
+		<if test="manuscriptType !=null and manuscriptType !='' ">
+			AND pd.manuscript_type =#{manuscriptType}
+		</if>
+
+
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			and ppname.parameter like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="startTime !=null and startTime !='' ">
+			AND pd.createtime >= #{startTime}
+		</if>
+		<if test="endTime !=null and endTime !='' ">
+			AND pd.createtime
+			&lt;=DATE_ADD(#{endTime},INTERVAL 1 DAY)
+		</if>
+		<if test="tagName !=null and tagName !='' ">
+			AND pptag.tag_name =#{tagName}
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND pd.terminal_type =#{terminalType}
+		</if>
+		)a
+	</select>
+
+</mapper>

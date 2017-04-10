@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ilanhai.mybatismapper.KeyConfig">
+	<update id="updatekeyconfig" parameterType="cn.ilanhai.kem.domain.key.KeyConfigEntity">
+		UPDATE key_config
+		SET
+		seed = #{seed},
+		update_time = #{updateTime}
+		WHERE
+		id = #{id};
+	</update>
+
+	<insert id="saveCode"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.dto.SaveUserCodeDto">
+		insert into
+		user_company_code(
+		code_value)values(
+		#{code}
+		);
+	</insert>
+
+	<update id="saveCodeforUser"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.dto.SaveUserCodeDto">
+		UPDATE user_identify_user
+		SET
+		identify_code = #{code}
+		WHERE
+		user_id = #{userId};
+	</update>
+
+
+
+	<select id="searchkeyconfig" resultType="cn.ilanhai.kem.domain.key.KeyConfigEntity"
+		parameterType="cn.ilanhai.kem.domain.key.KeyConfigEntity">
+		SELECT
+		`id`,
+		`prefix`,
+		`seed`,
+		`is_enable` AS isEnable,
+		`add_time` AS addTime,
+		`update_time` AS updateTime,
+		`len`,
+		`step`
+		FROM
+		`key_config`
+		WHERE
+		id = #{id}
+	</select>
+
+	<select id="searchUserCode"
+		resultType="cn.ilanhai.kem.domain.user.frontuser.dto.SaveUserCodeDto"
+		parameterType="cn.ilanhai.kem.domain.IdEntity">
+		SELECT
+		user_id as userId,identify_code as code
+		FROM
+		user_identify_user
+		WHERE
+		user_id = #{id}
+	</select>
+
+
+
+	<select id="searchCode" resultType="cn.ilanhai.kem.domain.IdEntity"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.dto.SaveUserCodeDto">
+		SELECT
+		code_value as id
+		FROM
+		user_company_code
+		WHERE
+		code_value =
+		#{code}
+	</select>
+
+
+
+	<select id="searchallkeyconfig" resultType="cn.ilanhai.kem.domain.key.KeyConfigEntity">
+		SELECT
+		`id`,
+		`prefix`,
+		`seed`,
+		`is_enable` AS isEnable,
+		`add_time` AS addTime,
+		`update_time` AS
+		updateTime,
+		`len`,
+		`step`
+		FROM
+		`key_config`
+	</select>
+</mapper>

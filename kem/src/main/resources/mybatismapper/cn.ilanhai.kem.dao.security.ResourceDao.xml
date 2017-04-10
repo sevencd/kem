@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.kem.dao.security.ResourceDao">
+	<resultMap type="cn.ilanhai.kem.domain.security.ResourceEntity"
+		id="resource">
+		<result property="id" column="id" />
+		<result property="uri" column="uri" />
+		<result property="addTime" column="add_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="enable" column="enable" />
+		<result property="remark" column="remark" />
+		<result property="name" column="name" />
+		<result property="delete" column="is_delete" />
+		<result property="type" column="type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="appId" column="app_id" />
+	</resultMap>
+	<select id="selectResourceByURI" parameterType="String"
+		resultMap="resource">
+		select * from sys_resource where uri=#{uri}
+	</select>
+</mapper>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.UserImg">
+	<resultMap id="BaseResultMap" type="cn.ilanhai.kem.domain.userImg.UserImgEntity">
+		<result column="img_id" property="imgId" jdbcType="VARCHAR" />
+		<result column="img_path" property="imgPath" jdbcType="VARCHAR" />
+		<result column="img_type" property="imgType" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<insert id="insert" parameterType="cn.ilanhai.kem.domain.userImg.UserImgUploadEntity">
+		INSERT INTO
+		user_resource_img(img_id,img_name,img_path,img_type,createtime,user_id,md5)VALUES
+		(#{imgId},#{imgName},
+		#{imgPath},#{type}
+		,#{createtime},#{userId},#{imgMd5}
+		)
+	</insert>
+	<update id="update">
+		UPDATE user_resource_img
+		<trim prefix="set" prefixOverrides=",">
+			<if test="imgName!=null">
+				img_name=#{imgName}
+			</if>
+			<if test="imgPath!=null">
+				,img_path=#{imgPath}
+			</if>
+			<if test="type!=null">
+				,img_type=#{type}
+			</if>
+		</trim>
+		where img_id=#{imgId}
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="cn.ilanhai.kem.domain.IdEntity">
+		DELETE FROM
+		user_resource_img WHERE img_id=#{id}
+	</delete>
+	<select id="queryById" parameterType="cn.ilanhai.kem.domain.IdEntity"
+		resultMap="BaseResultMap">
+		SELECT img_id,user_id,img_path FROM user_resource_img WHERE img_id=#{id}
+	</select>
+	<select id="queryUserImgForPage"
+		parameterType="cn.ilanhai.kem.domain.userImg.SearchUserImgRequestEntity"
+		resultType="cn.ilanhai.kem.domain.userImg.UserImgDataDto">
+		<choose>
+			<when test="materialId==null or materialId ==''">
+				SELECT img_id as imgId, (case when (find_in_set('://',img_path) &lt;=
+				0)
+				THEN
+				concat(#{serviceName},img_path)
+				ELSE
+				img_path
+				END) as imgPath,createtime FROM USER_RESOURCE_IMG
+				<trim prefix="where" prefixOverrides="and">
+					<if test="imgName!=null and imgName != ''">
+						img_name like '%${imgName}%'
+					</if>
+					<if test="imgMd5!=null and imgMd5 != ''">
+						and md5 = #{imgMd5}
+					</if>
+					<if test="type!=null and type != ''">
+						and img_type = #{type}
+					</if>
+					and user_id = #{userId}
+				</trim>
+				ORDER BY CREATETIME
+				<if test="orderType==1">
+					DESC
+				</if>
+				<if test="orderType==2">
+					ASC
+				</if>
+				limit ${startCount},${pageSize}
+			</when>
+			<otherwise>
+				SELECT UMI.img_id as imgId, (case when (find_in_set('://',URI.img_path) &lt;=
+				0)
+				THEN
+				concat(#{serviceName},URI.img_path)
+				ELSE
+				URI.img_path
+				END) as imgPath,URI.createtime as createtime FROM USER_MATERIAL_IMG UMI LEFT JOIN USER_RESOURCE_IMG URI
+				ON
+				UMI.img_id = URI.img_id
+				WHERE UMI.material_id =#{materialId}
+				<if test="imgName!=null and imgName != ''">
+					AND img_name like '%${imgName}%'
+				</if>
+				<if test="imgMd5!=null and imgMd5 != ''">
+					AND md5 = #{imgMd5}
+				</if>
+				<if test="type!=null and type != ''">
+					AND img_type = #{type}
+				</if>
+				AND USER_ID in (#{userId},'0')
+				ORDER BY CREATETIME
+				<if test="orderType==1">
+					DESC
+				</if>
+				<if test="orderType==2">
+					ASC
+				</if>
+				limit ${startCount},${pageSize}
+			</otherwise>
+		</choose>
+	</select>
+	<select id="queryUserImgForCount" parameterType="cn.ilanhai.kem.domain.tag.SearchTagRequestEntity"
+		resultType="int">
+		<choose>
+			<when test="materialId==null or materialId ==''">
+				SELECT count(1) FROM USER_RESOURCE_IMG
+				<trim prefix="where" prefixOverrides="and">
+					<if test="imgName!=null and imgName != ''">
+						img_name like '%${imgName}%'
+					</if>
+					<if test="imgMd5!=null  and imgMd5 != ''">
+						and md5 = #{imgMd5}
+					</if>
+					<if test="type!=null and type != ''">
+						and img_type = #{type}
+					</if>
+					and user_id = #{userId}
+				</trim>
+			</when>
+			<otherwise>
+				SELECT count(1) FROM USER_MATERIAL_IMG UMI LEFT JOIN
+				USER_RESOURCE_IMG URI
+				ON
+				UMI.img_id = URI.img_id
+				WHERE UMI.material_id
+				=#{materialId}
+				<if test="imgName!=null and imgName != ''">
+					AND img_name like '%${imgName}%'
+				</if>
+				<if test="imgMd5!=null and imgMd5 != ''">
+					AND md5 = #{imgMd5}
+				</if>
+				<if test="type!=null and type != ''">
+					AND img_type = #{type}
+				</if>
+				AND USER_ID in (#{userId},'0')
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

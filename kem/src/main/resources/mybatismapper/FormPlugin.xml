@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FormPlugin">
+	<resultMap type="cn.ilanhai.kem.domain.plugin.formplugin.FormPluginEntity"
+		id="formPluginEntity">
+		<result property="id" column="id" />
+		<result property="pluginId" column="plugin_id" />
+		<result property="addTime" column="add_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="name" column="name" />
+		<result property="phone" column="phone" />
+		<result property="email" column="email" />
+	</resultMap>
+	<select id="isExists" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.formplugin.FormPluginEntity">
+		SELECT
+		id
+		FROM
+		plugins_form_data
+		WHERE
+		id=#{id};
+	</select>
+	<insert id="add"
+		parameterType="cn.ilanhai.kem.domain.plugin.formplugin.FormPluginEntity"
+		useGeneratedKeys="true">
+		INSERT INTO
+		plugins_form_data(
+		plugin_id,
+		add_time,
+		update_time,
+		name,
+		phone,
+		email)
+		VALUES(
+		#{pluginId},
+		#{addTime},
+		#{updateTime},
+		#{name},
+		#{phone},
+		#{email});
+	</insert>
+	<select id="formPluginEntityCountQuery" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.formplugin.SearchFormPluginData">
+		SELECT
+		COUNT(*)
+		FROM
+		plugins_form_data
+		WHERE
+		plugin_id=#{pluginId}
+		<if test="word!=null and word!=''">
+			AND (
+			name like #{word}
+			OR
+			phone like #{word}
+			OR
+			email like
+			#{word})
+		</if>
+		ORDER BY id
+		#{order,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+	</select>
+	<select id="formPluginEntityQuery" resultMap="formPluginEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.formplugin.SearchFormPluginData">
+		SELECT
+		*
+		FROM
+		plugins_form_data
+		WHERE
+		plugin_id=#{pluginId}
+		<if test="word!=null && word!=''">
+			AND (
+			name like #{word}
+			OR
+			phone like #{word}
+			OR
+			email like
+			#{word})
+		</if>
+		ORDER BY id
+		#{order,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+	</select>
+</mapper>

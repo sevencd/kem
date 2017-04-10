@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ExtensionSql">
+	<select id="loadextensioninfo"
+		resultType="cn.ilanhai.kem.domain.extension.ExtensionSearchInfoDto"
+		parameterType="cn.ilanhai.kem.domain.extension.SearchExtensionRequestEntity">
+		select * from (SELECT DISTINCT
+		S.extension_id,
+		S.extension_name,
+		S.extension_img,
+		S.special_id,
+		S.special_name,
+		S.publish_time,
+CASE IFNULL(
+		b.`host`,
+		''
+	)
+WHEN '' THEN
+	S.extension_url
+ELSE
+	concat(
+		'http://',
+		b.`host`,
+		co.sys_value,
+		s.extension_id
+	)
+END AS extension_url,
+		S.extension_type,
+		S.extension_state,
+		S.createtime,
+		S.user_id,
+		S.summary,
+		U.user_name,
+		u.user_phone,
+		S.model_config_id,
+		ST.disable_reason,
+		sc.start_time,
+		sc.end_time,
+		sc.main_color,
+		ifnull(
+		sc.start_time,
+		S.publish_time
+		) AS orderTime,
+		S.manuscript_id as
+		manuscriptId, pm.enable as manuscriptEnable
+		FROM
+		prod_extension S
+
+		LEFT
+		JOIN user_front_user U ON s.user_id = u.user_id
+		LEFT JOIN audit_log ST
+		ON ST.model_config_id = s.model_config_id
+		LEFT
+		JOIN special_config sc ON
+		sc.model_config_id = s.model_config_id
+		LEFT JOIN prod_manuscript pm on
+		S.manuscript_id = pm.manuscript_id
+		LEFT JOIN prod_bind_host b ON b.user_id = s.user_id
+		AND b.`status` = 1
+		LEFT JOIN sys_config co ON co.sys_key = 'hostConfig'
+		) S where 1=1
+
+		<if test="extensionName != null and extensionName != ''">
+			AND S.extension_name LIKE CONCAT('%',#{extensionName},'%')
+		</if>
+		<if test="userId != null and userId !=''">
+			AND S.user_id = #{userId}
+		</if>
+		<if test="extensionState != null">
+			AND S.extension_state = #{extensionState}
+		</if>
+		<if test="extensionType != null">
+			AND S.extension_type = #{extensionType}
+		</if>
+		<if test="timeStart != null">
+			AND S.publish_time &gt;= #{timeStart}
+		</if>
+		<if test="timeEnd != null">
+			AND S.publish_time &lt;= DATE_ADD(#{timeEnd},INTERVAL 1 DAY)
+		</if>
+		<if test="orderType_new == 'date-asc'">
+			ORDER BY S.publish_time ASC
+		</if>
+		<if test="orderType_new == 'date-desc'">
+			ORDER BY S.publish_time DESC
+		</if>
+		<if test="orderType_new == 'click-asc'">
+			ORDER BY S.publish_time ASC
+		</if>
+		<if
+			test="orderType_new != 'click-desc' and orderType_new != 'date-desc' and  orderType_new != 'date-asc' and  orderType != null">
+			ORDER BY S.publish_time DESC
+		</if>
+		<if test="orderType_new == null or orderType_new == ''">
+			ORDER BY orderTime DESC
+		</if>
+		LIMIT
+		#{startCount},
+		#{pageSize};
+	</select>
+	<select id="searchextensioninfocount" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.extension.SearchExtensionRequestEntity">
+		select COUNT(1) from (SELECT DISTINCT
+		S.extension_id,
+		S.extension_name,
+		S.extension_img,
+		S.special_id,
+		S.special_name,
+		S.publish_time,
+		S.extension_url,
+		S.extension_type,
+		S.extension_state,
+		S.createtime,
+		S.user_id,
+		S.summary,
+		U.user_name,
+		u.user_phone,
+		S.model_config_id,
+		ST.disable_reason,
+		sc.start_time,
+		sc.end_time,
+		sc.main_color,
+		ifnull(
+		sc.start_time,
+		S.publish_time
+		) AS orderTime,
+		S.manuscript_id as
+		manuscriptId, pm.enable as manuscriptEnable
+		FROM
+		prod_extension S
+
+		LEFT
+		JOIN user_front_user U ON s.user_id = u.user_id
+		LEFT JOIN audit_log ST
+		ON ST.model_config_id = s.model_config_id
+		LEFT
+		JOIN special_config sc ON
+		sc.model_config_id = s.model_config_id
+		LEFT JOIN prod_manuscript pm on
+		S.manuscript_id = pm.manuscript_id
+		) S where 1=1
+
+		<if test="extensionName != null and extensionName != ''">
+			AND S.extension_name LIKE CONCAT('%',#{extensionName},'%'
+			)
+		</if>
+		<if test="userId != null and userId !=''">
+			AND S.user_id = #{userId}
+		</if>
+		<if test="extensionState != null">
+			AND S.extension_state = #{extensionState}
+		</if>
+		<if test="extensionType != null">
+			AND S.extension_type = #{extensionType}
+		</if>
+		<if test="timeStart != null">
+			AND S.createtime >= #{timeStart}
+		</if>
+		<if test="timeEnd != null">
+			AND S.createtime &lt;= DATE_ADD(#{timeEnd},INTERVAL 1 DAY)
+		</if>
+		<if test="orderType_new == 'date-asc'">
+			ORDER BY S.CREATETIME ASC
+		</if>
+		<if test="orderType_new == 'date-desc'">
+			ORDER BY S.CREATETIME DESC
+		</if>
+		<if test="orderType_new == 'click-asc'">
+			ORDER BY S.CREATETIME ASC
+		</if>
+		<if
+			test="orderType_new != 'click-desc' and orderType_new != 'date-desc' and  orderType_new != 'date-asc' and  orderType != null">
+			ORDER BY S.CREATETIME DESC
+		</if>
+		<if test="orderType_new == null or orderType_new == ''">
+			ORDER BY orderTime DESC
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.ApplicationStatisticDao">
+	<!-- 应用统计 开始 -->
+	<select id="selectAppStatisticForCount"
+		resultType="cn.ilanhai.kem.domain.statistic.dto.ApplicationStatisticResponseDto">
+		SELECT
+		statistic.*, CONCAT(ROUND(statistic.appCreateAmount /
+		statistic.appRegisterAmount*100,2),'%') as rate
+		FROM
+		(
+		SELECT
+		"邮件应用" as
+		appName,
+		count(er.user_id) AS appCreateAmount,
+		count(u.user_id) AS
+		appRegisterAmount,
+		(select sum(info_value) from email_info where
+		info_key = 'sendAmount') as sendNum
+		FROM
+		user_front_user u
+		LEFT JOIN
+		email_right_state er ON u.user_id =
+		er.user_id
+		WHERE
+		u.user_type = 1
+		) AS
+		statistic
+		union ALL
+		SELECT
+		statistic.*,
+		CONCAT(ROUND(statistic.appCreateAmount /
+		statistic.appRegisterAmount*100,2),'%') as rate
+		FROM
+		(
+		SELECT
+		"短信应用" as
+		appName,
+		count(sr.user_id) AS appCreateAmount,
+		count(u.user_id) AS
+		appRegisterAmount,
+		(select sum(info_value) from sms_info where info_key
+		= 'sendAmount') as
+		sendNum
+		FROM
+		user_front_user u
+		LEFT JOIN
+		sms_right_state sr ON u.user_id
+		= sr.user_id
+		WHERE
+		u.user_type = 1
+		) AS
+		statistic
+	</select>
+	<!-- 应用统计 结束 -->
+
+	<!-- 用户邮件购买记录 开始 -->
+	<select id="selectEmaiLUserForTotalCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		email_right_state er
+		LEFT JOIN prod_order o on er.user_id =
+		o.user_id
+		LEFT JOIN prod_order_info oi on o.order_id = oi.order_id
+		where o.pay_status = 1
+		AND o.description = '购买邮件'
+	</select>
+	<select id="selectEmaiLUserForPage"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.StatisticRequestDto"
+		resultMap="cn.ilanhai.mybatismapper.VIPUserStatisticDao.UserStatisticDto">
+		SELECT
+		userNameFunSQL.user_name,
+		userPhoneNoFunSQL.user_phone,
+		userEmailFunSQL.user_email,
+		oi.add_time as createTime,
+		oi.quantity as
+		buyNum,
+		o.pay_way,
+		CONVERT (o.pay_amount,
+		DECIMAL(20, 2)) AS
+		cash
+		FROM
+		email_right_state er LEFT JOIN
+		(
+		<include refid="userNameFunSQL"></include>
+		)
+		userNameFunSQL on er.user_id = userNameFunSQL.user_id
+		LEFT JOIN
+		(
+		<include refid="userPhoneNoFunSQL"></include>
+		)
+		userPhoneNoFunSQL on er.user_id = userPhoneNoFunSQL.user_id LEFT JOIN
+		(
+		<include refid="userEmailFunSQL">
+		</include>
+		)userEmailFunSQL on er.user_id = userEmailFunSQL.user_id
+		LEFT JOIN
+		prod_order o on er.user_id = o.user_id
+		LEFT JOIN prod_order_info oi on o.order_id = oi.order_id
+		where o.pay_status
+		= 1
+		AND o.description = '购买邮件'
+		order by
+		oi.add_time desc
+		limit
+		${startCount},${pageSize}
+	</select>
+	<!-- 用户邮件购买 结束 -->
+	<!-- 用户短信购买记录 开始 -->
+	<select id="selectSMSUserForTotalCount" resultType="int">
+		SELECT
+		count(*)
+		FROM
+		sms_right_state sr
+		LEFT JOIN prod_order o on sr.user_id =
+		o.user_id
+		LEFT JOIN prod_order_info oi on o.order_id = oi.order_id
+		where o.pay_status = 1
+		AND o.description = '购买短信'
+	</select>
+	<select id="selectSMSUserForPage"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.StatisticRequestDto"
+		resultMap="cn.ilanhai.mybatismapper.VIPUserStatisticDao.UserStatisticDto">
+		SELECT
+		sr.user_id as userId,
+		userNameFunSQL.user_name,
+		userPhoneNoFunSQL.user_phone,
+		userEmailFunSQL.user_email,
+		oi.add_time as
+		createTime,
+		oi.quantity as
+		buyNum,
+		o.pay_way,
+		CONVERT (o.pay_amount,
+		DECIMAL(20, 2)) AS
+		cash
+		FROM
+		sms_right_state sr LEFT JOIN
+		(
+		<include refid="userNameFunSQL"></include>
+		)
+		userNameFunSQL on sr.user_id = userNameFunSQL.user_id
+		LEFT JOIN
+		(
+		<include refid="userPhoneNoFunSQL"></include>
+		)
+		userPhoneNoFunSQL on sr.user_id = userPhoneNoFunSQL.user_id
+		LEFT JOIN
+		(
+		<include refid="userEmailFunSQL">
+		</include>
+		)userEmailFunSQL on sr.user_id = userEmailFunSQL.user_id
+		LEFT JOIN
+		prod_order o on sr.user_id = o.user_id
+		LEFT JOIN prod_order_info oi on o.order_id = oi.order_id
+		where o.pay_status = 1
+		AND o.description = '购买短信'
+		order by
+		oi.add_time desc
+		limit
+		${startCount},${pageSize}
+	</select>
+	<!-- 用户短信购买记录 结束 -->
+
+	<!-- 用户姓名 -->
+	<sql id="userNameFunSQL">
+		SELECT
+		IFNULL(t.user_id1, t.user_id2) AS user_id,
+		IF (
+		t.info_type2 = 1 and
+		t.info2 IS NOT NULL,
+		t.info2,
+		t.info1
+		) AS user_name
+		FROM
+		(
+		SELECT
+		t1.user_id AS user_id1,
+		t2.user_id AS user_id2,
+		t1.info_type
+		AS
+		info_type1,
+		t2.info_type AS info_type2,
+		t1.info AS info1,
+		t2.info AS
+		info2
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		user_info_user
+		WHERE
+		info_type = 0
+		AND info_state =
+		1
+		) t1
+		LEFT JOIN (
+		SELECT
+		*
+		FROM
+		user_info_user
+		WHERE
+		info_type = 1
+		AND
+		info_state = 1
+		) t2 ON t1.user_id = t2.user_id
+		UNION
+		SELECT
+		t1.user_id AS
+		user_id1,
+		t2.user_id AS user_id2,
+		t1.info_type AS info_type1,
+		t2.info_type AS info_type2,
+		t1.info AS info1,
+		t2.info AS info2
+		FROM
+		(
+		SELECT
+		*
+		FROM
+		user_info_user
+		WHERE
+		info_type = 0
+		AND info_state = 1
+		) t1
+		RIGHT JOIN (
+		SELECT
+		*
+		FROM
+		user_info_user
+		WHERE
+		info_type = 1
+		AND info_state
+		= 1
+		) t2 ON t1.user_id = t2.user_id
+		) t
+	</sql>
+	<!-- 用户手机号 -->
+	<sql id="userPhoneNoFunSQL">
+		SELECT
+		user_id,
+		identify as user_phone
+		FROM
+		user_identify_user
+		WHERE
+		identify_state = 1
+	</sql>
+	<!-- 用户邮箱 -->
+	<sql id="userEmailFunSQL">
+		SELECT
+		user_id,
+		info AS user_email
+		FROM
+		user_info_user
+		WHERE
+		info_type = 2 and info_state=1
+	</sql>
+	<!-- 查询最新购买记录（备用） 开始 -->
+	<sql id="latestPayTimeEmailOrderGroupByUserId">
+		SELECT
+		oo.*
+		FROM
+		prod_order oo,
+		(
+		SELECT
+		o.user_id,
+		max(o.pay_time)
+		AS 'maxpaytime'
+		FROM
+		prod_order o
+		WHERE
+		o.pay_status = 1
+		AND o.description
+		= '购买邮件'
+		GROUP BY
+		o.user_id
+		) sub
+		WHERE
+		oo.user_id =
+		sub.user_id
+		AND
+		oo.pay_time = sub.maxpaytime
+		AND oo.pay_status = 1
+		AND
+		oo.description =
+		'购买邮件'
+	</sql>
+	<sql id="latestPayTimeSMSOrderGroupByUserId">
+		SELECT
+		oo.*
+		FROM
+		prod_order oo,
+		(
+		SELECT
+		o.user_id,
+		max(o.pay_time)
+		AS 'maxpaytime'
+		FROM
+		prod_order o
+		WHERE
+		o.pay_status = 1
+		AND o.description
+		= '购买短信'
+		GROUP BY
+		o.user_id
+		) sub
+		WHERE
+		oo.user_id =
+		sub.user_id
+		AND
+		oo.pay_time = sub.maxpaytime
+		AND oo.pay_status = 1
+		AND
+		oo.description =
+		'购买短信'
+	</sql>
+	<!-- 查询最新购买记录（备用） 结束 -->
+
+</mapper>

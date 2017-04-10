@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.userRelationResource">
+	<insert id="insertUserRelationResource" parameterType="cn.ilanhai.kem.domain.member.UserResourcesEntity">
+		INSERT
+		INTO
+		user_relation_resource
+		(USER_ID,service_id,package_service_times,package_service_totalTimes,service_times,service_rotalTimes,starttime,endtime)
+		VALUES
+		(#{userId},#{serviceId},#{packageServiceTimes},#{packageServiceTotalTimes},#{serviceTimes},#{serviceTotalTimes},#{starttime},#{endtime});
+	</insert>
+
+	<update id="updateUserRelationResource" parameterType="cn.ilanhai.kem.domain.member.UserResourcesEntity">
+		UPDATE
+		user_relation_resource
+		SET
+		package_service_times =
+		#{packageServiceTimes} ,package_service_totalTimes =
+		#{packageServiceTotalTimes}, service_times = #{serviceTimes},
+		service_rotalTimes = #{serviceTotalTimes}
+		<if test="starttime !=null">
+			,starttime= #{starttime}
+		</if>
+		<if test="endtime !=null">
+			,endtime= #{endtime}
+		</if>
+		WHERE USER_ID = #{userId}
+		and service_id =
+		#{serviceId};
+	</update>
+
+
+	<update id="deleteUserRelationPackageResource"
+		parameterType="cn.ilanhai.kem.domain.member.dto.DeleteUserResourcesDto">
+		UPDATE
+		user_relation_resource
+		SET package_service_times=0 ,endtime= now(),service_times=0
+		WHERE USER_ID IN
+		<foreach item="user_id" index="index" collection="userIds"
+			open="(" separator="," close=")">
+			#{user_id}
+		</foreach>
+		and service_id IN
+		<foreach item="item" index="index" collection="serviceIds"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+
+	<select id="selectUserRelationResource" resultType="cn.ilanhai.kem.domain.member.UserResourcesEntity"
+		parameterType="cn.ilanhai.kem.domain.member.dto.SearchUserResourcesDto">
+		SELECT USER_ID as userId ,service_id as serviceId
+		,package_service_times as packageServiceTimes
+		,package_service_totalTimes as packageServiceTotalTimes,service_times
+		as serviceTimes,service_rotalTimes as serviceTotalTimes,starttime as
+		starttime,endtime as endtime from
+		user_relation_resource where USER_ID
+		=
+		#{userId}
+		<if test="serviceId !=null and serviceId !='' ">
+			AND service_id = #{serviceId}
+		</if>
+		;
+	</select>
+
+	<select id="selectUserRelationResourceCount" resultType="java.lang.Integer"
+		parameterType="cn.ilanhai.kem.domain.member.dto.SearchUserResourcesDto">
+		SELECT count(1) from user_relation_resource where USER_ID
+		=
+		#{userId}
+		<if test="serviceId !=null and serviceId !='' ">
+			AND service_id = #{serviceId}
+		</if>
+		;
+	</select>
+
+</mapper>

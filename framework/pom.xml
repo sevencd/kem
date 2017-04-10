@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<properties>
+		<!-- 开始定义编译属性 -->
+		<!-- 源文件使用的字符编码 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 源代码编译版本 -->
+		<project.build.sourceVerion>1.7</project.build.sourceVerion>
+		<!-- 目标平台编译版本 -->
+		<project.build.targetVerion>1.7</project.build.targetVerion>
+		<!-- 结束定义编译属性 -->
+		<!-- 资源编码 -->
+		<project.build.recourceEncoding>UTF-8</project.build.recourceEncoding>
+		<project.build.version>1.0.25</project.build.version>
+	</properties>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cn.ilanhai.framework</groupId>
+	<artifactId>framework</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.25</version>
+	<name>framework</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.13</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+	<modules>
+		<module>util</module>
+		<module>common</module>
+		<module>app</module>
+		<module>container</module>
+		<module>service</module>
+		<module>host</module>
+	</modules>
+	<build>
+		<plugins>
+			<!-- 编译 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<source>${project.build.sourceVerion}</source>
+					<target>${project.build.targetVerion}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<!-- 复制资源 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<encoding>${project.build.recourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<name>Releases</name>
+			<url>http://192.168.1.225:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Snapshots</name>
+			<url>http://192.168.1.225:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>

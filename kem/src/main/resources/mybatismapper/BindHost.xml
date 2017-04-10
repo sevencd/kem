@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BindHost">
+	
+	<insert id="savebindhost"
+		parameterType="cn.ilanhai.kem.domain.bindhost.BindHostRequestEntity"
+		 useGeneratedKeys="true" keyProperty="id">
+INSERT INTO prod_bind_host (
+	`user_id`,
+	`host`,
+	`status`
+)
+VALUES
+	(#{userId}, #{host}, #{status});	 
+	</insert>
+	
+	<select id="loadbindhost"
+		parameterType="cn.ilanhai.kem.domain.bindhost.QueryBindHostRequestEntity" 
+		resultType="cn.ilanhai.kem.domain.bindhost.QueryBindHostResponseEntity">
+SELECT
+	b.id,
+	b.`host`,
+	b.user_id AS userId,
+	b.`status`
+FROM
+	prod_bind_host b
+WHERE
+	b.user_id = #{userId}
+	AND b.status = 1
+	</select>
+	
+	<select id="queryextensionbyuser"
+		parameterType="cn.ilanhai.kem.domain.bindhost.QueryExtensionByuserRequest" 
+		resultType="cn.ilanhai.kem.domain.bindhost.QueryExtensionByUserResponse">
+	SELECT
+	e.extension_id AS extensionId,
+	e.extension_type AS extensionType
+FROM
+	prod_extension e
+WHERE
+	e.user_id = #{userId}
+AND e.extension_state in(0,1)
+	</select>
+	
+	<update id="updatebindhost"
+		parameterType="cn.ilanhai.kem.domain.bindhost.BindHostRequestEntity"
+		 useGeneratedKeys="true" keyProperty="id">
+UPDATE `prod_bind_host`
+SET `host` = #{host},
+	`status` = #{status}
+WHERE
+	(`user_id` = #{userId});
+	</update>
+	
+	<update id="updatehoststatus"
+		parameterType="cn.ilanhai.kem.domain.bindhost.UpdateUserHostStatus">
+UPDATE `prod_bind_host`
+SET `status` = #{status}
+WHERE
+	(`user_id` = #{userId});
+	</update>
+	
+	<select id="querysysbind"
+		parameterType="cn.ilanhai.kem.domain.bindhost.SearchSysBind" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.PayConfig.PayConfigResponseEntity">
+SELECT
+	s.sys_key AS sysKey,
+	s.sys_value AS sysValue,
+	s.`describe`
+FROM
+	sys_config s
+WHERE
+	s.sys_key = #{key}
+	</select>
+	
+	<delete id="deletebinduser"
+		parameterType="cn.ilanhai.kem.domain.bindhost.BindHostRequestEntity">
+DELETE
+FROM
+	prod_bind_host 
+WHERE
+	user_id = #{userId}
+	</delete>
+</mapper>

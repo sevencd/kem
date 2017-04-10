@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SmsRight">
+	<update id="updatesmsquantity"
+		parameterType="cn.ilanhai.kem.domain.smsright.AddSmsQuantityEntity">
+UPDATE `sms_right_state`
+SET `updatetime` = #{updateTime},
+ `remaintimes` = #{quantity},
+ `total` = #{total}
+WHERE
+	(`user_id` = #{UserId});
+	</update>
+	
+	<insert id="insertsmsquantity"
+		parameterType="cn.ilanhai.kem.domain.smsright.AddSmsQuantityEntity">
+INSERT INTO `sms_right_state` (
+	`createtime`,
+	`updatetime`,
+	`remaintimes`,
+	`user_id`,
+	`total`
+)
+VALUES
+	(
+		#{createTime},
+		#{updateTime},
+		#{quantity},
+		#{UserId},
+		#{quantity}
+	);
+	</insert>
+	
+	<select id="searchisexistsusersms"
+		resultType="Integer"
+		parameterType="String">
+SELECT
+	`id`
+FROM
+	`sms_right_state`
+WHERE
+	`user_id` = #{value}
+	</select>
+	
+	<select id="selectsmsquantity"
+		resultType="cn.ilanhai.kem.domain.smsright.SmsRightEntity"
+		parameterType="cn.ilanhai.kem.domain.smsright.SearchSmsQuantityByUser">
+SELECT
+	`id` AS `smsId`,
+	`createtime` AS `createTime`,
+	`updatetime` AS `updateTime`,
+	`remaintimes` AS `quantity`,
+	`user_id` AS `userId`,
+	`total` AS `total`
+FROM
+	`sms_right_state`
+WHERE
+	`user_id` = #{userId}
+	</select>
+	<!-- sms entity -->
+	<resultMap id="smsEntity"
+	    type="cn.ilanhai.kem.domain.smsright.SmsEntity" >
+	    <result property="smsId" column="sms_id"/>
+	    <result property="delete" column="is_delete"/>
+	    <result property="createTime" column="createtime"/>
+	    <result property="updateTime" column="updatetime"/>
+	    <result property="userId" column="user_id"/>
+	</resultMap>
+	<!-- add sms entity -->
+	<insert id="addSmsEntity" 
+	    parameterType="cn.ilanhai.kem.domain.smsright.SmsEntity">
+	    insert into sms_main(
+	    sms_id,
+	    is_delete,
+	    createtime,
+	    updatetime,
+	    user_id)values(
+	    #{smsId},
+	    #{delete},
+	    #{createTime},
+	    #{updateTime},
+	    #{userId});
+	</insert>
+	<!-- update sms entity -->
+	<update id="updateSmsEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.SmsEntity">
+	    update sms_main
+	    set 
+	    is_delete={delete},
+	    updatetime={updateTime}
+	    where 
+	    sms_id=#{smsId};
+	</update>
+	<!-- is exists sms entity -->
+	<select id="isExistsSmsEntity"
+	    resultType="String">
+	    select 
+	    sms_id
+	    from
+	    sms_main
+	    where 
+	    sms_id=#{smsId}
+	    limit 1;
+	</select>
+	<!-- query one sms entity by sms_id-->
+	<select id="queryOneSmsEntityBySmsId"
+	    resultMap="smsEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.dto.QueryOneSmsEntityDto">
+	    select 
+	    *
+	    from
+	    sms_main
+	    where 
+	    sms_id=#{smsId}
+	    limit 1;
+	</select>
+	<!-- sms info entity -->
+	<resultMap  id="smsInfoEntity"
+	    type="cn.ilanhai.kem.domain.smsright.SmsInfoEntity">
+	    <result property="infoId" column="info_id"/>
+	    <result property="smsId" column="sms_id"/>
+	    <result property="infoKey" column="info_key"/>
+	    <result property="infoValue" column="info_value"/>
+	    <result property="enable" column="enable"/>
+	</resultMap>
+	<!-- add sms info entity -->
+	<insert id="addSmsInfoEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.SmsInfoEntity">
+	    insert into sms_info(
+	    sms_id,
+	    info_key,
+	    info_value,
+	    enable)values(
+	    #{smsId},
+	    #{infoKey},
+	    #{infoValue},
+	    #{enable});
+	</insert>
+	<!-- update sms info entity -->
+	<update id="updateSmsInfoEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.SmsInfoEntity">
+	    update sms_info
+	    set
+	    info_value=#{infoValue},
+	    enable=#{enable}
+	    where 
+	    sms_id=#{smsId}
+	    and
+	    info_key=#{infoKey};
+	</update>
+	<!-- is exists sms info entity -->
+	<select id="isExistsSmsInfoEntity"
+	    resultType="int"
+	    parameterType="cn.ilanhai.kem.domain.smsright.SmsInfoEntity">
+	    select
+	    info_id
+	    from sms_info	    
+	    where 
+	    sms_id=#{smsId}
+	    and
+	    info_key=#{infoKey}
+	    limit 1;
+	</select>
+	<!-- query one sms info entity by  infoKey and sms_id -->
+	<select id="queryOneSmsInfoEntityByInfoKeyAndSmsId"
+	    resultMap="smsInfoEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.dto.QueryOneSmsInfoEntityDto">
+	    select
+	    *
+	    from sms_info	    
+	    where 
+	    sms_id=#{smsId}
+	    and
+	    info_key=#{infoKey}
+	    limit 1;
+	</select>
+	<!-- query one sms info entity by  infoKey and sms_id -->
+	<select id="querySmsInfoEntityBySmsId"
+	    resultMap="smsInfoEntity"
+	    parameterType="cn.ilanhai.kem.domain.smsright.dto.QuerySmsInfoEntityDto">
+	    select
+	    *
+	    from sms_info	    
+	    where 
+	    sms_id=#{smsId};
+	</select>
+</mapper>

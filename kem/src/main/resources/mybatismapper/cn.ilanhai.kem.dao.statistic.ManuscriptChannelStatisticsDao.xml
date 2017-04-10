@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.kem.dao.statistic.ManuscriptChannelStatisticsDao">
+	<resultMap
+		type="cn.ilanhai.kem.domain.statistic.ManuscriptChannelStatisticsEntity"
+		id="manuscriptChannelStatisticsEntity">
+		<result property="id" column="channel_id" />
+		<result property="visitUrl" column="visit_url" />
+		<result property="quantity" column="channel_quantity" />
+		<result property="channelType" column="channel_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="addTime" column="channel_add_time" />
+		<result property="updateTime" column="channel_update_time" />
+	</resultMap>
+	<!-- 添加 -->   
+	<insert id="addManuscriptChannelStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptChannelStatisticsEntity">
+		insert into prod_manuscript_channel_statistics(
+		visit_url,
+		channel_quantity,
+		channel_type,
+		channel_add_time,
+		channel_update_time
+		)values(
+		#{visitUrl},
+		#{quantity},
+		#{channelType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{addTime},
+		#{updateTime}
+		);
+	</insert>
+	<!-- 修改 -->
+	<update id="updateManuscriptChannelStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptChannelStatisticsEntity">
+		update
+		prod_manuscript_channel_statistics
+		set
+		channel_quantity=#{quantity},
+		channel_update_time=#{updateTime}
+		where
+		channel_id=#{id}
+	</update>
+	<!-- 是否存在,根据浏览url、数据类型、添加时间 -->
+	<select id="isExistsManuscriptChannelStatisticsEntity"
+		resultType="long"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptChannelStatisticsEntity">
+		select
+		channel_id
+		from
+		prod_manuscript_channel_statistics
+		where
+		channel_id=#{id}
+	</select>
+	<!-- 查询数据,根据浏览url、数据类型、添加时间 -->
+	<select id="oneManuscriptChannelStatisticsEntity" resultMap="manuscriptChannelStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryOneManuscriptChannelStatisticsDto">
+		select
+		*
+		from
+		prod_manuscript_channel_statistics
+		where
+		visit_url=#{visitUrl}
+		and
+		channel_type=#{channelType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		and
+		date(channel_add_time)=DATE(#{addDateTime})
+		limit 1
+	</select>
+
+
+
+</mapper>

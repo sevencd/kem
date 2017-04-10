@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- author huangyi -->
+<mapper namespace="cn.ilanhai.mybatismapper.customer">
+	<!-- 插入主表 -->
+	<insert id="insertMain" parameterType="cn.ilanhai.kem.domain.customer.CustomerMainEntity">
+		INSERT INTO customer_main
+		(customer_id,user_id,createtime) VALUES
+		(#{customerId},
+		#{userId},now()
+		);
+	</insert>
+
+	<insert id="insertMainList" parameterType="java.util.List">
+		INSERT INTO customer_main
+		(customer_id,user_id,createtime) VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.customerId},#{item.userId},now())
+		</foreach>
+	</insert>
+
+	<insert id="insertInfoList" parameterType="java.util.List">
+		INSERT INTO customer_info
+		(customer_id,customer_key,customer_value)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.customerId},#{item.customerKey},#{item.customerValue})
+		</foreach>
+	</insert>
+
+
+	<!-- 插入信息表 -->
+	<insert id="insertInfo" parameterType="cn.ilanhai.kem.domain.customer.CustomerInfoEntity">
+		INSERT INTO customer_info
+		(customer_id,customer_key,customer_value) VALUES
+		(#{customerId},
+		#{customerKey},#{customerValue}
+		);
+	</insert>
+
+	<!-- 删除客户 -->
+	<update id="deleteCustomer"
+		parameterType="cn.ilanhai.kem.domain.customer.dto.DeleteCustomerDto">
+		update customer_main
+		set is_delete = 1 where customer_id
+		in
+		<foreach item="item" index="index" collection="customerIds"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		and ( user_id = #{userId} or '0' = #{userId});
+	</update>
+
+	<!-- 更新客户信息 -->
+	<update id="updateInfo" parameterType="cn.ilanhai.kem.domain.customer.CustomerInfoEntity">
+		update customer_info
+		set
+		customer_value = #{customerValue} where customer_id =
+		#{customerId} and
+		customer_key = #{customerKey};
+	</update>
+
+	<!-- 获取客户信息 -->
+	<select id="selectCustomerInfo" parameterType="cn.ilanhai.kem.domain.customer.CustomerInfoEntity"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerInfoEntity">
+		SELECT customer_id as customerId , customer_key as
+		customerKey ,
+		customer_value as customerValue FROM
+		customer_info where
+		customer_id = #{customerId} and
+		customer_key = #{customerKey} limit
+		0,1;
+	</select>
+
+	<!-- 获取客户主表 -->
+	<select id="selectCustomerMain" parameterType="cn.ilanhai.kem.domain.customer.CustomerMainEntity"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerMainEntity">
+		SELECT customer_id as customerId , user_id as userId ,
+		createtime FROM
+		customer_main where customer_id = #{customerId} limit
+		0,1;
+	</select>
+
+	<!-- 查询客户信息 -->
+	<select id="queryCustomer"
+		parameterType="cn.ilanhai.kem.domain.customer.dto.SearchCustomerDto"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerEntity">
+		select * from (SELECT cm.customer_id as customerId ,
+		cm.createtime as
+		createtime,
+		<!-- name -->
+		ci_name.customer_value as name,
+		<!-- phone -->
+		ci_phone.customer_value as phone,
+		<!-- qq -->
+		ci_qq.customer_value as qq,
+		<!-- email -->
+		ci_email.customer_value as email,
+		<!-- address -->
+		ci_address.customer_value as address,
+		<!-- extensionName -->
+		ci_extensionName.customer_value as extensionName,
+		<!-- originate -->
+		ci_originate.customer_value as originate,
+		<!-- 行业 -->
+		ci_industry.customer_value as industry,
+		<!-- 公司 -->
+		ci_company.customer_value as company,
+		<!-- 省 -->
+		ci_province.customer_value as province,
+		<!-- 市 -->
+		ci_city.customer_value as city,
+		<!-- 区 -->
+		ci_area.customer_value as area,
+		<!-- qq签名 -->
+		ci_qqAutograph.customer_value as qqAutograph,
+		<!-- 签名 -->
+		ci_autograph.customer_value as autograph,
+		<!-- 备注 -->
+		ci_remark.customer_value as remark,
+		<!-- 客户分类 -->
+		IFNULL(ci_type.customer_value,'1') as type,
+		<!-- 性别 -->
+		ci_sex.customer_value as sex
+		FROM
+		customer_main cm
+		<!-- name -->
+		left join customer_info ci_name on cm.customer_id =
+		ci_name.customer_id and ci_name.customer_key = 'name'
+		<!-- phone -->
+		left join customer_info ci_phone on cm.customer_id =
+		ci_phone.customer_id and ci_phone.customer_key = 'phone'
+		<!-- qq -->
+		left join customer_info ci_qq on cm.customer_id = ci_qq.customer_id
+		and ci_qq.customer_key = 'qq'
+		<!-- email -->
+		left join customer_info ci_email on cm.customer_id =
+		ci_email.customer_id and ci_email.customer_key = 'email'
+		<!-- address -->
+		left join customer_info ci_address on cm.customer_id =
+		ci_address.customer_id and ci_address.customer_key = 'address'
+		<!-- extensionName -->
+		left join customer_info ci_extensionName on cm.customer_id =
+		ci_extensionName.customer_id and ci_extensionName.customer_key =
+		'extensionName'
+		<!-- originate -->
+		left join customer_info ci_originate on cm.customer_id =
+		ci_originate.customer_id and ci_originate.customer_key = 'originate'
+		<!-- 行业 -->
+		left join customer_info ci_industry on cm.customer_id =
+		ci_industry.customer_id and ci_industry.customer_key = 'industry'
+		<!-- 公司 -->
+		left join customer_info ci_company on cm.customer_id =
+		ci_company.customer_id and ci_company.customer_key = 'company'
+		<!-- 省 -->
+		left join customer_info ci_province on cm.customer_id =
+		ci_province.customer_id and ci_province.customer_key = 'province'
+		<!-- 市 -->
+		left join customer_info ci_city on cm.customer_id =
+		ci_city.customer_id and ci_city.customer_key = 'city'
+		<!-- 区 -->
+		left join customer_info ci_area on cm.customer_id =
+		ci_area.customer_id and ci_area.customer_key = 'area'
+		<!-- qq签名 -->
+		left join customer_info ci_qqAutograph on cm.customer_id =
+		ci_qqAutograph.customer_id and ci_qqAutograph.customer_key =
+		'qqAutograph'
+		<!-- 签名 -->
+		left join customer_info ci_autograph on cm.customer_id =
+		ci_autograph.customer_id and ci_autograph.customer_key = 'autograph'
+		<!-- 备注 -->
+		left join customer_info ci_remark on cm.customer_id =
+		ci_remark.customer_id and ci_remark.customer_key = 'remark'
+		<!-- 分组 -->
+		left join customer_info ci_type on cm.customer_id =
+		ci_type.customer_id and ci_type.customer_key = 'type'
+		<!-- 性别 -->
+		left join customer_info ci_sex on cm.customer_id =
+		ci_sex.customer_id
+		and ci_sex.customer_key = "sex"
+		where cm.user_id
+		= #{userId} and
+		cm.is_delete = 0
+		) a
+		where
+		1=1
+		<if test="searchStr !=null and searchStr !='' ">
+			and (name like
+			concat('%',#{searchStr},'%') or email like
+			concat('%',#{searchStr},'%') or extensionName like
+			concat('%',#{searchStr},'%') or qq like
+			concat('%',#{searchStr},'%')
+			or phone like
+			concat('%',#{searchStr},'%') or address like
+			concat('%',#{searchStr},'%')
+			)
+		</if>
+		<if test="originate !=null and originate !='' ">
+			and originate = #{originate}
+		</if>
+		<if test="type != null and type != 0">
+			and type = #{type}
+		</if>
+		<if test="sendType == 1">
+			and phone &lt;&gt; ''
+		</if>
+		<if test="sendType == 2">
+			and email &lt;&gt; ''
+		</if>
+		ORDER
+		BY
+		createtime desc,customerId desc
+		<if test="sendType == null or sendType == 0">
+		limit
+		#{startCount},#{pageSize};
+		</if>
+	</select>
+	<!-- 查询客户信息总量 -->
+	<select id="queryCustomerCount"
+		parameterType="cn.ilanhai.kem.domain.customer.dto.SearchCustomerDto"
+		resultType="java.lang.Integer">
+		select count(1) as count from (SELECT cm.customer_id as customerId ,
+		<!-- name -->
+		ci_name.customer_value as name,
+		<!-- phone -->
+		ci_phone.customer_value as phone,
+		<!-- qq -->
+		ci_qq.customer_value as qq,
+		<!-- email -->
+		ci_email.customer_value as email,
+		<!-- address -->
+		ci_address.customer_value as address,
+		<!-- extensionName -->
+		ci_extensionName.customer_value as extensionName,
+		<!-- originate -->
+		ci_originate.customer_value as originate,
+		<!-- 行业 -->
+		ci_industry.customer_value as industry,
+		<!-- 公司 -->
+		ci_company.customer_value as company,
+		<!-- 省 -->
+		ci_province.customer_value as province,
+		<!-- 市 -->
+		ci_city.customer_value as city,
+		<!-- 区 -->
+		ci_area.customer_value as area,
+		<!-- qq签名 -->
+		ci_qqAutograph.customer_value as qqAutograph,
+		<!-- 签名 -->
+		ci_autograph.customer_value as autograph,
+		<!-- 备注 -->
+		ci_remark.customer_value as remark,
+		<!-- 客户分类 -->
+		IFNULL(ci_type.customer_value,'1') as type,
+		<!-- 性别 -->
+		ci_sex.customer_value as sex
+		FROM
+		customer_main cm
+		<!-- name -->
+		left join customer_info ci_name on cm.customer_id =
+		ci_name.customer_id and ci_name.customer_key = 'name'
+		<!-- phone -->
+		left join customer_info ci_phone on cm.customer_id =
+		ci_phone.customer_id and ci_phone.customer_key = 'phone'
+		<!-- qq -->
+		left join customer_info ci_qq on cm.customer_id = ci_qq.customer_id
+		and ci_qq.customer_key = 'qq'
+		<!-- email -->
+		left join customer_info ci_email on cm.customer_id =
+		ci_email.customer_id and ci_email.customer_key = 'email'
+		<!-- address -->
+		left join customer_info ci_address on cm.customer_id =
+		ci_address.customer_id and ci_address.customer_key = 'address'
+		<!-- extensionName -->
+		left join customer_info ci_extensionName on cm.customer_id =
+		ci_extensionName.customer_id and ci_extensionName.customer_key =
+		'extensionName'
+		<!-- originate -->
+		left join customer_info ci_originate on cm.customer_id =
+		ci_originate.customer_id and ci_originate.customer_key = 'originate'
+		<!-- 行业 -->
+		left join customer_info ci_industry on cm.customer_id =
+		ci_industry.customer_id and ci_industry.customer_key = 'industry'
+		<!-- 公司 -->
+		left join customer_info ci_company on cm.customer_id =
+		ci_company.customer_id and ci_company.customer_key = 'company'
+		<!-- 省 -->
+		left join customer_info ci_province on cm.customer_id =
+		ci_province.customer_id and ci_province.customer_key = 'province'
+		<!-- 市 -->
+		left join customer_info ci_city on cm.customer_id =
+		ci_city.customer_id and ci_city.customer_key = 'city'
+		<!-- 区 -->
+		left join customer_info ci_area on cm.customer_id =
+		ci_area.customer_id and ci_area.customer_key = 'area'
+		<!-- qq签名 -->
+		left join customer_info ci_qqAutograph on cm.customer_id =
+		ci_qqAutograph.customer_id and ci_qqAutograph.customer_key =
+		'qqAutograph'
+		<!-- 签名 -->
+		left join customer_info ci_autograph on cm.customer_id =
+		ci_autograph.customer_id and ci_autograph.customer_key = 'autograph'
+		<!-- 备注 -->
+		left join customer_info ci_remark on cm.customer_id =
+		ci_remark.customer_id and ci_remark.customer_key = 'remark'
+		<!-- 分组 -->
+		left join customer_info ci_type on cm.customer_id =
+		ci_type.customer_id and ci_type.customer_key = 'type'
+		<!-- 性别 -->
+		left join customer_info ci_sex on cm.customer_id =
+		ci_sex.customer_id
+		and ci_sex.customer_key = "sex"
+		where cm.user_id
+		= #{userId} and
+		cm.is_delete = 0
+		) a
+		where
+		1=1
+		<if test="searchStr !=null and searchStr !='' ">
+			and (name like
+			concat('%',#{searchStr},'%') or email like
+			concat('%',#{searchStr},'%') or extensionName like
+			concat('%',#{searchStr},'%') or qq like
+			concat('%',#{searchStr},'%')
+			or phone like
+			concat('%',#{searchStr},'%') or address like
+			concat('%',#{searchStr},'%')
+			)
+		</if>
+		<if test="originate !=null and originate !='' ">
+			and originate = #{originate}
+		</if>
+		<if test="type != null and type != 0">
+			and type = #{type}
+		</if>
+		<if test="sendType == 1">
+			and phone &lt;&gt; ''
+		</if>
+		<if test="sendType == 2">
+			and email &lt;&gt; ''
+		</if>
+	</select>
+
+	<!-- 查询客户标签是否存在 -->
+	<select id="searchcustomertag"
+		parameterType="cn.ilanhai.kem.domain.customer.tag.QueryCustomerTagDto"
+		resultType="cn.ilanhai.kem.domain.customer.tag.CustomerTagEntity">
+		SELECT
+		tag_id as tagId,
+		customer_id as customerId,
+		special_tag as SpecialTag,
+		customer_tag as customerTag,
+		createtime,
+		updatetime
+		FROM
+		customer_tag
+		WHERE
+		is_delete = 0
+		AND customer_id =
+		#{customerId}
+	</select>
+
+	<insert id="insertcustomertag"
+		parameterType="cn.ilanhai.kem.domain.customer.tag.CustomerTagEntity">
+		INSERT INTO `customer_tag` (
+		`customer_id`,
+		`special_tag`,
+		`customer_tag`,
+		`is_delete`,
+		`createtime`,
+		`updatetime`
+		)
+		VALUES
+		(
+		#{customerId},
+		#{SpecialTag},
+		#{customerTag},
+		0,
+		#{createTime},
+		#{updateTime}
+		);
+
+	</insert>
+
+	<update id="updatecustomertag"
+		parameterType="cn.ilanhai.kem.domain.customer.tag.CustomerTagEntity">
+		UPDATE `customer_tag`
+		SET
+		`special_tag` = #{SpecialTag},
+		`customer_tag` = #{customerTag},
+		`updatetime` = #{updateTime}
+		WHERE
+		`customer_id` = #{customerId} and
+		`is_delete` = '0';
+	</update>
+
+	<!-- 加载单个用户的信息 -->
+	<select id="loadcustomerinfo" parameterType="cn.ilanhai.kem.domain.customer.tag.QueryCustomerDto"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerEntity">
+		select * from (SELECT cm.customer_id as customerId ,
+		<!-- name -->
+		ci_name.customer_value as name,
+		<!-- phone -->
+		ci_phone.customer_value as phone,
+		<!-- qq -->
+		ci_qq.customer_value as qq,
+		<!-- email -->
+		ci_email.customer_value as email,
+		<!-- address -->
+		ci_address.customer_value as address,
+		<!-- extensionName -->
+		ci_extensionName.customer_value as extensionName,
+		<!-- originate -->
+		ci_originate.customer_value as originate,
+		<!-- 行业 -->
+		ci_industry.customer_value as industry,
+		<!-- 公司 -->
+		ci_company.customer_value as company,
+		<!-- 省 -->
+		ci_province.customer_value as province,
+		<!-- 市 -->
+		ci_city.customer_value as city,
+		<!-- 区 -->
+		ci_area.customer_value as area,
+		<!-- qq签名 -->
+		ci_qqAutograph.customer_value as qqAutograph,
+		<!-- 签名 -->
+		ci_autograph.customer_value as autograph,
+		<!-- 备注 -->
+		ci_remark.customer_value as remark,
+		<!-- 客户分类 -->
+		IFNULL(ci_type.customer_value,'1') as type,
+		<!-- 性别 -->
+		ci_sex.customer_value as sex
+		FROM
+		customer_main cm
+		<!-- name -->
+		left join customer_info ci_name on cm.customer_id =
+		ci_name.customer_id and ci_name.customer_key = 'name'
+		<!-- phone -->
+		left join customer_info ci_phone on cm.customer_id =
+		ci_phone.customer_id and ci_phone.customer_key = 'phone'
+		<!-- qq -->
+		left join customer_info ci_qq on cm.customer_id = ci_qq.customer_id
+		and ci_qq.customer_key = 'qq'
+		<!-- email -->
+		left join customer_info ci_email on cm.customer_id =
+		ci_email.customer_id and ci_email.customer_key = 'email'
+		<!-- address -->
+		left join customer_info ci_address on cm.customer_id =
+		ci_address.customer_id and ci_address.customer_key = 'address'
+		<!-- extensionName -->
+		left join customer_info ci_extensionName on cm.customer_id =
+		ci_extensionName.customer_id and ci_extensionName.customer_key =
+		'extensionName'
+		<!-- originate -->
+		left join customer_info ci_originate on cm.customer_id =
+		ci_originate.customer_id and ci_originate.customer_key = 'originate'
+		<!-- 行业 -->
+		left join customer_info ci_industry on cm.customer_id =
+		ci_industry.customer_id and ci_industry.customer_key = 'industry'
+		<!-- 公司 -->
+		left join customer_info ci_company on cm.customer_id =
+		ci_company.customer_id and ci_company.customer_key = 'company'
+		<!-- 省 -->
+		left join customer_info ci_province on cm.customer_id =
+		ci_province.customer_id and ci_province.customer_key = 'province'
+		<!-- 市 -->
+		left join customer_info ci_city on cm.customer_id =
+		ci_city.customer_id and ci_city.customer_key = 'city'
+		<!-- 区 -->
+		left join customer_info ci_area on cm.customer_id =
+		ci_area.customer_id and ci_area.customer_key = 'area'
+		<!-- qq签名 -->
+		left join customer_info ci_qqAutograph on cm.customer_id =
+		ci_qqAutograph.customer_id and ci_qqAutograph.customer_key =
+		'qqAutograph'
+		<!-- 签名 -->
+		left join customer_info ci_autograph on cm.customer_id =
+		ci_autograph.customer_id and ci_autograph.customer_key = 'autograph'
+		<!-- 备注 -->
+		left join customer_info ci_remark on cm.customer_id =
+		ci_remark.customer_id and ci_remark.customer_key = 'remark'
+		<!-- 分组 -->
+		left join customer_info ci_type on cm.customer_id =
+		ci_type.customer_id and ci_type.customer_key = 'type'
+		<!-- 性别 -->
+		left join customer_info ci_sex on cm.customer_id =
+		ci_sex.customer_id
+		and ci_sex.customer_key = "sex"
+		where cm.user_id
+		= #{userId} and
+		cm.is_delete = 0
+		and cm.customer_id = #{customerId}
+		ORDER BY
+		cm.createtime
+		desc
+		) a
+	</select>
+
+	<select id="searchorigination" resultType="cn.ilanhai.kem.domain.customer.OriginationEntity">
+		SELECT
+		`id`,
+		`describe`
+		as `value`,
+		`type` as `key`
+		FROM
+		`origination`
+		WHERE
+		`is_delete` = 0
+		ORDER
+		BY
+		type
+	</select>
+
+
+	<select id="querycustomersbyids" parameterType="cn.ilanhai.kem.domain.customer.QueryCustomersByIds"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerEntity">
+		select * from (SELECT cm.customer_id as customerId ,
+		<!-- name -->
+		ci_name.customer_value as name,
+		<!-- phone -->
+		ci_phone.customer_value as phone,
+		<!-- qq -->
+		ci_qq.customer_value as qq,
+		<!-- email -->
+		ci_email.customer_value as email,
+		<!-- address -->
+		ci_address.customer_value as address,
+		<!-- extensionName -->
+		ci_extensionName.customer_value as extensionName,
+		<!-- originate -->
+		ci_originate.customer_value as originate,
+		<!-- 行业 -->
+		ci_industry.customer_value as industry,
+		<!-- 公司 -->
+		ci_company.customer_value as company,
+		<!-- 省 -->
+		ci_province.customer_value as province,
+		<!-- 市 -->
+		ci_city.customer_value as city,
+		<!-- 区 -->
+		ci_area.customer_value as area,
+		<!-- qq签名 -->
+		ci_qqAutograph.customer_value as qqAutograph,
+		<!-- 签名 -->
+		ci_autograph.customer_value as autograph,
+		<!-- 备注 -->
+		ci_remark.customer_value as remark,
+		<!-- 客户分类 -->
+		IFNULL(ci_type.customer_value,'1') as type,
+		<!-- 性别 -->
+		ci_sex.customer_value as sex
+		FROM
+		customer_main cm
+		<!-- name -->
+		left join customer_info ci_name on cm.customer_id =
+		ci_name.customer_id and ci_name.customer_key = 'name'
+		<!-- phone -->
+		left join customer_info ci_phone on cm.customer_id =
+		ci_phone.customer_id and ci_phone.customer_key = 'phone'
+		<!-- qq -->
+		left join customer_info ci_qq on cm.customer_id = ci_qq.customer_id
+		and ci_qq.customer_key = 'qq'
+		<!-- email -->
+		left join customer_info ci_email on cm.customer_id =
+		ci_email.customer_id and ci_email.customer_key = 'email'
+		<!-- address -->
+		left join customer_info ci_address on cm.customer_id =
+		ci_address.customer_id and ci_address.customer_key = 'address'
+		<!-- extensionName -->
+		left join customer_info ci_extensionName on cm.customer_id =
+		ci_extensionName.customer_id and ci_extensionName.customer_key =
+		'extensionName'
+		<!-- originate -->
+		left join customer_info ci_originate on cm.customer_id =
+		ci_originate.customer_id and ci_originate.customer_key = 'originate'
+		<!-- 行业 -->
+		left join customer_info ci_industry on cm.customer_id =
+		ci_industry.customer_id and ci_industry.customer_key = 'industry'
+		<!-- 公司 -->
+		left join customer_info ci_company on cm.customer_id =
+		ci_company.customer_id and ci_company.customer_key = 'company'
+		<!-- 省 -->
+		left join customer_info ci_province on cm.customer_id =
+		ci_province.customer_id and ci_province.customer_key = 'province'
+		<!-- 市 -->
+		left join customer_info ci_city on cm.customer_id =
+		ci_city.customer_id and ci_city.customer_key = 'city'
+		<!-- 区 -->
+		left join customer_info ci_area on cm.customer_id =
+		ci_area.customer_id and ci_area.customer_key = 'area'
+		<!-- qq签名 -->
+		left join customer_info ci_qqAutograph on cm.customer_id =
+		ci_qqAutograph.customer_id and ci_qqAutograph.customer_key =
+		'qqAutograph'
+		<!-- 签名 -->
+		left join customer_info ci_autograph on cm.customer_id =
+		ci_autograph.customer_id and ci_autograph.customer_key = 'autograph'
+		<!-- 备注 -->
+		left join customer_info ci_remark on cm.customer_id =
+		ci_remark.customer_id and ci_remark.customer_key = 'remark'
+		<!-- 分组 -->
+		left join customer_info ci_type on cm.customer_id =
+		ci_type.customer_id and ci_type.customer_key = 'type'
+		<!-- 性别 -->
+		left join customer_info ci_sex on cm.customer_id =
+		ci_sex.customer_id
+		and ci_sex.customer_key = "sex"
+		where
+		cm.is_delete = 0
+		and cm.customer_id
+		in
+		<foreach item="item" index="index" collection="customerIds"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		ORDER BY
+		cm.createtime
+		desc
+		) a
+
+	</select>
+
+
+	<select id="querycustomersCountbyids"
+		parameterType="cn.ilanhai.kem.domain.customer.dto.SearchCustomerCountDto"
+		resultType="cn.ilanhai.kem.domain.customer.dto.SearchCustomerDataDto">
+		select DISTINCT pm.manuscript_id as manuscriptId
+		,pp.parameter as name
+		,pt.parameter as time
+		,pimg.parameter as img
+		,(select
+		sum(pds.data_quantity) from
+		prod_manuscript_data_statistics pds
+		where
+		pds.visit_url like
+		CONCAT('%',pm.manuscript_id,'%' ) and
+		pds.data_type
+		= 0 )as pv
+		,(select sum(pds.data_quantity) from
+		prod_manuscript_data_statistics
+		pds where
+		pds.visit_url like
+		CONCAT('%',pm.manuscript_id,'%' ) and
+		pds.data_type
+		=
+		1 )as uv
+		,(select
+		count(1) from customer_main cm LEFT
+		JOIN customer_info ci on
+		cm.customer_id = ci.customer_id and
+		ci.customer_key = 'extensionId'
+		LEFT JOIN customer_info ct on
+		ct.customer_id = cm.customer_id and
+		ct.customer_key = 'type' where
+		cm.is_delete = 0 and
+		ct.customer_value='1' and ci.customer_value =
+		pm.manuscript_id) as
+		customersum
+
+		from prod_manuscript pm
+		left join
+		prod_parameter pp on
+		pm.manuscript_id = pp.manuscript_id and
+		pp.parameter_type = 23
+		left join
+		prod_parameter pt on pm.manuscript_id
+		= pt.manuscript_id and
+		pt.parameter_type = 20
+		LEFT JOIN prod_parameter pimg ON
+		pm.manuscript_id = pimg.manuscript_id
+		AND pimg.parameter_type = 24
+		where
+		pm.manuscript_type = 3 and pm.terminal_type
+		= 2 and
+		pm.user_id=#{userId}
+		ORDER BY time desc limit 5
+
+	</select>
+
+	<select id="querycustomersbygroupids"
+		parameterType="cn.ilanhai.kem.domain.customer.QueryGroupCustomersDto"
+		resultType="cn.ilanhai.kem.domain.customer.CustomerEntity">
+		select * from (SELECT cm.customer_id as customerId ,
+		<!-- name -->
+		ci_name.customer_value as name,
+		<!-- phone -->
+		ci_phone.customer_value as phone,
+		<!-- qq -->
+		ci_qq.customer_value as qq,
+		<!-- email -->
+		ci_email.customer_value as email,
+		<!-- address -->
+		ci_address.customer_value as address,
+		<!-- extensionName -->
+		ci_extensionName.customer_value as extensionName,
+		<!-- originate -->
+		ci_originate.customer_value as originate,
+		<!-- 行业 -->
+		ci_industry.customer_value as industry,
+		<!-- 公司 -->
+		ci_company.customer_value as company,
+		<!-- 省 -->
+		ci_province.customer_value as province,
+		<!-- 市 -->
+		ci_city.customer_value as city,
+		<!-- 区 -->
+		ci_area.customer_value as area,
+		<!-- qq签名 -->
+		ci_qqAutograph.customer_value as qqAutograph,
+		<!-- 签名 -->
+		ci_autograph.customer_value as autograph,
+		<!-- 备注 -->
+		ci_remark.customer_value as remark,
+		<!-- 客户分类 -->
+		IFNULL(ci_type.customer_value,'1') as type,
+		<!-- 性别 -->
+		ci_sex.customer_value as sex
+		FROM
+		customer_main cm
+		<!-- name -->
+		left join customer_info ci_name on cm.customer_id =
+		ci_name.customer_id and ci_name.customer_key = 'name'
+		<!-- phone -->
+		left join customer_info ci_phone on cm.customer_id =
+		ci_phone.customer_id and ci_phone.customer_key = 'phone'
+		<!-- qq -->
+		left join customer_info ci_qq on cm.customer_id = ci_qq.customer_id
+		and ci_qq.customer_key = 'qq'
+		<!-- email -->
+		left join customer_info ci_email on cm.customer_id =
+		ci_email.customer_id and ci_email.customer_key = 'email'
+		<!-- address -->
+		left join customer_info ci_address on cm.customer_id =
+		ci_address.customer_id and ci_address.customer_key = 'address'
+		<!-- extensionName -->
+		left join customer_info ci_extensionName on cm.customer_id =
+		ci_extensionName.customer_id and ci_extensionName.customer_key =
+		'extensionName'
+		<!-- originate -->
+		left join customer_info ci_originate on cm.customer_id =
+		ci_originate.customer_id and ci_originate.customer_key = 'originate'
+		<!-- 行业 -->
+		left join customer_info ci_industry on cm.customer_id =
+		ci_industry.customer_id and ci_industry.customer_key = 'industry'
+		<!-- 公司 -->
+		left join customer_info ci_company on cm.customer_id =
+		ci_company.customer_id and ci_company.customer_key = 'company'
+		<!-- 省 -->
+		left join customer_info ci_province on cm.customer_id =
+		ci_province.customer_id and ci_province.customer_key = 'province'
+		<!-- 市 -->
+		left join customer_info ci_city on cm.customer_id =
+		ci_city.customer_id and ci_city.customer_key = 'city'
+		<!-- 区 -->
+		left join customer_info ci_area on cm.customer_id =
+		ci_area.customer_id and ci_area.customer_key = 'area'
+		<!-- qq签名 -->
+		left join customer_info ci_qqAutograph on cm.customer_id =
+		ci_qqAutograph.customer_id and ci_qqAutograph.customer_key =
+		'qqAutograph'
+		<!-- 签名 -->
+		left join customer_info ci_autograph on cm.customer_id =
+		ci_autograph.customer_id and ci_autograph.customer_key = 'autograph'
+		<!-- 备注 -->
+		left join customer_info ci_remark on cm.customer_id =
+		ci_remark.customer_id and ci_remark.customer_key = 'remark'
+		<!-- 分组 -->
+		left join customer_info ci_type on cm.customer_id =
+		ci_type.customer_id and ci_type.customer_key = 'type'
+		<!-- 性别 -->
+		left join customer_info ci_sex on cm.customer_id =
+		ci_sex.customer_id
+		and ci_sex.customer_key = "sex"
+		where cm.user_id
+		= #{userId} and
+		cm.is_delete = 0
+		and cm.customer_id in
+		(
+		SELECT DISTINCT
+		cgi.contacts_id
+		FROM
+		contacts_group_info cgi
+		WHERE
+		cgi.group_id IN
+		<foreach item="item" index="index" collection="groupIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)
+
+		ORDER BY
+		cm.createtime
+		desc
+		) a
+	</select>
+
+
+	<!-- 客户统计 开始 -->
+	<select id="selectForCount_back"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.CustomerStatisticRequestDto"
+		resultType="long">
+		SELECT
+		count(1)
+		FROM
+		(
+		SELECT
+		cm.user_id,
+		DATEDIFF(CURDATE(),
+		cm.createtime) + 1 AS days,
+		ci.customer_value AS type
+		FROM
+		customer_main
+		cm
+		LEFT JOIN customer_info ci ON cm.customer_id = ci.customer_id
+		AND
+		ci.customer_key = #{customerKey}
+		WHERE
+		cm.is_delete = 0
+		) AS statistic
+		WHERE
+		statistic.days &lt;= #{days} and statistic.user_id=#{userId} and
+		statistic.type=#{type}
+	</select>
+	<!-- 客户统计 结束 -->
+	<!-- 客户统计 开始 -->
+	<select id="selectForCount"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.CustomerStatisticRequestDto"
+		resultType="cn.ilanhai.kem.domain.statistic.dto.CustomerStatisticEntity">
+		SELECT
+		type,
+		days,
+		count(1) AS count
+		FROM
+		(
+		SELECT
+		cm.user_id,
+		ci.customer_value AS type,
+		DATEDIFF(CURDATE(), cm.createtime) + 1 AS days
+		FROM
+		customer_main cm
+		LEFT JOIN customer_info ci ON cm.customer_id = ci.customer_id
+		WHERE
+		cm.is_delete = 0
+		AND cm.user_id=#{userId}
+		AND
+		ci.customer_value IN (1, 2, 3)
+		AND ci.customer_key = 'type'
+		) AS stastic
+		GROUP BY
+		type,
+		days
+	</select>
+	<!-- 客户统计 结束 -->
+	<!-- 查询账号类型 开始 -->
+	<select id="selectAccountType"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.CustomerStatisticRequestDto"
+		resultType="cn.ilanhai.kem.domain.userRelation.UserRelationEntity">
+		select uru.user_type as userType,uru.father_user_id as fatherUserId  from user_main_user
+		umu
+		LEFT JOIN user_relation_user uru on umu.user_id=uru.user_id
+		where
+		umu.user_id=#{userId}
+		and umu.state&lt;&gt;0
+		and uru.state&lt;&gt;0
+		limit 0,1
+	</select>
+	<!-- 查询账号类型 结束 -->
+	
+</mapper>

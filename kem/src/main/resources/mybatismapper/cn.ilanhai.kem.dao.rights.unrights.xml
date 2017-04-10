@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="rights">
+
+	<insert id="saveUnRightsTimes"
+		parameterType="cn.ilanhai.kem.domain.rights.dto.SaveUnRightsTimesDto">
+		INSERT INTO
+		prod_unrights (user_id,
+		unrights_times,total_times,
+		update_time) VALUES (
+		#{userId}, #{addTimes},#{addTimes}, now());
+	</insert>
+
+	<update id="updateUnRightsTimes"
+		parameterType="cn.ilanhai.kem.domain.rights.dto.SaveUnRightsTimesDto">
+		UPDATE prod_unrights SET
+		unrights_times = unrights_times
+		+ #{addTimes},total_times = total_times
+		+ #{addTimes},
+		update_time=now() WHERE user_id = #{userId};
+	</update>
+
+	<update id="useUnRightsTimes"
+		parameterType="cn.ilanhai.kem.domain.rights.dto.UseUnRightsTimesDto">
+		UPDATE prod_unrights SET
+		unrights_times = unrights_times
+		- 1,
+		update_time=now() WHERE user_id = #{userId};
+	</update>
+
+	<select id="queryUnRightsTimes" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.rights.UnRightsTimesEntity">
+		Select
+		unrights_id as unrightsId ,user_id as userId
+		,unrights_times as unrightsTimes ,update_time as updateTime from
+		prod_unrights
+		where user_id = #{userId};
+	</select>
+
+
+
+	<insert id="saveUnRightsLog" parameterType="cn.ilanhai.kem.domain.rights.UnRightsLogEntity">
+		INSERT INTO
+		prod_unrights_log (user_id, manuscript_id, createtime) VALUES
+		(#{userId}, #{manuscriptId},now());
+	</insert>
+
+	<update id="updateUnRightsLog" parameterType="cn.ilanhai.kem.domain.rights.UnRightsLogEntity">
+
+	</update>
+	<select id="queryUnRightsLog" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.rights.UnRightsLogEntity">
+		Select
+		unrights_log_id as unrightsLogId ,user_id as userId
+		,manuscript_id as manuscriptId ,createtime as createtime from
+		prod_unrights_log
+		where manuscript_id = #{manuscriptId};
+	</select>
+
+
+
+</mapper>

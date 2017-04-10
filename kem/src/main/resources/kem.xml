@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<context:component-scan base-package="cn.ilanhai.kem" />
+	<!-- 注册状态机 -->
+	<bean id="registWork" class="cn.ilanhai.kem.modules.work.RegistWork"></bean>
+	<bean id="registsetpwdWork" class="cn.ilanhai.kem.modules.work.RegistsetpwdWork"></bean>
+	<!-- <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+		<property name="driverClassName"> <value>com.mysql.jdbc.Driver</value> </property> 
+		<property name="url"> <value> <![CDATA[jdbc:mysql://192.168.1.228:3306/kem_dev?user=root&password=123456&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]> 
+		</value> </property> </bean> <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager"> 
+		<property name="dataSource" ref="dataSource" /> </bean> -->
+	<tx:annotation-driven />
+
+</beans>

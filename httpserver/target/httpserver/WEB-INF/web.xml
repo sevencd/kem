@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:javaee="http://java.sun.com/xml/ns/javaee"
+	xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+	<display-name>KEM HTTP Server</display-name>
+	<!-- context param begin -->
+	<context-param>
+		<!-- spring mvc 上下文的配置 -->
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:applicationContext.xml</param-value>
+	</context-param>
+	<!-- caches 配置 -->
+	<context-param>
+		<param-name>cacheId</param-name>
+		<param-value>redis</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheHost</param-name>
+		<param-value>192.168.1.228</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cachePort</param-name>
+		<param-value>6379</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cachePassword</param-name>
+		<param-value></param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheConnectionTimeout</param-name>
+		<param-value>2048</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheOsTimeout</param-name>
+		<param-value>2048</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheSsl</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheType</param-name>
+
+		<param-value>redis</param-value>
+	</context-param>
+	<context-param>
+		<param-name>cacheQuantity</param-name>
+		<param-value>16</param-value>
+	</context-param>
+	<!-- 应用资源(图片)上传 配置 -->
+	<context-param>
+		<param-name>savePath</param-name>
+		<param-value>D:\install\apache-tomcat-7.0.70\webapps\httpserver</param-value>
+	</context-param>
+	<context-param>
+		<param-name>serviceName</param-name>
+		<param-value>http://image.kem.dev.cn</param-value>
+	</context-param>
+	<context-param>
+		<param-name>imgFile</param-name>
+		<param-value>files</param-value>
+	</context-param>
+	<context-param>
+		<param-name>inputName</param-name>
+		<param-value>img</param-value>
+	</context-param>
+	<!-- context param end -->
+	<!--servlet begin -->
+	<!-- 应用资源(图片)上传服务 -->
+	<servlet>
+		<description>用以分发url到指定的处理方法</description>
+		<servlet-name>UserImgUploadServlet</servlet-name>
+		<servlet-class>cn.ilanhai.httpserver.servlet.UserImgUploadServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserImgUploadServlet</servlet-name>
+		<url-pattern>/kem/userImg/upload</url-pattern>
+	</servlet-mapping>
+	
+	
+	<servlet>
+		<description>用以分发url到指定的处理方法</description>
+		<servlet-name>UserSVGUploadServlet</servlet-name>
+		<servlet-class>cn.ilanhai.httpserver.servlet.UserSVGUploadServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UserSVGUploadServlet</servlet-name>
+		<url-pattern>/kem/material/uploadsvg</url-pattern>
+	</servlet-mapping>
+	<!-- 应用数据服务 -->
+	<servlet>
+		<description>用以分发url到指定的处理方法</description>
+		<servlet-name>URLDispatcherServlet</servlet-name>
+		<servlet-class>cn.ilanhai.httpserver.servlet.URLDispatcherServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>URLDispatcherServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<!--servlet end -->
+	<!--filter begin -->
+	<!-- 退出 -->
+	<!-- <filter> <filter-name>AnonymousFilter</filter-name> <filter-class>cn.ilanhai.httpserver.filters.AnonymousFilter</filter-class> 
+		</filter> <filter-mapping> <filter-name>AnonymousFilter</filter-name> <url-pattern>/session/logout</url-pattern> 
+		</filter-mapping> -->
+	<!-- 跨域 -->
+	<filter>
+		<filter-name>CORS</filter-name>
+		<filter-class>com.thetransactioncompany.cors.CORSFilter</filter-class>
+		<init-param>
+			<param-name>cors.allowOrigin</param-name>
+			<param-value>*</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CORS</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- 重复 -->
+	<filter>
+		<filter-name>RequestOverlapFilter</filter-name>
+		<filter-class>cn.ilanhai.httpserver.filters.RequestOverlapFilter</filter-class>
+		<init-param>
+			<param-name>expireTime</param-name>
+			<param-value>3000</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>RequestOverlapFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!--filter end -->
+	<!-- listener begin -->
+	<listener>
+		<!-- 初始化KEM上下文 -->
+		<listener-class>
+			cn.ilanhai.httpserver.listener.KemServletContextListener
+		</listener-class>
+	</listener>
+	<!-- listener end -->
+</web-app>
+

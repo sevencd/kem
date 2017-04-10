@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.SmsValicode">
+	<resultMap id="BaseResultMap" type="cn.ilanhai.kem.domain.smsvalicode.SmsValidateCodeEntity">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="identity_code" property="identityCode" jdbcType="VARCHAR" />
+		<result column="user_id" property="userId" jdbcType="VARCHAR" />
+		<result column="user_type" property="userType" jdbcType="INTEGER" typeHandler="cn.ilanhai.kem.domain.enums.UserTypeConvertHandler"/>
+		<result column="module_code" property="ModuleCode" jdbcType="VARCHAR" />
+		<result column="work_id" property="workId" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="deadline" property="deadline" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" typeHandler="cn.ilanhai.kem.domain.enums.ValidateStatusConvertHandler" />
+	</resultMap>
+	<insert id="insert" parameterType="cn.ilanhai.kem.domain.smsvalicode.SmsValidateCodeEntity" keyProperty="id" useGeneratedKeys="true" >
+		INSERT INTO sys_identify_code(identity_code,user_id,user_type,module_code,work_id,createtime,deadline,status)VALUES
+		(#{identityCode},
+		#{userId},#{userType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{ModuleCode},#{workId},#{createtime},#{deadline},#{status,typeHandler=cn.ilanhai.kem.domain.enums.ValidateStatusConvertHandler}
+		)
+	</insert>
+	<update id="update">
+		UPDATE sys_identify_code
+		<trim prefix="set" prefixOverrides=",">
+			<if test="identityCode!=null">
+				identity_code=#{identityCode}
+			</if>
+			<if test="userId!=null">
+				,user_id=#{userId}
+			</if>
+			<if test="userType!=null">
+				,user_type=#{userType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+			</if>
+			<if test="ModuleCode!=null">
+				,module_code=#{ModuleCode}
+			</if>
+			<if test="workId!=null">
+				,work_id=#{workId}
+			</if>
+			<if test="status!=null">
+				,status=#{status,typeHandler=cn.ilanhai.kem.domain.enums.ValidateStatusConvertHandler}
+			</if>
+		</trim>
+		where id=#{id}
+	</update>
+
+	<select id="querySmsValicodeById" parameterType="cn.ilanhai.kem.domain.IdEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM sys_identify_code
+		<trim prefix="where" prefixOverrides="and">
+			<if test="id!=null">
+				AND id=#{id}
+			</if>
+		</trim>
+	</select>
+	<select id="querySmsValicodeById2" parameterType="cn.ilanhai.kem.domain.IdDto"
+		resultMap="BaseResultMap">
+		SELECT * FROM sys_identify_code
+		<trim prefix="where" prefixOverrides="and">
+			<if test="id!=null">
+				AND id=#{id}
+			</if>
+		</trim>
+	</select>
+</mapper>

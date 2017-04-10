@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="contacts">
+	<insert id="addContactMain" parameterType="cn.ilanhai.kem.domain.contacts.ContactsMainEntity">
+		INSERT INTO
+		contacts_main(contacts_id,is_delete,user_id,createtime,updatetime,contacts_type
+		)values(#{contactsId},#{isDelete},
+		#{userId},
+		#{createtime},
+		#{updatetime},
+		#{contactsType}
+		);
+	</insert>
+
+	<update id="updateContactMain" parameterType="cn.ilanhai.kem.domain.contacts.ContactsMainEntity">
+		update
+		contacts_main set is_delete = #{isDelete},updatetime =
+		#{updatetime},contacts_type=#{contactsType}
+		where
+		user_id = #{userId}
+		and
+		contacts_id = #{contactsId}
+	</update>
+
+	<select id="getContactMainCount" parameterType="cn.ilanhai.kem.domain.contacts.ContactsMainEntity"
+		resultType="java.lang.Integer">
+		select
+		count(1) from contacts_main where
+		contacts_id =
+		#{contactsId};
+	</select>
+
+	<insert id="addContactInfo" parameterType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity">
+		INSERT INTO
+		contacts_info(contacts_id,info_key,
+		info_value,enable
+		)values(#{contactsId},#{infoKey},#{infoValue},#{enable}
+		);
+	</insert>
+
+	<update id="updateContactInfo" parameterType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity">
+		update
+		contacts_info set info_value
+		= #{infoValue},enable = #{enable} where
+		contacts_id =
+		#{contactsId} and info_key = #{infoKey}
+	</update>
+
+	<select id="getContactInfoValue" parameterType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity"
+		resultType="java.lang.Integer">
+		select
+		count(1) from contacts_main cm left join
+		contacts_info ci on ci.contacts_id = cm.contacts_id and cm.is_delete =
+		0 and cm.user_id = #{userId} where
+		ci.info_key = 2
+		and
+		ci.info_value =
+		#{infoValue};
+	</select>
+
+	<select id="getContactInfo" parameterType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity"
+		resultType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity">
+		select contacts_id as contactsId,info_value as infoValue
+		from contacts_info where
+		info_key = #{infoKey}
+		and
+		contacts_id =
+		#{contactsId};
+	</select>
+
+	<select id="getContactInfoCount" parameterType="cn.ilanhai.kem.domain.contacts.ContactsInfoEntity"
+		resultType="java.lang.Integer">
+		select
+		count(1) from contacts_info where
+		info_key =
+		#{infoKey}
+		and contacts_id =
+		#{contactsId};
+	</select>
+
+	<select id="queryContacts" parameterType="cn.ilanhai.kem.domain.contacts.dto.QueryContactsDto"
+		resultType="cn.ilanhai.kem.domain.contacts.dto.SearchContactsResponseDto">
+		select DISTINCT * from (select main.contacts_id as contactId
+		,info3.info_value as name , info.info_value as value
+		from contacts_main
+		as main left join
+		contacts_info as info3 on info3.info_key
+		= 3 and
+		info3.contacts_id =
+		main.contacts_id
+		left join
+		contacts_info as info on
+		info.info_key = 2 and
+		info.contacts_id =
+		main.contacts_id
+		where
+		main.user_id
+		= #{userId} and main.is_delete = 0 and main.contacts_type
+		= #{type} ORDER BY
+		createtime desc) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and ( name like
+			concat('%',#{keyword},'%') or value like
+			concat('%',#{keyword},'%'))
+		</if>
+		ORDER BY
+		value
+		limit
+		#{startCount},#{pageSize};
+	</select>
+
+
+
+	<select id="queryContactsCount" parameterType="cn.ilanhai.kem.domain.contacts.dto.QueryContactsDto"
+		resultType="cn.ilanhai.kem.domain.CountDto">
+		select count(1) as count from (select main.contacts_id as contactId
+		,info3.info_value as name , info.info_value as value
+		from contacts_main
+		as main left join
+		contacts_info as info3 on info3.info_key
+		= 3 and
+		info3.contacts_id =
+		main.contacts_id
+		left join
+		contacts_info as info on
+		info.info_key = 2 and
+		info.contacts_id =
+		main.contacts_id
+		where
+		main.user_id
+		= #{userId} and main.is_delete = 0 and main.contacts_type
+		= #{type} ORDER BY
+		createtime desc) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and ( name like
+			concat('%',#{keyword},'%') or value like
+			concat('%',#{keyword},'%'))
+		</if>
+		;
+	</select>
+
+
+	<select id="queryGroupContacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.dto.QueryGroupContactsDto"
+		resultType="cn.ilanhai.kem.domain.email.EmailContractEntity">
+		select DISTINCT a.name as toName,value as emailAddr,contactId as id
+		from (select main.contacts_id as contactId
+		,info3.info_value as name ,
+		info.info_value as value
+		from contacts_main
+		as main left join
+		contacts_info as info3 on info3.info_key
+		= 3 and
+		info3.contacts_id =
+		main.contacts_id
+		left join
+		contacts_info as info on
+		info.info_key = 2 and
+		info.contacts_id =
+		main.contacts_id
+		where
+		main.user_id
+		= #{userId} and
+		main.is_delete = 0 and main.contacts_type
+		= 2 and
+		main.contacts_id in
+		(select DISTINCT contacts_id from
+		contacts_group_info where group_id in
+		<foreach item="item" index="index" collection="groupIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)
+		) a
+	</select>
+	
+	<select id="queryGroupPhoneNumber"
+		parameterType="cn.ilanhai.kem.domain.contacts.dto.QueryGroupPhoneNumberDto"
+		resultType="cn.ilanhai.kem.domain.contacts.dto.QueryGroupPhoneNumberResponseDto">
+		select DISTINCT value as phone
+		from (select main.contacts_id as contactId
+		,info3.info_value as name ,
+		info.info_value as value
+		from contacts_main
+		as main left join
+		contacts_info as info3 on info3.info_key
+		= 3 and
+		info3.contacts_id =
+		main.contacts_id
+		left join
+		contacts_info as info on
+		info.info_key = 2 and
+		info.contacts_id =
+		main.contacts_id
+		where
+		main.user_id
+		= #{userId} and
+		main.is_delete = 0 and main.contacts_type
+		= 1 and
+		main.contacts_id in
+		(select DISTINCT contacts_id from
+		contacts_group_info where group_id in
+		<foreach item="item" index="index" collection="groupIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		)
+		) a
+	</select>
+
+	<update id="deleteContacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.dto.DeleteContactsDto">
+		 <![CDATA[  
+		update contacts_main set is_delete = 1
+		where 
+		user_id = #{userId} and 
+		contacts_id in
+		 ]]>
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+
+	<select id="querycontactsgroupbyname"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.QueryContactsGroupIsExits">
+		SELECT
+		`cgm`.`group_id` AS `groupId`,
+		`cgm`.`group_name`
+		AS `groupName`,
+		`cgm`.`create_time` AS `createTime`,
+		`cgm`.`update_time` AS `updateTime`,
+		`cgm`.`type` AS `type`,
+		`cgm`.`enable` AS `enable`,
+		`cgm`.`user_id` AS `userId`
+		FROM
+		`contacts_group_main` `cgm`
+		WHERE
+		`cgm`.`group_name` = #{groupName}
+		AND
+		`cgm`.`user_id` = #{userId}
+	</select>
+
+	<select id="querycontactsgroupbyid"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity">
+		SELECT
+		`cgm`.`group_id` AS `groupId`,
+		`cgm`.`group_name`
+		AS `groupName`,
+		`cgm`.`create_time` AS `createTime`,
+		`cgm`.`update_time` AS `updateTime`,
+		`cgm`.`type` AS `type`,
+		`cgm`.`enable` AS `enable`,
+		`cgm`.`user_id` AS `userId`
+		FROM
+		`contacts_group_main` `cgm`
+		WHERE
+		`cgm`.`group_id` = #{groupId}
+		AND
+		`cgm`.`user_id` = #{userId}
+	</select>
+
+	<select id="querycontactsgroupbyids" resultType="cn.ilanhai.kem.domain.email.EmailGroupEntity"
+		parameterType="cn.ilanhai.kem.domain.contacts.dto.QueryContactGroupsDto">
+		SELECT
+		`cgm`.`group_id` AS `groupId`,
+		`cgm`.`group_name` AS `groupName`
+		FROM
+		`contacts_group_main` `cgm`
+		WHERE
+		`cgm`.`user_id` = #{userId} and
+		`cgm`.`group_id` in
+		<foreach item="item" index="index" collection="groupIds" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<insert id="insertcontactgroup"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity">
+		INSERT INTO `contacts_group_main` (
+		`group_id`,
+		`create_time`,
+		`update_time`,
+		`group_name`,
+		`type`,
+		`enable`,
+		`user_id`
+		)
+		VALUES
+		(
+		#{groupId},
+		#{createTime},
+		#{updateTime},
+		#{groupName},
+		#{type},
+		#{enable},
+		#{userId}
+		);
+	</insert>
+
+	<update id="updatecontactgroup"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity">
+UPDATE `contacts_group_main`
+SET 
+ `update_time` = #{updateTime},
+ `group_name` = #{groupName},
+ `enable` = #{enable},
+ `user_id` = #{userId}
+WHERE
+	(`group_id` = #{groupId});
+	</update>
+	
+	<select id="querycontactsgroups"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsGroup"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.SearchContactGroupRequest">
+SELECT
+	cgm.`group_id` AS groupId,
+	cgm.`group_name` AS groupName,
+	(
+		select count(*) from `contacts_group_info` cgi where cgi.`group_id` = cgm.`group_id`
+	) AS contactsCount
+FROM
+	`contacts_group_main` cgm
+WHERE
+	1 = 1
+	AND `user_id` = #{userId}
+	AND `enable` = 1
+	<if test="type != null">
+	AND `type` = #{type}
+	</if>
+	<if test="keyword != null and keyword != ''">
+	AND group_name like CONCAT('%',#{keyword},'%')
+	</if>
+LIMIT #{startCount},#{pageSize}
+	</select>
+	
+	
+	<select id="querycontactsgroupscount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.SearchContactGroupRequest">
+SELECT 
+	COUNT(*) AS　count
+FROM
+`contacts_group_main`
+WHERE
+	1 = 1
+	AND `user_id` = #{userId}
+	AND `enable` = 1
+	<if test="type != null">
+	AND `type` = #{type}
+	</if>
+	<if test="keyword != null and keyword != ''">
+	AND group_name like CONCAT('%',#{keyword},'%')
+	</if>
+	</select>
+	
+	<delete id="deletegropupcontacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.AddGroupContactsRequest">
+DELETE
+FROM
+	`contacts_group_info`
+WHERE
+	`group_id` = #{groupId}
+	</delete>
+	
+	<insert id="insertgropupcontacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.AddGroupContactsRequest"> 
+INSERT INTO `contacts_group_info` (
+	`group_id`,
+	`contacts_id`
+)
+VALUES
+	<foreach collection="list" item="item" index="index" separator=",">
+	(#{groupId},#{item})
+	</foreach>
+	</insert>
+	
+	<select id="querygroupcontactss"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsInfo"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.SearchGroupContactsRequest">
+SELECT DISTINCT
+	cgi.contacts_id AS contactId,
+	ci2.info_value AS `name`,
+	ci1.info_value AS `value`
+FROM
+	contacts_group_info cgi
+LEFT JOIN contacts_info ci1 ON ci1.contacts_id = cgi.contacts_id
+AND ci1.info_key = 2
+LEFT JOIN contacts_info ci2 ON ci2.contacts_id = cgi.contacts_id
+AND ci2.info_key = 3
+WHERE
+	1 = 1
+	<if test="groupId != null and groupId != ''">
+		AND `cgi`.group_id in 
+		<foreach item="item" index="index" collection="groupIds" open="(" separator="," close=")">  
+   	 	#{item}
+  		</foreach> 
+	</if>
+	<if test="keyword != null and keyword != ''">
+	AND (ci1.info_value LIKE CONCAT('%',#{keyword},'%') OR ci2.info_value LIKE CONCAT('%',#{keyword},'%'))
+	</if>
+	</select>
+	
+	<select id="querygroupcontactscount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.SearchGroupContactsRequest">
+select count(1) as count from (SELECT DISTINCT
+	cgi.contacts_id AS contactId,
+	ci2.info_value AS `name`,
+	ci1.info_value AS `value`
+FROM
+	contacts_group_info cgi
+LEFT JOIN contacts_info ci1 ON ci1.contacts_id = cgi.contacts_id
+AND ci1.info_key = 2
+LEFT JOIN contacts_info ci2 ON ci2.contacts_id = cgi.contacts_id
+AND ci2.info_key = 3
+WHERE
+	1 = 1
+	<if test="groupId != null and groupId != ''">
+		AND `cgi`.group_id in 
+		<foreach item="item" index="index" collection="groupIds" open="(" separator="," close=")">  
+   	 	#{item}
+  		</foreach> 
+	</if>
+	<if test="keyword != null and keyword != ''">
+	AND (ci1.info_value LIKE CONCAT('%',#{keyword},'%') OR ci2.info_value LIKE CONCAT('%',#{keyword},'%'))
+	</if>
+	) a
+	</select>
+	
+	<delete id="deletegroup"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.DeleteGroupRequest">
+DELETE
+FROM
+	`contacts_group_main` 
+WHERE
+	user_id = #{userId}
+	AND group_id IN
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+   	 	#{item}
+  	</foreach> 
+	</delete>
+	
+	<delete id="deletegroupcontacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.DeleteGroupRequest">
+DELETE
+FROM
+	`contacts_group_info` 
+WHERE
+ group_id IN
+ 	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+   	 	#{item}
+  	</foreach> 
+	</delete>
+	
+	<delete id="deletegroupcontactsbycontact"
+		parameterType="cn.ilanhai.kem.domain.contacts.group.QueryGroupContactsByContact">
+DELETE
+FROM
+	`contacts_group_info` 
+WHERE
+ contacts_id IN
+ 	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+   	 	#{item}
+  	</foreach> 
+	</delete>
+	
+	<select id="selectcontactgroupid"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity"
+		parameterType="String">
+SELECT
+	cgi.group_id AS groupId,
+	cgm.group_name AS groupName
+FROM
+	contacts_group_info `cgi`
+LEFT JOIN contacts_group_main `cgm` ON `cgm`.group_id = `cgi`.group_id
+WHERE
+ `cgi`.contacts_id = #{value}
+	</select>
+	
+	<select id="searchcontactsinfo"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsInfo"
+		parameterType="cn.ilanhai.kem.domain.contacts.SearchContactsById">
+SELECT
+	c.contacts_id AS contactId,
+	c.info_value AS `value`
+FROM
+	contacts_info c
+WHERE
+	c.contacts_id = #{contactsId}
+AND c.info_key = 2
+	</select>
+	
+	<select id="searchgroupinfo"
+		resultType="cn.ilanhai.kem.domain.contacts.group.ContactsGroupEntity"
+		parameterType="String">
+SELECT
+	`group_id` AS groupId,
+	`create_time` AS createTime,
+	`update_time` AS updateTime,
+	`group_name` AS groupName,
+	`type` AS type,
+	`enable` AS `enable`,
+	`user_id` AS `userId`
+FROM
+	`contacts_group_main`
+WHERE
+ `group_id` = #{value}
+	</select>
+	
+	<select id="searchsysnchronizecontacts"
+		parameterType="cn.ilanhai.kem.domain.contacts.SynchronizeContractsRequest"
+		resultType="cn.ilanhai.kem.domain.contacts.ContactInformation">
+SELECT DISTINCT
+	`ciname`.customer_value AS `name`,
+	<if test="type == 1">
+	 `ciphone`.customer_value AS valueNumber
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value AS valueNumber
+	</if>
+FROM
+	customer_main `cm`
+LEFT JOIN customer_info `ciname` ON `ciname`.customer_id = `cm`.customer_id
+AND `ciname`.customer_key = 'name'
+LEFT JOIN customer_info `ciphone` ON `ciphone`.customer_id = `cm`.customer_id
+AND `ciphone`.customer_key = 'phone'
+LEFT JOIN customer_info `ciemail` ON `ciemail`.customer_id = `cm`.customer_id
+AND `ciemail`.customer_key = 'email'
+WHERE
+	`cm`.user_id = #{userId}
+AND `ciphone`.customer_value IS NOT NULL
+AND `cm`.is_delete = 0
+AND <if test="type == 1">
+	 `ciphone`.customer_value 
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value 
+	</if> NOT IN (
+	SELECT
+		`ci`.info_value
+	FROM
+		`contacts_main` `cm`
+	LEFT JOIN `contacts_info` `ci` ON `cm`.contacts_id = `ci`.contacts_id
+	AND `ci`.info_key = 2
+	WHERE
+		`cm`.user_id = #{userId}
+	AND `cm`.is_delete = 0
+  AND `ci`.info_value IS NOT NULL
+)
+GROUP BY
+	<if test="type == 1">
+	 `ciphone`.customer_value 
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value 
+	</if>
+	</select>
+	
+	
+	<!-- 同步联系人时去重的人 -->
+	<select id="searchcommonnumber"
+		parameterType="cn.ilanhai.kem.domain.contacts.SynchronizeContractsRequest"
+		resultType="cn.ilanhai.kem.domain.contacts.ContactInformation">
+SELECT DISTINCT
+	`ciname`.customer_value AS `name`,
+	<if test="type == 1">
+	 `ciphone`.customer_value AS valueNumber
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value AS valueNumber
+	</if>
+FROM
+	customer_main `cm`
+LEFT JOIN customer_info `ciname` ON `ciname`.customer_id = `cm`.customer_id
+AND `ciname`.customer_key = 'name'
+LEFT JOIN customer_info `ciphone` ON `ciphone`.customer_id = `cm`.customer_id
+AND `ciphone`.customer_key = 'phone'
+LEFT JOIN customer_info `ciemail` ON `ciemail`.customer_id = `cm`.customer_id
+AND `ciemail`.customer_key = 'email'
+WHERE
+	`cm`.user_id = #{userId}
+AND `ciphone`.customer_value IS NOT NULL
+AND `cm`.is_delete = 0
+AND <if test="type == 1">
+	 `ciphone`.customer_value 
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value 
+	</if> IN (
+	SELECT
+		`ci`.info_value
+	FROM
+		`contacts_main` `cm`
+	LEFT JOIN `contacts_info` `ci` ON `cm`.contacts_id = `ci`.contacts_id
+	AND `ci`.info_key = 2
+	WHERE
+		`cm`.user_id = #{userId}
+	AND `cm`.is_delete = 0
+  AND `ci`.info_value IS NOT NULL
+)
+GROUP BY
+	<if test="type == 1">
+	 `ciphone`.customer_value 
+	</if>
+	<if test="type == 2">
+	 `ciemail`.customer_value 
+	</if>
+	</select>
+	
+
+</mapper>

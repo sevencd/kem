@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="AuthConfig">
+	
+	<select id="searchauthconfig"
+		resultType="cn.ilanhai.kem.domain.auth.AuthConfigEntity">
+SELECT
+	`id`,
+	`type`,
+	`app_id` AS appId,
+	`app_secret` AS appSecret,
+	`is_enable` AS `ENABLE`,
+	`add_time` AS addTime,
+	`update_time` AS updateTime,
+	`redirect_uri` AS redirectUri,
+	`auth_uri` AS authUri,
+	`remark`
+FROM
+	`auth_config`
+	</select>
+	
+	<select id="searchoneauthconfig"
+		resultType="cn.ilanhai.kem.domain.auth.AuthConfigEntity"
+		parameterType="Integer">
+	SELECT
+	`id`,
+	`type`,
+	`app_id` AS appId,
+	`app_secret` AS appSecret,
+	`is_enable` AS `ENABLE`,
+	`add_time` AS addTime,
+	`update_time` AS updateTime,
+	`redirect_uri` AS redirectUri,
+	`auth_uri` AS authUri,
+	`remark`
+FROM
+	`auth_config`
+WHERE 
+	type = #{id}
+	</select>
+</mapper>

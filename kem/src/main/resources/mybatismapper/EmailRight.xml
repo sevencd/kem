@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmailRight">
+	<select id="searchemailquantity" resultType="cn.ilanhai.kem.domain.email.EmailRightEntity"
+		parameterType="cn.ilanhai.kem.domain.email.SearchEmailQuantityByUser">
+		SELECT
+		`id` AS `emailId`,
+		`createtime` AS `createTime`,
+		`updatetime` AS `updateTime`,
+		`remaintimes` AS `remainTimes`,
+		`user_id`
+		AS `userId`,
+		`total` AS `total`
+		FROM
+		`email_right_state`
+		WHERE
+		user_id =
+		#{userId}
+	</select>
+
+	<select id="searchisexistsuseremail" resultType="Integer"
+		parameterType="String">
+		SELECT
+		`id`
+		FROM
+		`email_right_state`
+		WHERE
+		user_id =#{value}
+	</select>
+
+	<insert id="insertemailquantity" parameterType="cn.ilanhai.kem.domain.email.AddEmailQuantityEntity">
+		INSERT INTO
+		`email_right_state` (
+		`createtime`,
+		`updatetime`,
+		`remaintimes`,
+		`user_id`,
+		`total`
+		)
+		VALUES
+		(
+		#{createTime},
+		#{updateTime},
+		#{quantity},
+		#{userId},
+		#{quantity}
+		);
+	</insert>
+
+	<update id="updateemailquantity" parameterType="cn.ilanhai.kem.domain.email.AddEmailQuantityEntity">
+		UPDATE
+		`email_right_state`
+		SET
+		`updatetime` = #{updateTime},
+		`remaintimes` =
+		#{quantity},
+		`total` = #{total}
+		WHERE
+		(`user_id` = #{userId});
+	</update>
+	<!-- email entity -->
+	<resultMap type="cn.ilanhai.kem.domain.email.MailEntity" id="mailEntity">
+		<result property="emailId" column="email_id" />
+		<result property="delete" column="is_delete" />
+		<result property="createTime" column="createtime" />
+		<result property="updateTime" column="updatetime" />
+		<result property="userId" column="user_id" />
+	</resultMap>
+	<!-- add email entity -->
+	<insert id="addMailEntity" parameterType="cn.ilanhai.kem.domain.email.MailEntity">
+		insert into email_main(
+		email_id,
+		is_delete,
+		createtime,
+		updatetime,
+		user_id)values(
+		#{emailId},
+		#{delete},
+		#{createTime},
+		#{updateTime},
+		#{userId});
+	</insert>
+	<!-- update email entity -->
+	<update id="updateMailEntity" parameterType="cn.ilanhai.kem.domain.email.MailEntity">
+		update email_main
+		set
+		is_delete=#{delete},
+		updatetime=#{updateTime}
+		where
+		email_id=#{emailId};
+	</update>
+	<!-- is exists email entity -->
+	<select id="isExistsMailEntity" resultType="String"
+		parameterType="cn.ilanhai.kem.domain.email.MailEntity">
+		select
+		email_id
+		from
+		email_main
+		where
+		email_id=#{emailId}
+		limit 1;
+	</select>
+	<!-- select one mail entity -->
+	<select id="selectOneMailEntityByMailId" resultMap="mailEntity"
+		parameterType="String">
+		select
+		*
+		from
+		email_main
+		where email_id=#{emailId} and
+		is_delete = 0
+		limit 1;
+	</select>
+	<!-- email info entity -->
+	<resultMap type="cn.ilanhai.kem.domain.email.MailInfoEntity"
+		id="mailInfoEntity">
+		<result property="infoId" column="info_id" />
+		<result property="emailId" column="email_id" />
+		<result property="infoKey" column="info_key" />
+		<result property="infoValue" column="info_value" />
+		<result property="enable" column="enable" />
+	</resultMap>
+	<!-- add email entity -->
+	<insert id="addMailInfoEntity" parameterType="cn.ilanhai.kem.domain.email.MailInfoEntity">
+		insert into
+		email_info(
+		info_id,
+		email_id,
+		info_key,
+		info_value,
+		enable)values(
+		#{infoId},
+		#{emailId},
+		#{infoKey},
+		#{infoValue},
+		#{enable});
+	</insert>
+	<!-- update email entity -->
+	<update id="updateMailInfoEntity" parameterType="cn.ilanhai.kem.domain.email.MailInfoEntity">
+		update
+		email_info
+		set
+		info_value=#{infoValue},
+		enable=#{enable}
+		where
+		email_id=#{emailId}
+		and
+		info_key=#{infoKey};
+	</update>
+	<!-- is exists email entity -->
+	<select id="isExistsMailInfoEntity" resultType="int"
+		parameterType="cn.ilanhai.kem.domain.email.MailInfoEntity">
+		select
+		info_id
+		from
+		email_info
+		where
+		email_id=#{emailId}
+		and
+		info_key=#{infoKey}
+		limit 1;
+	</select>
+	<select id="queryOneMailInfoEntityByMailIdAndKey" resultMap="mailInfoEntity"
+		parameterType="cn.ilanhai.kem.domain.email.QueryOneMailInfoDto">
+		select
+		*
+		from
+		email_info
+		where
+		email_id=#{emailId}
+		and
+		info_key=#{key}
+		limit 1;
+	</select>
+	<!-- select mail info entity by email id -->
+	<select id="selectMailEntityByEmailId" resultMap="mailInfoEntity"
+		parameterType="String">
+		select
+		*
+		from
+		email_info
+		where email_id=#{emailId}
+	</select>
+
+	<!-- search email contract -->
+
+	<select id="searchemailcontracts" resultType="cn.ilanhai.kem.domain.email.EmailContractEntity"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailContractRequest">
+		SELECT
+		`email_contract_id` AS `emailContractId`,
+		`email_id` AS `emailId`,
+		`to_name` AS `toName`,
+		`email_addr` AS
+		`emailAddr`,
+		`id`
+		FROM
+		`email_contract`
+		WHERE
+		`email_id` = #{emailId}
+		LIMIT
+		#{startCount},#{pageSize}
+	</select>
+
+	<select id="searchemailcontractscount" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailContractRequest">
+		SELECT
+		COUNT(`email_contract_id`) AS `count`
+		FROM
+		`email_contract`
+		WHERE
+		`email_id` = #{emailId}
+	</select>
+
+	<delete id="deletecontract" parameterType="String">
+		DELETE
+		FROM
+		`email_contract`
+		WHERE
+		`email_id` = #{value}
+	</delete>
+
+	<insert id="insertcontract" parameterType="cn.ilanhai.kem.domain.email.SaveContractRequest">
+		INSERT INTO `email_contract` (
+		`email_id`,
+		`to_name`,
+		`email_addr`,
+		`id`
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{emailId},#{item.toName},#{item.emailAddr},#{item.id})
+		</foreach>
+	</insert>
+
+
+	<!-- search email group -->
+
+	<select id="searchemailgroups" resultType="cn.ilanhai.kem.domain.email.EmailGroupEntity"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailGroupRequest">
+		SELECT
+		`email_group_id` AS `emailGroupId`,
+		`email_id` AS
+		`emailId`,
+		`group_name` AS `groupName`,
+		`group_id` AS `groupId`
+		FROM
+		`email_group`
+		WHERE
+		`email_id` = #{emailId}
+		LIMIT
+		#{startCount},#{pageSize}
+	</select>
+
+	<select id="searchemailgroupscount" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailContractRequest">
+		SELECT
+		COUNT(1) AS `count`
+		FROM
+		`email_group`
+		WHERE
+		`email_id` = #{emailId}
+	</select>
+
+	<delete id="deletegroups" parameterType="cn.ilanhai.kem.domain.email.SaveContractRequest">
+		DELETE
+		FROM
+		`email_group`
+		WHERE
+		`email_id` = #{emailId}
+	</delete>
+
+	<insert id="insertgroup" parameterType="cn.ilanhai.kem.domain.email.SaveContractRequest">
+		INSERT INTO `email_group` (
+		`email_id`,
+		`group_name`,
+		`group_id`
+		)
+		VALUES
+		<foreach collection="groupList" item="item" index="index"
+			separator=",">
+			(#{emailId},#{item.groupName},#{item.groupId})
+		</foreach>
+		;
+	</insert>
+
+
+	<select id="searchisexistsemailid" resultType="String"
+		parameterType="String">
+		SELECT
+		`email_id`
+		FROM
+		email_main
+		WHERE
+		`email_id` = #{value}
+	</select>
+	<select id="queryEmailContractByEmailId" resultType="cn.ilanhai.kem.domain.email.EmailContractEntity"
+		parameterType="String">
+		SELECT
+		`email_contract_id` AS `emailContractId`,
+		`email_id` AS `emailId`,
+		`to_name` AS `toName`,
+		`email_addr` AS
+		`emailAddr`
+		FROM
+		`email_contract`
+		WHERE
+		`email_id` = #{emailId}
+	</select>
+
+	<select id="queryEmailGroupByEmailId" resultType="cn.ilanhai.kem.domain.email.EmailGroupEntity"
+		parameterType="String">
+		SELECT DISTINCT
+		eg.`email_group_id` AS `emailGroupId`,
+		eg.`email_id` AS `emailId`,
+		eg.`group_name` AS `groupName`,
+		eg.`group_id` AS
+		`groupId`
+		FROM
+		`email_group` eg
+		WHERE
+		eg.`email_id` =
+		#{emailId}
+	</select>
+
+	<select id="queryEmailGroupByEmailIdLimit" resultType="cn.ilanhai.kem.domain.email.EmailGroupEntity"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailGroupRequest">
+		SELECT DISTINCT
+		eg.`email_group_id` AS `emailGroupId`,
+		eg.`email_id` AS `emailId`,
+		eg.`group_name` AS `groupName`,
+		(
+		SELECT
+		count(1)
+		FROM
+		contacts_group_info
+		WHERE
+		group_id = eg.group_id
+		) AS contactsCount,
+		eg.`group_id` AS
+		`groupId`
+		FROM
+		`email_group` eg
+		left JOIN contacts_group_main cm on cm.group_id = eg.group_id
+		WHERE
+		eg.`email_id` = #{emailId}
+		LIMIT
+		#{startCount},#{pageSize}
+	</select>
+
+	<select id="queryEmailGroupByEmailIdLimitCount" resultType="java.lang.Integer"
+		parameterType="cn.ilanhai.kem.domain.email.QueryEmailGroupRequest">
+		select count(1) as count from (SELECT DISTINCT
+		`email_group_id` AS `emailGroupId`,
+		`email_id` AS `emailId`,
+		`group_name` AS `groupName`,
+		`group_id` AS
+		`groupId`
+		FROM
+		`email_group`
+		WHERE
+		`email_id` = #{emailId}
+		) a
+	</select>
+
+
+</mapper>

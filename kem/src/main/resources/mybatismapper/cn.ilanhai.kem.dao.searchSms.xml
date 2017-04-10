@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="searchSms">
+	<select id="querySmss" parameterType="cn.ilanhai.kem.domain.smsright.dto.QuerySmsDto"
+		resultType="cn.ilanhai.kem.domain.smsright.dto.SearchSmsResponseDto">
+		select DISTINCT * from (
+		select main.sms_id as smsId,
+		content.info_value as smsContent ,main.createtime as createtime,
+		sendTime.info_value as sendtime , sendAmount.info_value as
+		sendAmount,
+		sendType.info_value as sendType
+		from sms_main as main
+		left
+		join sms_info as content on content.sms_id = main.sms_id and
+		content.info_key = 'content'
+		left join sms_info as sendTime on
+		sendTime.sms_id = main.sms_id and sendTime.info_key = 'sendTime'
+		left join sms_info as sendAmount on sendAmount.sms_id =
+		main.sms_id and sendAmount.info_key = 'sendAmount'
+		left join sms_info as sendType on sendType.sms_id =
+		main.sms_id and sendType.info_key = 'sendType'
+		
+		where main.user_id
+		= #{userId} and main.is_delete = 0 ORDER
+		BY
+		main.createtime desc) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and smsContent like
+			concat('%',#{keyword},'%')
+		</if>
+		limit
+		#{startCount},#{pageSize};
+	</select>
+
+	<select id="querySmssCount" parameterType="cn.ilanhai.kem.domain.smsright.dto.QuerySmsDto"
+		resultType="cn.ilanhai.kem.domain.CountDto">
+		select count(1) as count from (
+		select main.sms_id as smsId,
+		content.info_value as smsContent ,main.createtime as createtime,
+		sendTime.info_value as sendtime , sendAmount.info_value as
+		sendAmount
+		from sms_main as main
+		left
+		join sms_info as content on content.sms_id = main.sms_id and
+		content.info_key = 'content'
+		left join sms_info as sendTime on
+		sendTime.sms_id = main.sms_id and sendTime.info_key = 'sendTime'
+		left join sms_info as sendAmount on sendAmount.sms_id =
+		main.sms_id and sendAmount.info_key = 'sendAmount'
+		
+		where main.user_id
+		= #{userId} and main.is_delete = 0 ORDER
+		BY
+		main.createtime desc) a
+		where
+		1=1
+		<if test="keyword !=null and keyword !='' ">
+			and smsContent like
+			concat('%',#{keyword},'%')
+		</if>
+		;
+	</select>
+	
+	<update id="deleteSmss" parameterType="cn.ilanhai.kem.domain.smsright.dto.DeleteSmsDto">
+		 <![CDATA[  
+		update sms_main set is_delete = 1
+		where 
+		user_id = #{userId} and 
+		sms_id in
+		 ]]>  
+		<foreach item="item" index="index" collection="ids" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+	</update>
+
+</mapper>

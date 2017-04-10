@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+ <!DOCTYPE configuration PUBLIC   
+    "-//mybatis.org//DTD Config 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+	</settings>
+	<typeHandlers>
+		<typeHandler handler="cn.ilanhai.kem.dao.typehandler.MapTypeHandler"
+			javaType="java.util.Map" jdbcType="VARCHAR" />
+
+	</typeHandlers>
+	<mappers>
+		<mapper resource="mybatismapper/Tran.xml" />
+		<mapper resource="mybatismapper/FrontuserSql.xml" />
+		<mapper resource="mybatismapper/ExtensionSql.xml" />
+		<mapper resource="mybatismapper/manuscript.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.security.GroupAuthorizationDao.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.security.ResourceDao.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.security.RoleAuthorizationDao.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.rights.unrights.xml" />
+		<mapper resource="mybatismapper/TrafficUserPluginSql.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.event.EventDao.xml" />
+		<mapper resource="mybatismapper/TemplateSql.xml" />
+		<mapper resource="mybatismapper/member.xml" />
+		<mapper resource="mybatismapper/paymentservice.xml" />
+		<mapper resource="mybatismapper/BindHost.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.statistic.manuscriptStatistic.xml" />
+		<mapper resource="mybatismapper/CompositeMaterial.xml" />
+		<mapper resource="mybatismapper/Meterial.xml" />
+		<mapper resource="mybatismapper/AuthConfig.xml" />
+		<mapper resource="mybatismapper/UserBound.xml" />
+		<mapper resource="mybatismapper/ImgValicode.xml" />
+		<mapper resource="mybatismapper/KeyConfig.xml" />
+		<mapper resource="mybatismapper/Notify.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.statistic.manuscriptAreaStatistic.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.statistic.ManuscriptDataStatisticsDao.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.statistic.ManuscriptChannelStatisticsDao.xml" />
+		<mapper
+			resource="mybatismapper/cn.ilanhai.kem.dao.statistic.ManuscriptVisitDao.xml" />
+		<mapper resource="mybatismapper/EmailRight.xml" />
+		<mapper resource="mybatismapper/SmsRight.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.contacts.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.searchEmail.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.searchSms.xml" />
+		<mapper resource="mybatismapper/manuscript_collection.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.BackuserDao.xml" />
+		<mapper resource="mybatismapper/TrafficuserDao.xml" />
+		<mapper resource="mybatismapper/SysTagDao.xml" />
+		<mapper resource="mybatismapper/DbVerDao.xml" />
+		<mapper resource="mybatismapper/SmsValicodeDao.xml" />
+		<mapper resource="mybatismapper/UserImg.xml" />
+		<mapper resource="mybatismapper/VIPUserStatisticDao.xml" />
+		<mapper resource="mybatismapper/ApplicationStatisticDao.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.customer.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.searchManuscript.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.collectionType.xml" />
+		<mapper resource="mybatismapper/Crawler.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.userRelation.xml" />
+		<mapper resource="mybatismapper/TrialUser.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.userRelationResource.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.userRelationResourcelog.xml" />
+		<mapper resource="mybatismapper/cn.ilanhai.kem.dao.userZdslog.xml" />
+		
+	</mappers>
+</configuration>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CompositeMaterial">
+
+	<resultMap id="CompositeMaterialEntityMap" type="cn.ilanhai.kem.domain.compositematerial.CompositeMaterialEntity" >
+		<id column="id" property="id"/>
+		<result column="addTime" property="addTime"/>
+		<result column="updateTime" property="updateTime"/>
+		<result column="iconUrl" property="iconUrl"/>
+		<result column="state" property="state" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result column="category" property="category" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result column="data" property="data"/>
+		<result column="userId" property="userId"/>
+		<result column="type" property="type"/>
+		<result column="clientType" property="clientType"/>
+	</resultMap>
+
+	<select id="searchidfromcomposite"
+		resultType="String"
+		parameterType="cn.ilanhai.kem.domain.compositematerial.CompositeMaterialEntity">
+SELECT
+	id
+FROM
+	composite_material
+WHERE
+	id = #{id}
+	</select>
+	
+	<insert id="insertcomposite"
+		parameterType="cn.ilanhai.kem.domain.compositematerial.CompositeMaterialEntity">
+INSERT INTO composite_material (
+	`id`,
+	`add_time`,
+	`update_time`,
+	`icon_url`,
+	`state`,
+	`category`,
+	`data`,
+	`user_id`,
+	`type`,
+	`client_type`
+)
+VALUES
+	(#{id},
+	#{addTime},
+	#{updateTime},
+	#{iconUrl},
+	#{state,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+	#{category,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+	#{data},
+	#{userId},
+	#{type},
+	#{clientType})
+	</insert>
+	
+	<update id="updatecomposite"
+		parameterType="cn.ilanhai.kem.domain.compositematerial.CompositeMaterialEntity">
+UPDATE composite_material
+SET update_time = #{updateTime},
+ icon_Url = #{iconUrl},
+ state = #{state,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+ category = #{category,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+ DATA = #{data},
+ user_id = #{userId},
+ type = #{type},
+ client_type = #{clientType}
+WHERE
+	id =#{id}
+	</update>
+	
+	<select id="searchcomposite"
+		resultMap="CompositeMaterialEntityMap"
+		parameterType="String">
+SELECT
+	m.id,
+	m.add_time AS addTime,
+	m.update_time AS updateTime,
+	m.icon_url AS iconUrl,
+	m.state,
+	m.category,
+	m.`data`,
+	m.user_id AS userId,
+	m.type,
+	m.client_type AS clientType
+FROM
+	composite_material m
+WHERE
+	id = #{id}
+	</select>
+	
+	<select id="searchcomposites"
+		resultMap="CompositeMaterialEntityMap"
+		parameterType="cn.ilanhai.kem.domain.compositematerial.QueryCMData">
+SELECT
+	m.id,
+	m.add_time AS addTime,
+	m.update_time AS updateTime,
+	m.icon_url AS iconUrl,
+	m.state,
+	m.category,
+	m.`data`,
+	m.user_id AS userId,
+	m.type,
+	m.client_type AS clientType
+FROM
+	composite_material m
+WHERE
+	1 = 1
+	<if test="type != null and type != ''">
+		AND type like CONCAT('%',#{type},'%')
+	</if>
+	<if test="clientType != null">
+		AND client_type = #{clientType}
+	</if>
+		ORDER BY m.id 
+	<if test="orderBy != null and orderBy != ''">
+	${orderBy}
+	</if>
+LIMIT #{startCount},#{pageSize}
+	</select>
+	
+	<select id="searchcompositescount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.compositematerial.QueryCMData">
+	SELECT COUNT(*) FROM composite_material WHERE 1=1
+	<if test="type != null and type != ''">
+		AND type like CONCAT('%',#{type},'%')
+	</if>
+	<if test="clientType != null">
+		AND client_type = #{clientType}
+	</if>
+	</select>
+	
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.kem.dao.security.RoleAuthorizationDao">
+	<resultMap type="cn.ilanhai.kem.domain.security.RoleAuthorizationEntity"
+		id="roleAuthorization">
+		<result property="id" column="id" />
+		<result property="addTime" column="add_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="roleId" column="role_id" />
+		<result property="resourceId" column="resource_id" />
+		<result property="authorityCode" column="authority_code" />
+	</resultMap>
+	<select id="selectRoleAuthorizationByResourceIdAndRoleId"
+		resultMap="roleAuthorization" parameterType="cn.ilanhai.kem.domain.security.GroupAuthorizationEntity">
+		select * from sys_role_authorization
+		where role_id in
+		(#{roleId})
+		and
+		resource_id=#{resourceId}
+	</select>
+	<!-- 减少与数据库的交互 -->
+	<select id="selectRoleAuthorizationByResourceURIAndGroupId"
+		parameterType="cn.ilanhai.kem.domain.security.QueryRoleAuthorizationParamerter"
+		resultMap="roleAuthorization">
+		select * from sys_role_authorization
+		where
+		role_id in
+		(select
+		role_id
+		from sys_group_authorization where group_id=#{groupId})
+		and
+		resource_id
+		in(select id
+		from sys_resource where uri=#{uri})
+	</select>
+</mapper>

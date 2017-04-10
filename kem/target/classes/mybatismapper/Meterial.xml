@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Meterial">
+
+	<delete id="deleimgbyid" parameterType="String">
+		DELETE
+		FROM
+		user_material_img
+		WHERE
+		img_id = #{id}
+	</delete>
+
+	<select id="searchidfrommeterial" resultType="String"
+		parameterType="cn.ilanhai.kem.domain.material.MaterialEntity">
+		SELECT
+		material_id
+		FROM
+		user_material
+		WHERE
+		1 = 1
+		<if test="material_id != null ">
+			AND material_id = #{material_id}
+		</if>
+		<if
+			test="material_id == null and material_name != null and material_name != ''">
+			AND material_name = #{material_name}
+		</if>
+		<if test="material_id == null and terminal_type != null">
+			AND terminal_type = #{terminal_type}
+		</if>
+		<if test="material_id == null and userId != null and userId != ''">
+			AND user_id = #{userId}
+		</if>
+	</select>
+
+	<update id="updatemeterial" parameterType="cn.ilanhai.kem.domain.material.MaterialEntity">
+		UPDATE `user_material`
+		SET
+		`material_name` = #{material_name},
+		`material_state` =
+		#{material_state},
+		`createtime` = #{createtime},
+		`terminal_type` =
+		#{terminal_type},
+		`user_id` = #{userId}
+		WHERE
+		(`material_id` =
+		#{material_id});
+
+	</update>
+
+	<insert id="insertmeterial" parameterType="cn.ilanhai.kem.domain.material.MaterialEntity">
+		INSERT INTO
+		user_material (
+		material_id,
+		material_name,
+		material_state,
+		createtime,
+		terminal_type,
+		user_id
+		)
+		VALUES
+		(#{material_id},#{material_name},#{material_state},NOW(),#{terminal_type},#{userId})
+	</insert>
+
+	<insert id="insertmeterialimg" parameterType="cn.ilanhai.kem.domain.material.MaterialImgEntity">
+		INSERT INTO
+		user_material_img
+		(material_id, img_id)
+		VALUES
+		(#{material_id},
+		#{img_id})
+	</insert>
+
+	<select id="searchmeterial" resultType="cn.ilanhai.kem.domain.material.MaterialEntity"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterialEntity">
+		SELECT
+		um.material_id,
+		um.material_name,
+		um.material_state,
+		um.createtime,
+		um.terminal_type AS terminal_type,
+		um.user_id AS userId,
+		IFNULL(smsv.count, 0) AS count,
+		um.img_key AS `key`
+		FROM
+		user_material um
+		LEFT JOIN (
+		SELECT
+		material_category_id,
+		count(material_category_id) AS
+		count
+		FROM
+		sys_material_search_view
+		WHERE
+		user_id IN ('0', '1')
+		GROUP BY
+		material_category_id
+		) smsv ON smsv.material_category_id =
+		um.material_id
+		WHERE
+		1 = 1
+		<if test="materialName != null and materialName != ''">
+			AND um.material_name like CONCAT('%',#{materialName},'%')
+		</if>
+		<if test="terminalType != null">
+			AND um.terminal_type = #{terminalType}
+		</if>
+		<if test="userId != null and userId != ''">
+			AND um.user_id = #{userId}
+		</if>
+
+		<choose>
+			<when test="materialState != null">
+				AND um.material_state = #{materialState}
+			</when>
+			<otherwise>
+				AND um.material_state &lt;&gt; 2
+			</otherwise>
+		</choose>
+		<if test="materialType != null">
+			AND um.material_type = #{materialType}
+		</if>
+		ORDER BY
+		um.material_state ASC,
+		um.order_level ASC,
+		um.createtime ASC
+		LIMIT #{startCount},#{pageSize}
+	</select>
+
+	<select id="searchmeteralcount" resultType="cn.ilanhai.kem.domain.CountDto"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterialEntity">
+		SELECT
+		count(um.material_id) AS count
+		FROM
+		user_material um
+		LEFT JOIN (
+		SELECT
+		material_id,
+		count(user_material_img_id) AS count
+		FROM
+		user_material_img
+		GROUP BY
+		material_id
+		) umi ON umi.material_id =
+		um.material_id
+		WHERE
+		1 = 1
+		<if
+			test="isTrueSearch == true and materialName != null and materialName != ''">
+			AND um.material_name = #{materialName}
+		</if>
+		<if
+			test="isTrueSearch == false and materialName != null and materialName != ''">
+			AND um.material_name like CONCAT('%',#{materialName},'%')
+		</if>
+		<if test="terminalType != null">
+			AND um.terminal_type = #{terminalType}
+		</if>
+		<if test="userId != null and userId != ''">
+			AND um.user_id = #{userId}
+		</if>
+		<if test="materialState != null">
+			AND um.material_state = #{materialState}
+		</if>
+		<if test="materialState == null">
+			AND um.material_state &lt;&gt; 2
+		</if>
+		<if test="materialType != null">
+			AND um.material_type = #{materialType}
+		</if>
+	</select>
+
+	<select id="searchmeteralType" resultType="cn.ilanhai.kem.domain.material.MaterialEntity"
+		parameterType="String">
+		SELECT
+		um.material_id,
+		um.material_name,
+		um.material_state,
+		um.createtime,
+		um.terminal_type,
+		um.user_id as userId,
+		IFNULL(umi.count, 0) AS count,
+		um.img_key as imgKey
+		FROM
+		user_material um
+		LEFT JOIN (
+		SELECT
+		material_id,
+		count(user_material_img_id) AS count
+		FROM
+		user_material_img
+		GROUP BY
+		material_id
+		) umi ON umi.material_id =
+		um.material_id
+		WHERE
+		1 = 1
+		AND um.material_state &lt;&gt; 2
+		AND
+		um.material_id = #{id}
+	</select>
+
+	<!--新增素材信息 -->
+	<insert id="saveMeterialInfo" parameterType="cn.ilanhai.kem.domain.material.MaterialInfoEntity">
+		INSERT INTO
+		sys_material_info (
+		material_id,
+		info_key,
+		info_value,
+		enable
+		)
+		VALUES
+		(#{materialId},#{infoKey},#{infoValue},#{enable})
+	</insert>
+
+	<!--修改素材信息 -->
+	<insert id="updateMeterialInfo" parameterType="cn.ilanhai.kem.domain.material.MaterialInfoEntity">
+		update
+		sys_material_info
+		set info_value = #{infoValue}
+		where
+		material_id =
+		#{materialId} and info_key = #{infoKey}
+	</insert>
+
+	<!--查询某个素材信息 -->
+	<select id="queryOneMeterialInfo" resultType="cn.ilanhai.kem.domain.material.MaterialInfoEntity"
+		parameterType="cn.ilanhai.kem.domain.material.dto.QueryMaterialInfoDto">
+		SELECT info_id as infoId,material_id as
+		materialId,info_key as infoKey,info_value as infoValue,enable as
+		enable from
+		sys_material_info where material_id =
+		#{materialId} and
+		info_key =
+		#{infoKey}  
+		<if test="infoValue != null and infoValue != ''">
+			AND info_value = #{infoValue}
+		</if>
+		 limit 1;
+	</select>
+
+	<!--查询素材信息 -->
+	<select id="queryMeterialInfos" resultType="cn.ilanhai.kem.domain.material.MaterialInfoEntity"
+		parameterType="cn.ilanhai.kem.domain.material.dto.QueryMaterialInfoDto">
+		SELECT info_id as infoId,material_id as
+		materialId,info_key as infoKey,info_value as infoValue,enable as
+		enable from
+		sys_material_info where material_id =
+		#{materialId} and
+		info_key =
+		#{infoKey};
+	</select>
+
+	<!--新增素材 -->
+	<insert id="saveMeterialMain" parameterType="cn.ilanhai.kem.domain.material.MaterialMainEntity">
+		INSERT INTO
+		sys_material_main (
+		material_id,
+		user_id,
+		createtime,
+		updatetime,
+		enable
+		)
+		VALUES
+		(#{materialId},#{userId},#{createtime},#{updatetime},#{enable})
+	</insert>
+
+	<select id="queryMeterialMain" resultType="cn.ilanhai.kem.domain.material.MaterialMainEntity"
+		parameterType="java.lang.String">
+		SELECT material_id as materialId ,user_id as
+		userId,createtime ,updatetime ,enable as
+		enable from
+		sys_material_main
+		where material_id =
+		#{materialId} limit 1;
+	</select>
+
+	<!--修改素材 -->
+	<insert id="updateMeterialMain" parameterType="cn.ilanhai.kem.domain.material.MaterialMainEntity">
+		update
+		sys_material_main set enable = #{enable},updatetime = #{updatetime}
+		where material_id =
+		#{materialId}
+	</insert>
+
+
+
+
+	<select id="searchallmaterial"
+		resultType="cn.ilanhai.kem.domain.material.SearchAllMaterialEntity"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterailRequest">
+		SELECT
+		m.`materialId` AS materialId,
+		m.`thumbnail` AS `thumbnail`,
+		m.`terminal_type` AS terminalType,
+		m.`material_category` AS
+		materialCategory,
+		m.`material_category_id` AS materialCategoryId,
+		m.`material_type` AS materialType,
+		m.`createtime` AS `createtime`,
+		m.`keyword` AS keyWord,
+		m.`material_status` AS materialStatus,
+		m.`remark` AS remark,
+		m.`material_template` AS materialTemplate,
+		m.`client_type` AS clientType,
+		m.`composite_category` AS
+		compositeCategory,
+		m.`prepare_thumbnail` AS prepareThumbnail
+		FROM
+		sys_material_search_view m
+		WHERE
+		1 = 1
+		AND ( `user_id` = '0' OR `user_id`
+		= '1')
+		<if test="key != null and key != ''">
+			AND `keyword` like CONCAT('%',#{key},'%')
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND m.materialId = #{materialId}
+		</if>
+		<if test="terminalType != null">
+			AND m.terminal_type &lt;&gt; 1
+		</if>
+		<if test="materialCategoryId != null and materialCategoryId != ''">
+			AND `m`.`material_category_id` = #{materialCategoryId}
+		</if>
+		<if test="startDate != null">
+			AND m.createtime &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND m.createtime &lt;= DATE_ADD(#{endDate},INTERVAL 1 DAY)
+		</if>
+		<if test="templateId != null and templateId != ''">
+			AND m.manuscript_id = #{templateId}
+		</if>
+		<if test="materialType != null and materialType != 0">
+			AND m.material_type = #{materialType}
+		</if>
+		ORDER BY
+		m.`material_status` desc,
+		<if test="sort == null or sort == ''">
+			m.`createtime` DESC
+		</if>
+		<if test="sort != null and sort != ''">
+			m.`createtime` ${sort}
+		</if>
+		,m.`materialId`
+		LIMIT #{startCount},#{pageSize}
+	</select>
+
+
+	<select id="searchmanuscriptmaterial"
+		resultType="cn.ilanhai.kem.domain.material.SearchAllMaterialEntity"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterailRequest">
+		SELECT DISTINCT
+		smy.material_id AS materialId,
+		m.`thumbnail` AS `thumbnail`,
+		m.`terminal_type` AS terminalType,
+		m.`material_category` AS
+		materialCategory,
+		m.`material_category_id` AS materialCategoryId,
+		m.`material_type` AS materialType,
+		m.`createtime` AS `createtime`,
+		m.`keyword` AS keyWord,
+		m.`material_status` AS materialStatus,
+		m.`remark` AS remark,
+		m.`material_template` AS materialTemplate,
+		m.`client_type` AS clientType,
+		m.`composite_category` AS
+		compositeCategory,
+		m.`prepare_thumbnail` AS prepareThumbnail
+		FROM
+
+		sys_material_info smy left join sys_material_search_view m on
+		smy.material_id =
+		m.materialId and smy.info_key = 8  
+
+		WHERE
+		1 = 1
+		and m.materialId is not null
+		AND (
+		`user_id` = '0' OR `user_id` = '1')
+		<if test="key != null and key != ''">
+			AND `keyword` like CONCAT('%',#{key},'%')
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND m.materialId = #{materialId}
+		</if>
+		<if test="terminalType != null">
+			AND m.terminal_type &lt;&gt; 1
+		</if>
+		<if test="materialCategoryId != null and materialCategoryId != ''">
+			AND `m`.`material_category_id` = #{materialCategoryId}
+		</if>
+		<if test="startDate != null">
+			AND m.createtime &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND m.createtime &lt;= DATE_ADD(#{endDate},INTERVAL 1 DAY)
+		</if>
+		<if test="templateId != null and templateId != ''">
+			AND smy.info_value = #{templateId}
+		</if>
+		<if test="materialType != null and materialType != 0">
+			AND TRIM(m.material_type) = TRIM(#{materialType})
+		</if>
+		ORDER BY
+		m.`material_status` desc,
+		<if test="sort == null or sort == ''">
+			m.`createtime` DESC
+		</if>
+		<if test="sort != null and sort != ''">
+			m.`createtime` ${sort}
+		</if>
+		,m.`materialId`
+		LIMIT #{startCount},#{pageSize}
+	</select>
+
+	<select id="searchmanuscriptmaterialcount" resultType="cn.ilanhai.kem.domain.CountDto"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterailRequest">
+		SELECT
+		count(DISTINCT smy.material_id) AS count
+		FROM
+		sys_material_info smy left join
+		sys_material_search_view m on smy.material_id =
+		m.materialId and
+		smy.info_key = 8
+		WHERE
+		1 = 1
+		and m.materialId is not null
+		AND ( `user_id` = '0' OR `user_id` = '1')
+		<if test="key != null and key != ''">
+			AND `keyword` like CONCAT('%',#{key},'%')
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND m.materialId = #{materialId}
+		</if>
+		<if test="terminalType != null">
+			AND m.terminal_type &lt;&gt; 1
+		</if>
+		<if test="materialCategoryId != null and materialCategoryId != ''">
+			AND `m`.`material_category_id` = #{materialCategoryId}
+		</if>
+		<if test="startDate != null">
+			AND m.createtime &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND m.createtime &lt;= DATE_ADD(#{endDate},INTERVAL 1 DAY)
+		</if>
+		<if test="templateId != null and templateId != ''">
+			AND smy.info_value = #{templateId}
+		</if>
+		<if test="materialType != null and materialType != 0">
+			AND m.material_type = #{materialType}
+		</if>
+	</select>
+
+	<select id="getmaterial"
+		resultType="cn.ilanhai.kem.domain.material.dto.GetMaterialResponseDto"
+		parameterType="cn.ilanhai.kem.domain.material.dto.GetMaterialDto">
+		SELECT
+		m.`thumbnail` AS `thumbnail`,
+		m.`material_type` AS
+		materialType
+		FROM
+		sys_material_search_view m
+		WHERE
+		1 = 1
+		AND m.materialId =
+		#{materialId}
+		LIMIT 1;
+	</select>
+
+	<select id="searchallmaterialcount" resultType="cn.ilanhai.kem.domain.CountDto"
+		parameterType="cn.ilanhai.kem.domain.material.SearchMaterailRequest">
+		SELECT
+		count(m.materialId) AS count
+		FROM
+		sys_material_search_view m
+		WHERE
+		1 = 1
+		AND ( `user_id` = '0' OR `user_id` = '1')
+		<if test="key != null and key != ''">
+			AND `keyword` like CONCAT('%',#{key},'%')
+		</if>
+		<if test="materialId != null and materialId != ''">
+			AND m.materialId = #{materialId}
+		</if>
+		<if test="terminalType != null">
+			AND m.terminal_type &lt;&gt; 1
+		</if>
+		<if test="materialCategoryId != null and materialCategoryId != ''">
+			AND `m`.`material_category_id` = #{materialCategoryId}
+		</if>
+		<if test="startDate != null">
+			AND m.createtime &gt;= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND m.createtime &lt;= DATE_ADD(#{endDate},INTERVAL 1 DAY)
+		</if>
+		<if test="templateId != null and templateId != ''">
+			AND m.manuscript_id = #{templateId}
+		</if>
+		<if test="materialType != null and materialType != 0">
+			AND m.material_type = #{materialType}
+		</if>
+	</select>
+
+	<delete id="deleteClassifcition" parameterType="java.lang.String">
+		DELETE
+		FROM
+		user_material_img
+		WHERE
+		img_id in
+		<foreach item="item" index="index" collection="array" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="deleteMeterial"
+		parameterType="cn.ilanhai.kem.domain.material.dto.DeleteMeterialDto">
+		 <![CDATA[  
+		DELETE
+		FROM
+		user_material_img
+		WHERE
+		img_id in
+		 ]]>
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+		 <![CDATA[  
+		DELETE
+		FROM
+		user_resource_img
+		WHERE
+		img_id in
+		]]>
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+		  
+		 <![CDATA[  
+		DELETE
+		FROM
+		composite_material
+		WHERE
+		id in
+		 ]]>
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+		 <![CDATA[  
+		DELETE
+		FROM
+		sys_material_main
+		WHERE
+		material_id in
+		 ]]>
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+		 <![CDATA[  
+		DELETE
+		FROM
+		sys_material_info
+		WHERE
+		material_id in
+		 ]]>
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+		;
+
+	</delete>
+
+	<insert id="insertclassifcition"
+		parameterType="cn.ilanhai.kem.domain.material.classification.ClassificationRequest">
+		INSERT INTO `user_material_img`
+		(`material_id`, `img_id`)
+		VALUES
+		<foreach collection="categoryIds" item="item" index="index"
+			separator=",">
+			(#{item},#{materialId})
+		</foreach>
+	</insert>
+
+	<select id="selectclassifcitionisLegitimate" resultType="String"
+		parameterType="String">
+		SELECT
+		`material_id`
+		FROM
+		`user_material`
+		WHERE
+		material_id =
+		#{value}
+	</select>
+
+	<select id="selectmaterialidisLegitimate" resultType="String"
+		parameterType="String">
+		SELECT
+		`img_id`
+		FROM
+		`user_resource_img`
+		WHERE
+		`img_id` =
+		#{value}
+	</select>
+</mapper>

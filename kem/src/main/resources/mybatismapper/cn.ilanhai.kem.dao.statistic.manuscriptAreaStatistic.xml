@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="areaStatistic">
+	<insert id="addData"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptAreaEntity">
+		INSERT INTO
+		prod_manuscript_area_statistics(area_name,area_city,
+		area_quantity,area_add_time,area_update_time,visit_url
+		)values(#{areaName},#{areaCity},
+		#{areaQuantity},
+		#{areaAddTime},
+		#{areaUpdateTime},
+		#{visitUrl}
+		);
+	</insert>
+
+	<insert id="updateDate"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptAreaEntity">
+		update prod_manuscript_area_statistics set area_quantity
+		= area_quantity+1,area_update_time = now() where
+		visit_url =
+		#{visitUrl} and area_name = #{areaName} and area_city =
+		#{areaCity} and
+		TO_DAYS(area_add_time)=TO_DAYS(#{areaAddTime});
+	</insert>
+
+	<select id="queryData"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryStatsticAreaDto"
+		resultType="cn.ilanhai.kem.domain.statistic.dto.ManuscriptAreaDto">
+		select area_name as areaName ,sum(area_quantity) AS
+		areaQuantity
+		from prod_manuscript_area_statistics where visit_url =
+		#{visitUrl}
+		GROUP BY
+		area_name ORDER BY
+		areaQuantity asc limit #{startCount},#{pageSize};
+	</select>
+	
+	<select id="queryMaxData"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryStatsticAreaDto"
+		resultType="cn.ilanhai.kem.domain.statistic.dto.ManuscriptAreaDto">
+		select max(areaQuantity) as areaQuantity  from (select area_name as areaName ,sum(area_quantity) AS
+		areaQuantity
+		from prod_manuscript_area_statistics where visit_url =
+		#{visitUrl}
+		GROUP BY
+		area_name ORDER BY
+		areaQuantity asc limit #{startCount},#{pageSize} )a;
+	</select>
+
+	<select id="queryOtherData"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryStatsticAreaDto"
+		resultType="java.lang.Integer">
+		select sum(areaQuantity) from (select sum(area_quantity) AS
+		areaQuantity
+		from
+		prod_manuscript_area_statistics where visit_url =
+		#{visitUrl} and
+		area_add_time BETWEEN DATE(#{startTime}) AND
+		DATE(DATE_ADD(#{endTime},INTERVAL 1 DAY)) GROUP BY area_name ORDER BY
+		areaQuantity desc limit
+		10,10000) a
+	</select>
+
+	<select id="queryExistData"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryStatsticAreaDto"
+		resultType="java.lang.Integer">
+		select
+		count(1) as count
+		from
+		prod_manuscript_area_statistics
+		where visit_url = #{visitUrl} and
+		area_name = #{areaName}
+		and area_city
+		= #{areaCity}
+		and
+		TO_DAYS(area_add_time)=TO_DAYS(#{areaAddTime}) ;
+	</select>
+
+</mapper>

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.BackUser">
+	<resultMap id="BaseResultMap"
+		type="cn.ilanhai.kem.domain.user.backuser.BackUserEntity">
+		<result column="user_id" property="userID" jdbcType="VARCHAR" />
+		<result column="user_name" property="userName" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="login_pwd" property="login_pwd" jdbcType="VARCHAR" />
+		<result column="status" property="status"
+			typeHandler="cn.ilanhai.kem.domain.enums.EnumTypeConvertHandler" />
+	</resultMap>
+	<!--插入user_main start -->
+	<insert id="insertUserMain" parameterType="cn.ilanhai.framework.app.domain.Entity">
+		INSERT INTO
+		user_main_user (user_id, user_type, createtime, state) VALUES
+		(#{userId},
+		#{userType},#{createTime},#{status}
+		)
+	</insert>
+	<!--插入user_main end -->
+	<!--插入user_identity start -->
+	<insert id="insertUserIdentity" parameterType="cn.ilanhai.framework.app.domain.Entity">
+		INSERT INTO
+		user_identify_user (user_id, identify,identify_type,
+		identify_state,identify_code)VALUES
+		(#{userId},
+		#{phoneNo},0,1,#{companyCode}
+		)
+	</insert>
+	<!--插入user_identity end -->
+	<!--插入user_voucher start -->
+	<insert id="insertUserVoucher" parameterType="cn.ilanhai.framework.app.domain.Entity">
+		INSERT INTO
+		user_voucher_user (user_id, voucher,voucher_type, vouche_state) VALUES
+		(#{userId},
+		#{loginPwd},0,1
+		)
+	</insert>
+	<!--插入user_voucher end -->
+	<!--插入user_info start -->
+	<insert id="insertUserInfo" parameterType="cn.ilanhai.framework.app.domain.Entity">
+		INSERT INTO user_info_user (user_id, info,info_type, info_state)VALUES
+		<foreach item="item" index="index" collection="infos"
+			separator=",">
+			(#{item.userID},#{item.info},#{item.infoType},#{item.infoState})
+		</foreach>
+	</insert>
+	<!--插入user_info end -->
+	<!--按版本加载用户信息，查询结果分页 start -->
+	<select id="queryUserInfoForPage"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.LoadUserInfoByEditionDto"
+		resultType="cn.ilanhai.kem.domain.user.frontuser.LoadReturnUserInfoByEdtion">
+		SELECT
+		umu.user_id as userId,
+		umu.state as status,<!-- 状态 -->
+		m.package_service_id as packageServiceId,
+		ps.name as memberType,
+		userPhoneFunSQL.userPhone,
+		userEmailFunSQL.userEmail,
+		companyFunSQL.company,<!-- 公司 -->
+		contactFunSQL.contact,<!--联系人 -->
+		<!-- 设计师的话，则获取模板数量 -->
+		(
+		SELECT
+		count(1)
+		FROM
+		prod_template
+		WHERE
+		template_state = 3
+		AND user_id =
+		umu.user_id
+		) AS templateCount
+		FROM
+		user_main_user umu
+		LEFT JOIN
+		user_relation_user uru on
+		umu.user_id=uru.user_id
+		LEFT JOIN <!--电话号码 -->
+		(
+		SELECT
+		user_id,
+		identify AS userPhone
+		FROM
+		user_identify_user
+		WHERE
+		identify_state = #{state}
+		) userPhoneFunSQL ON umu.user_id =
+		userPhoneFunSQL.user_id
+		LEFT JOIN <!-- 邮箱 -->
+		(
+		SELECT
+		user_id,
+		info AS userEmail
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{emailInfoType}
+		AND info_state = #{state}
+		) userEmailFunSQL ON
+		umu.user_id =
+		userEmailFunSQL.user_id
+		LEFT JOIN <!-- 公司名称 -->
+		(
+		SELECT
+		user_id,
+		info AS company
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{companyInfoType}
+		AND
+		info_state = #{state}
+		) companyFunSQL ON
+		umu.user_id = companyFunSQL.user_id
+		LEFT JOIN <!-- 联系人 -->
+		(
+		SELECT
+		user_id,
+		info AS contact
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{contactInfoType}
+		AND
+		info_state = #{state}
+		) contactFunSQL ON
+		umu.user_id = contactFunSQL.user_id
+		LEFT JOIN member_main m ON
+		umu.user_id = m.user_id
+		LEFT JOIN prod_package_service ps on
+		m.package_service_id=ps.id
+		<trim prefix="where" prefixOverrides="and">
+			<if test="relationType!=null">
+				<!-- 主账号 -->
+				(uru.user_type=#{relationType} or uru.user_type is null)
+			</if>
+			<if test="userType!=null and userType!=0">
+				<!-- 用户类型 -->
+				and umu.user_type=#{userType}
+			</if>
+			<if test="packageServiceId!=null and packageServiceId&gt;0 ">
+				<!-- 企业基础版 --><!-- 企业标准版 --><!-- 企业高级版 -->
+				and m.package_service_id=#{packageServiceId}
+			</if>
+			<if test="packageServiceId!=null and packageServiceId&lt;0">
+				<if test="packageServiceId==-1"><!-- 试用用户 -->
+					and umu.state=1 and m.member_id is null
+				</if>
+				<if test="packageServiceId==-2"><!-- 申请试用 -->
+					and umu.state=2 and m.member_id is null
+				</if>
+			</if><!-- 关键字过滤 -->
+			<if test="keyWord != null and keyWord != ''">
+				AND( companyFunSQL.company LIKE CONCAT('%',#{keyWord},'%'
+				) or
+				userPhoneFunSQL.userPhone
+				LIKE CONCAT('%',#{keyWord},'%' ) or
+				userEmailFunSQL.userEmail
+				LIKE
+				CONCAT('%',#{keyWord},'%' ) or
+				contactFunSQL.contact
+				LIKE
+				CONCAT('%',#{keyWord},'%' ))
+			</if>
+		</trim>
+		order by umu.createtime desc
+		limit
+		${startCount},${pageSize}
+	</select>
+	<!--按版本加载用户信息，查询结果分页 end -->
+
+	<!--按版本加载用户信息，查询总数 start -->
+	<select id="queryUserInfoForCount"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.LoadUserInfoByEditionDto"
+		resultType="int">
+		SELECT
+		count(umu.user_id)
+		FROM
+		user_main_user umu
+		LEFT JOIN
+		user_relation_user uru on umu.user_id=uru.user_id
+		LEFT JOIN <!--电话号码 -->
+		(
+		SELECT
+		user_id,
+		identify AS userPhone
+		FROM
+		user_identify_user
+		WHERE
+		identify_state = #{state}
+		) userPhoneFunSQL ON umu.user_id =
+		userPhoneFunSQL.user_id
+		LEFT JOIN <!-- 邮箱 -->
+		(
+		SELECT
+		user_id,
+		info AS userEmail
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{emailInfoType}
+		AND info_state = #{state}
+		) userEmailFunSQL ON
+		umu.user_id =
+		userEmailFunSQL.user_id
+		LEFT JOIN <!-- 公司名称 -->
+		(
+		SELECT
+		user_id,
+		info AS company
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{companyInfoType}
+		AND
+		info_state = #{state}
+		) companyFunSQL ON
+		umu.user_id = companyFunSQL.user_id
+		LEFT JOIN <!-- 联系人 -->
+		(
+		SELECT
+		user_id,
+		info AS contact
+		FROM
+		user_info_user
+		WHERE
+		info_type =
+		#{contactInfoType}
+		AND
+		info_state = #{state}
+		) contactFunSQL ON
+		umu.user_id = contactFunSQL.user_id
+		LEFT JOIN member_main m ON
+		umu.user_id = m.user_id
+		LEFT JOIN prod_package_service ps on
+		m.package_service_id=ps.id
+		<trim prefix="where" prefixOverrides="and">
+			<if test="relationType!=null">
+				<!-- 主账号 -->
+				(uru.state=#{state} or uru.state is null) and
+				(uru.user_type=#{relationType} or uru.user_type is null)
+			</if>
+			<if test="userType!=null and userType!=0">
+				<!-- 用户类型 -->
+				and umu.user_type=#{userType}
+			</if>
+			<if test="packageServiceId!=null and packageServiceId&gt;0 ">
+				<!-- 企业基础版 --><!-- 企业标准版 --><!-- 企业高级版 -->
+				and m.package_service_id=#{packageServiceId}
+			</if>
+			<if test="packageServiceId!=null and packageServiceId&lt;0">
+				<if test="packageServiceId==-1"><!-- 试用用户 -->
+					and umu.state=1 and m.member_id is null
+				</if>
+				<if test="packageServiceId==-2"><!-- 申请试用 -->
+					and umu.state=2 and m.member_id is null
+				</if>
+			</if><!-- 关键字过滤 -->
+			<if test="keyWord != null and keyWord != ''">
+				AND( companyFunSQL.company LIKE CONCAT('%',#{keyWord},'%'
+				) or
+				userPhoneFunSQL.userPhone
+				LIKE CONCAT('%',#{keyWord},'%' ) or
+				userEmailFunSQL.userEmail
+				LIKE
+				CONCAT('%',#{keyWord},'%' ) or
+				contactFunSQL.contact
+				LIKE
+				CONCAT('%',#{keyWord},'%' ))
+			</if>
+		</trim>
+	</select>
+	<!--按版本加载用户信息，查询总数 end -->
+	<!--查询用户详情 开始 -->
+	<select id="queryUserDetailByUserId"
+		parameterType="cn.ilanhai.kem.domain.user.manageuser.QueryCondition.GetUserDetailQCondition"
+		resultType="java.util.HashMap">
+		select umu.user_id as userId, umu.state as
+		status,uru.user_type as accountType,uiu.identify as
+		usePhone,info1.info as company,info2.info
+		as
+		contact,info3.info as
+		job,info4.info as contactPhoneNo,(SELECT
+		count(1)
+		FROM
+		prod_extension
+		WHERE
+		user_id = umu.user_id)AS
+		extensionCount,m.starttime,m.endtime,m.package_service_id as
+		packageServiceId, m.status as memberState , ps.name as
+		memberType from
+		user_main_user umu
+		<!-- 查询主账号，子账号 -->
+		LEFT JOIN user_relation_user uru ON umu.user_id = uru.user_id
+		LEFT JOIN
+		user_identify_user
+		uiu on
+		umu.user_id=uiu.user_id
+		LEFT JOIN
+		user_info_user info1 on
+		umu.user_id=info1.user_id and
+		info1.info_type=#{company}
+		LEFT JOIN
+		user_info_user info2 on
+		umu.user_id=info2.user_id and
+		info2.info_type=#{contact}
+		LEFT JOIN
+		user_info_user info3 on
+		umu.user_id=info3.user_id and
+		info3.info_type=#{job}
+		LEFT JOIN
+		user_info_user info4 on
+		umu.user_id=info4.user_id and
+		info4.info_type=#{contactPhoneNo}
+		LEFT
+		JOIN member_main m on umu.user_id=m.user_id
+		LEFT JOIN
+		prod_package_service ps on
+		m.package_service_id=ps.id
+		where
+		umu.user_id=#{userId}
+		limit 0,1
+	</select>
+	<!--查询用户详情 结束 -->
+	<select id="queryDataByUserId" parameterType="cn.ilanhai.kem.domain.IdEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM user_back_user WHERE user_id=#{id}
+	</select>
+	<select id="queryDataByUserName"
+		parameterType="cn.ilanhai.kem.domain.user.backuser.QueryByUserNameNoConditionEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM user_back_user WHERE user_name=#{userName}
+	</select>
+	<select id="selectIdentityByUserId" resultType="string">
+		SELECT identify
+		FROM user_identify_user WHERE user_id=#{userId}
+	</select>
+</mapper>

@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ActivePlugin">
+	<resultMap
+		type="cn.ilanhai.kem.domain.plugin.activeplugin.entity.DrawPrizeRecordEntity"
+		id="drawPrizeRecordEntity">
+		<result property="recordId" column="record_id" />
+		<result property="pluginId" column="plugin_id" />
+		<result property="phoneNo" column="phone_no" />
+		<result property="name" column="name" />
+		<result property="address" column="address" />
+		<result property="qq" column="qq" />
+		<result property="createtime" column="createtime" />
+		<result property="prizeName" column="prize_name" />
+		<result property="prizeNo" column="prize_no" />
+		<result property="exchangeState" column="exchange_state" />
+		<result property="exchangeTime" column="exchangetime" />
+	</resultMap>
+	<resultMap
+		type="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		id="activePluginEntity">
+		<result property="pluginId" column="plugin_id" />
+		<result property="pluginType" column="plugin_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="createtime" column="create_time" />
+		<result property="userId" column="user_id" />
+		<result property="relationId" column="relation_id" />
+		<result property="relationType" column="relation_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="isUsed" column="is_used" />
+		<result property="activePluginType" column="type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="drawTime" column="drawtime" />
+		<result property="winTime" column="wintime" />
+		<result property="intervalTime" column="intervaltime" />
+		<result property="intervalTimeType" column="intervaltime_type" />
+		<result property="prizeCollectInfo" column="prize_collect_info"
+			typeHandler="cn.ilanhai.kem.dao.typehandler.MapTypeHandler" />
+		<result property="prizeCollectRequiredInfo" column="prize_collect_required_info"
+			typeHandler="cn.ilanhai.kem.dao.typehandler.MapTypeHandler" />
+		<result property="outerUrl" column="outer_url" />
+		<result property="merchantPhone" column="merchant_phone" />
+	</resultMap>
+	<resultMap
+		type="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginPrizeSettingEntity"
+		id="activePluginPrizeSettingEntity">
+		<result property="recordId" column="record_id" />
+		<result property="optionName" column="option_name" />
+		<result property="prizeName" column="prize_name" />
+		<result property="amount" column="amount" />
+		<result property="rate" column="rate" />
+	</resultMap>
+	<delete id="deleteDrawprizeData"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.DeleteDrawprizeDataDto">
+		delete from
+		user_plugin_activeplugin_drawprizedata
+		where
+		record_id=#{recordId};
+	</delete>
+	<update id="updatePrizeSetting"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginPrizeSettingEntity">
+		UPDATE
+		user_plugin_activeplugin_prizesetting
+		set amount =
+		amount - 1
+		where
+		record_id =#{recordId}
+	</update>
+	<update id="update"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.DrawPrizeRecordEntity">
+		update
+		user_plugin_activeplugin_drawprizedata
+		set
+		plugin_id=#{recordId},
+		phone_no=#{phoneNo},
+		name=#{name},
+		address=#{address},
+		qq=#{qq},
+		createtime=#{createtime},
+		prize_name=#{prizeName},
+		prize_no=#{prizeNo},
+		exchange_state=#{exchangeState},
+		exchangetime=#{exchangeTime}
+		where
+		record_id=#{recordId}
+	</update>
+	<insert id="add"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.DrawPrizeRecordEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_activeplugin_drawprizedata(
+		plugin_id,
+		phone_no,
+		name,
+		address,
+		qq,
+		createtime,
+		prize_name,
+		prize_no,
+		exchange_state)
+		values (
+		#{pluginId},
+		#{phoneNo},
+		#{name},
+		#{address},
+		#{qq},
+		#{createtime},
+		#{prizeName},
+		#{prizeNo},
+		#{exchangeState});
+	</insert>
+	<select id="isExists" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.DrawPrizeRecordEntity">
+		SELECT
+		record_id
+		FROM
+		user_plugin_activeplugin_drawprizedata
+		WHERE
+		record_id=#{recordId};
+	</select>
+	<select id="queryUserDrFawPrizeCount" resultMap="drawPrizeRecordEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.QueryDrawprizeDataDto">
+		SELECT
+		*
+		from
+		user_plugin_activeplugin_drawprizedata
+		where
+		plugin_id=#{pluginId}
+		and
+		phone_no=#{phoneNo}
+		order by
+		createtime
+		desc;
+	</select>
+	<select id="queryUserDrawPrize" resultMap="drawPrizeRecordEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.QueryDrawprizeDataDto">
+		SELECT
+		*
+		from user_plugin_activeplugin_drawprizedata A
+		LEFT JOIN
+		user_plugin_info B
+		ON A.plugin_id = B.plugin_id
+		where
+		A.prize_no IS NOT
+		NULL
+		AND
+		B.relation_id=#{relationId}
+		<if test="prizeNo!=null and prizeNo!=''">
+			and A.prize_no like CONCAT('%',#{prizeNo},'%')
+		</if>
+		order by
+		A.createtime
+		desc
+		LIMIT #{startCount},#{pageSize};
+	</select>
+	<select id="queryUserDrawPrizeForCount" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.QueryDrawprizeUserDataDto">
+		SELECT
+		count(*) as count
+		from
+		user_plugin_activeplugin_drawprizedata A
+		LEFT JOIN user_plugin_info B
+		ON A.plugin_id = B.plugin_id
+		where
+		A.prize_no IS NOT NULL
+		AND
+		B.relation_id=#{relationId}
+		<if test="prizeNo!=null and  prizeNo!=''">
+			and A.prize_no like CONCAT('%',#{prizeNo},'%')
+		</if>
+	</select>
+	<select id="queryDrawPrizeRecordByRecordId" parameterType="Integer"
+		resultMap="drawPrizeRecordEntity">
+		select
+		record_id,
+		plugin_id,
+		phone_no,
+		name,
+		address,
+		qq,
+		createtime,
+		prize_name,
+		prize_no,
+		exchange_state,
+		exchangetime
+		from
+		user_plugin_activeplugin_drawprizedata
+		where
+		record_id=#{recordId}
+	</select>
+	<select id="queryActivePluginByRelationId" parameterMap="activePluginEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.QueryActivePluginByRelationId">
+		select
+		upi.plugin_id as plugin_id,
+		upi.plugin_type as
+		plugin_type ,
+		upi.create_time as
+		create_time ,
+		upi.user_id as user_id ,
+		upi.relation_id as relation_id,
+		upi.relation_type as relation_type ,
+		upi.is_used as is_used ,
+		upa.type
+		as type ,
+		upa.drawtime as drawtime,
+		upa.wintime as wintime ,
+		upa.intervaltime as intervaltime ,
+		upa.intervaltime_type as
+		intervaltime_type ,
+		upa.prize_collect_info as
+		prize_collect_info ,
+		upa.prize_collect_required_info as
+		prize_collect_required_info ,
+		upa.outer_url as outer_url,
+		upa.merchant_phone as merchant_phone ,
+		from
+		user_plugin_info upi
+		left
+		join user_plugin_activeplugin upa
+		on
+		upa.plugin_id=upi.plugin_id
+		<where>
+			<if test="isUsed==null">
+				upi.is_used=1
+			</if>
+			<if test="isUsed!=null">
+				1=1
+			</if>
+			and
+			upi.relation_id=#{relationId}
+			and
+			upi.plugin_type =2
+			<if test="activeType!=null">
+				and
+				upa.type=#{activeType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+			</if>
+		</where>
+		order by
+		upi.create_time
+		desc
+		LIMIT 1;
+	</select>
+	<select id="queryActivePluginByRelationId1" parameterMap="activePluginPrizeSettingEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.dto.QueryActivePluginByRelationId">
+		select
+		record_id,
+		option_name,
+		prize_name,
+		amount,
+		rate
+		from
+		user_plugin_activeplugin_prizesetting
+		where
+		plugin_id=#{pluginId};
+	</select>
+	<insert id="add"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_info(
+		plugin_type,
+		create_time,
+		user_id,
+		relation_id,
+		relation_type,
+		is_used)
+		values (
+		#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{createtime},
+		#{userId},
+		#{relationId},
+		#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{isUsed});
+	</insert>
+	<insert id="add1"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_activeplugin(
+		plugin_id,
+		type,
+		drawtime,
+		wintime,
+		intervaltime,
+		intervaltime_type,
+		prize_collect_info,
+		prize_collect_required_info,
+		outer_url,
+		merchant_phone)
+		values (
+		#{pluginId},
+		#{activePluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{drawTime},
+		#{winTime},
+		#{intervalTime},
+		#{intervalTimeType},
+		#{prizeCollectInfo,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		#{prizeCollectRequiredInfo,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		#{outerUrl},
+		#{merchantPhone});
+	</insert>
+	<update id="update"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		UPDATE user_plugin_info
+		SET
+		plugin_type=#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		create_time=#{createtime},
+		user_id=#{userId},
+		relation_id=#{relationId},
+		relation_type=#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		is_used=#{isUsed}
+		WHERE
+		plugin_id=#{pluginId};
+	</update>
+	<update id="update1"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		UPDATE
+		user_plugin_activeplugin
+		SET
+		drawtime=#{drawTime},
+		wintime=#{winTime},
+		intervaltime=#{intervalTime},
+		intervaltime_type=#{intervalTimeType},
+		prize_collect_info=#{prizeCollectInfo,,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		prize_collect_required_info=#prizeCollectRequiredInfo,,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		outer_url=#{outerUrl},
+		merchant_phone=#{merchantPhone}
+		WHERE
+		plugin_id=#{pluginId};
+	</update>
+	<select id="activePluginEntityIsExists" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		SELECT
+		plugin_id
+		FROM
+		user_plugin_info
+		WHERE
+		plugin_id=#{pluginId}
+	</select>
+	<delete id="insertPrizeSettings"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		DELETE FROM
+		user_plugin_activeplugin_prizesetting
+		WHERE
+		plugin_id=#{pluginId};
+	</delete>
+	<insert id="insertPrizeSettings1"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_activeplugin_prizesetting(
+		plugin_id,
+		option_name,
+		prize_name,
+		amount,rate)
+		values (
+		#{pluginId},
+		#{optionName},
+		#{prizeName},
+		#{amount},
+		#{rate});
+	</insert>
+</mapper>

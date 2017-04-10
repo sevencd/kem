@@ -1,0 +1,182 @@
+Logger--> INFO{ServerImpl.java:42}-begin start server
+Logger--> INFO{ServerImpl.java:81}-start initial appalication manager
+Logger--> INFO{ApplicationManagerImpl.java:52}-start initial appalication manager
+Logger--> INFO{ConfigurationImpl.java:53}-start load config
+Logger--> INFO{ConfigurationImpl.java:104}-end load config
+Logger--> INFO{SessionManagerImpl.java:71}-start inital session manager
+Logger--> INFO{SessionManagerImpl.java:72}-end inital session manager
+Logger--> INFO{ApplicationManagerImpl.java:67}-end initial appalication manager
+Logger--> INFO{ApplicationManagerImpl.java:81}-begin start application mananger
+Logger--> INFO{DriverManagerDataSource.java:133}-Loaded JDBC driver: com.mysql.jdbc.Driver
+Logger--> INFO{AbstractApplicationContext.java:581}-Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@14593bf: startup date [Mon Aug 29 12:54:32 CST 2016]; root of context hierarchy
+Logger--> INFO{XmlBeanDefinitionReader.java:317}-Loading XML bean definitions from class path resource [kem.xml]
+Logger--> INFO{ApplicationManagerImpl.java:134}-start application kem
+Logger--> INFO{ApplicationManagerImpl.java:146}-end start application mananger
+Logger--> INFO{ServerImpl.java:93}-end initial appalication manager
+Logger--> INFO{ServerImpl.java:70}-conf\provider.xml
+Logger--> INFO{AbstractApplicationContext.java:581}-Refreshing org.springframework.context.support.FileSystemXmlApplicationContext@a6a609: startup date [Mon Aug 29 12:54:47 CST 2016]; root of context hierarchy
+Logger--> INFO{XmlBeanDefinitionReader.java:317}-Loading XML bean definitions from file [D:\dev_data\workdata\Branch\Codes\Backend\framework\host\conf\provider.xml]
+Logger--> INFO{?:?}-using logger: com.alibaba.dubbo.common.logger.log4j.Log4jLoggerAdapter
+Logger--> INFO{ServiceBean.java:107}- [DUBBO] The service ready on spring started. service: cn.ilanhai.framework.service.AppService, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:510}- [DUBBO] Export dubbo service cn.ilanhai.framework.service.AppService to local registry, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:470}- [DUBBO] Export dubbo service cn.ilanhai.framework.service.AppService to url dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:481}- [DUBBO] Register dubbo service cn.ilanhai.framework.service.AppService url dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511 to registry registry://192.168.1.228:2181/com.alibaba.dubbo.registry.RegistryService?application=provider&dubbo=2.4.10&pid=13104&registry=zookeeper&timestamp=1472446488490, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractServer.java:69}- [DUBBO] Start NettyServer bind /0.0.0.0:20880, export /192.168.1.146:20880, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:232}- [DUBBO] Load registry store file C:\Users\Nature\.dubbo\dubbo-registry-192.168.1.228.cache, data: {cn.ilanhai.framework.service.AppService=empty://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=12012&side=provider&timestamp=1472266198570}, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ZkEventThread.java:64}-Starting ZkClient event thread.
+Logger--> INFO{Environment.java:100}-Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+Logger--> INFO{Environment.java:100}-Client environment:host.name=Nature-PC
+Logger--> INFO{Environment.java:100}-Client environment:java.version=1.8.0_25
+Logger--> INFO{Environment.java:100}-Client environment:java.vendor=Oracle Corporation
+Logger--> INFO{Environment.java:100}-Client environment:java.home=D:\dev_software\java\jdk_8_25_x86\jre
+Logger--> INFO{Environment.java:100}-Client environment:java.class.path=D:\dev_data\workdata\Branch\Codes\Backend\framework\host\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\kem\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\kem\target\test-classes;D:\dev_data\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\dev_data\workdata\Branch\Codes\Backend\framework\app\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\app\target\test-classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\common\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\common\target\test-classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\util\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\util\target\test-classes;D:\dev_data\repository\com\alibaba\fastjson\1.2.13\fastjson-1.2.13.jar;D:\dev_data\repository\log4j\log4j\1.2.9\log4j-1.2.9.jar;D:\dev_data\repository\org\springframework\spring-context\4.3.0.RELEASE\spring-context-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-expression\4.3.0.RELEASE\spring-expression-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-context-support\4.3.0.RELEASE\spring-context-support-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-core\4.3.0.RELEASE\spring-core-4.3.0.RELEASE.jar;D:\dev_data\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;D:\dev_data\repository\org\springframework\spring-beans\4.3.0.RELEASE\spring-beans-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-jdbc\4.3.0.RELEASE\spring-jdbc-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-tx\4.3.0.RELEASE\spring-tx-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-aop\4.3.0.RELEASE\spring-aop-4.3.0.RELEASE.jar;D:\dev_data\repository\org\apache\activemq\activemq-all\5.9.0\activemq-all-5.9.0.jar;D:\dev_data\repository\org\apache\commons\commons-pool2\2.4.2\commons-pool2-2.4.2.jar;D:\dev_data\repository\redis\clients\jedis\2.9.0\jedis-2.9.0.jar;D:\dev_data\repository\cglib\cglib\3.2.4\cglib-3.2.4.jar;D:\dev_data\repository\org\ow2\asm\asm\5.1\asm-5.1.jar;D:\dev_data\repository\org\apache\ant\ant\1.9.6\ant-1.9.6.jar;D:\dev_data\repository\org\apache\ant\ant-launcher\1.9.6\ant-launcher-1.9.6.jar;D:\dev_data\repository\mysql\mysql-connector-java\5.1.6\mysql-connector-java-5.1.6.jar;D:\dev_data\repository\org\springframework\spring-webmvc\4.3.0.RELEASE\spring-webmvc-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-web\4.3.0.RELEASE\spring-web-4.3.0.RELEASE.jar;D:\dev_data\repository\commons-codec\commons-codec\1.10\commons-codec-1.10.jar;D:\dev_data\workdata\Branch\Codes\Backend\framework\service\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\container\target\classes;D:\dev_data\repository\org\javassist\javassist\3.20.0-GA\javassist-3.20.0-GA.jar;D:\dev_data\repository\org\jboss\netty\netty\3.2.9.Final\netty-3.2.9.Final.jar;D:\dev_data\repository\com\alibaba\dubbo\2.4.10\dubbo-2.4.10.jar;D:\dev_data\repository\com\101tec\zkclient\0.7\zkclient-0.7.jar;D:\dev_data\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\dev_data\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\dev_data\repository\org\apache\zookeeper\zookeeper\3.4.6\zookeeper-3.4.6.jar;D:\dev_data\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\dev_data\repository\io\netty\netty\3.7.0.Final\netty-3.7.0.Final.jar;D:\dev_data\repository\org\springframework\spring\2.5.6\spring-2.5.6.jar
+Logger--> INFO{Environment.java:100}-Client environment:java.library.path=D:\dev_software\java\jdk_8_25_x86\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:/dev_software/java/jre_8_91(x86)/bin/client;D:/dev_software/java/jre_8_91(x86)/bin;D:/dev_software/java/jre_8_91(x86)/lib/i386;C:\Program Files (x86)\Common Files\NetSarang;C:\ProgramData\Oracle\Java\javapath;D:\dev_software\java\jdk_8_25_x86\bin;D:\dev_software\java\jdk_8_25_x86\jre\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\dev_software\apache-maven-3.3.9\bin;C:\Program Files\Git\cmd;D:\dev_software\eclipse;;.
+Logger--> INFO{Environment.java:100}-Client environment:java.io.tmpdir=C:\Users\Nature\AppData\Local\Temp\
+Logger--> INFO{Environment.java:100}-Client environment:java.compiler=<NA>
+Logger--> INFO{Environment.java:100}-Client environment:os.name=Windows 7
+Logger--> INFO{Environment.java:100}-Client environment:os.arch=x86
+Logger--> INFO{Environment.java:100}-Client environment:os.version=6.1
+Logger--> INFO{Environment.java:100}-Client environment:user.name=Nature
+Logger--> INFO{Environment.java:100}-Client environment:user.home=C:\Users\Nature
+Logger--> INFO{Environment.java:100}-Client environment:user.dir=D:\dev_data\workdata\Branch\Codes\Backend\framework\host
+Logger--> INFO{ZooKeeper.java:438}-Initiating client connection, connectString=192.168.1.228:2181 sessionTimeout=30000 watcher=org.I0Itec.zkclient.ZkClient@1cbd8c
+Logger--> INFO{ZkClient.java:934}-Waiting for keeper state SyncConnected
+Logger--> INFO{ClientCnxn.java:975}-Opening socket connection to server 192.168.1.228/192.168.1.228:2181. Will not attempt to authenticate using SASL (unknown error)
+Logger--> INFO{ClientCnxn.java:852}-Socket connection established to 192.168.1.228/192.168.1.228:2181, initiating session
+Logger--> INFO{ClientCnxn.java:1235}-Session establishment complete on server 192.168.1.228/192.168.1.228:2181, sessionid = 0x156c07256b6001a, negotiated timeout = 30000
+Logger--> INFO{ZkClient.java:711}-zookeeper state changed (SyncConnected)
+Logger--> INFO{AbstractRegistry.java:302}- [DUBBO] Register: dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:325}- [DUBBO] Subscribe: provider://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:422}- [DUBBO] Notify urls for subscribe url provider://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511, urls: [empty://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=13104&side=provider&timestamp=1472446488511], dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServerImpl.java:52}-end start server
+Logger--> INFO{App.java:23}-service started
+Logger--> INFO{ServerImpl.java:42}-begin start server
+Logger--> INFO{ServerImpl.java:81}-start initial appalication manager
+Logger--> INFO{ApplicationManagerImpl.java:52}-start initial appalication manager
+Logger--> INFO{ConfigurationImpl.java:53}-start load config
+Logger--> INFO{ConfigurationImpl.java:104}-end load config
+Logger--> INFO{SessionManagerImpl.java:71}-start inital session manager
+Logger--> INFO{SessionManagerImpl.java:72}-end inital session manager
+Logger--> INFO{ApplicationManagerImpl.java:67}-end initial appalication manager
+Logger--> INFO{ApplicationManagerImpl.java:81}-begin start application mananger
+Logger--> INFO{DriverManagerDataSource.java:133}-Loaded JDBC driver: com.mysql.jdbc.Driver
+Logger--> INFO{AbstractApplicationContext.java:581}-Refreshing org.springframework.context.support.ClassPathXmlApplicationContext@14593bf: startup date [Mon Aug 29 12:55:26 CST 2016]; root of context hierarchy
+Logger--> INFO{XmlBeanDefinitionReader.java:317}-Loading XML bean definitions from class path resource [kem.xml]
+Logger--> INFO{ApplicationManagerImpl.java:134}-start application kem
+Logger--> INFO{ApplicationManagerImpl.java:146}-end start application mananger
+Logger--> INFO{ServerImpl.java:93}-end initial appalication manager
+Logger--> INFO{ServerImpl.java:70}-conf\provider.xml
+Logger--> INFO{AbstractApplicationContext.java:581}-Refreshing org.springframework.context.support.FileSystemXmlApplicationContext@1a5b70d: startup date [Mon Aug 29 12:55:27 CST 2016]; root of context hierarchy
+Logger--> INFO{XmlBeanDefinitionReader.java:317}-Loading XML bean definitions from file [D:\dev_data\workdata\Branch\Codes\Backend\framework\host\conf\provider.xml]
+Logger--> INFO{?:?}-using logger: com.alibaba.dubbo.common.logger.log4j.Log4jLoggerAdapter
+Logger--> INFO{ServiceBean.java:107}- [DUBBO] The service ready on spring started. service: cn.ilanhai.framework.service.AppService, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:510}- [DUBBO] Export dubbo service cn.ilanhai.framework.service.AppService to local registry, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:470}- [DUBBO] Export dubbo service cn.ilanhai.framework.service.AppService to url dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServiceConfig.java:481}- [DUBBO] Register dubbo service cn.ilanhai.framework.service.AppService url dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235 to registry registry://127.0.0.1:2181/com.alibaba.dubbo.registry.RegistryService?application=provider&dubbo=2.4.10&pid=2576&registry=zookeeper&timestamp=1472446528215, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractServer.java:69}- [DUBBO] Start NettyServer bind /0.0.0.0:20880, export /192.168.1.146:20880, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:232}- [DUBBO] Load registry store file C:\Users\Nature\.dubbo\dubbo-registry-127.0.0.1.cache, data: {cn.ilanhai.framework.service.AppService=empty://192.168.1.146/cn.ilanhai.framework.service.AppService?application=consumer&category=configurators&connected=true&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=10780&revision=1.0-SNAPSHOT&side=consumer&timestamp=1472122082901 empty://192.168.1.146/cn.ilanhai.framework.service.AppService?application=consumer&category=routers&connected=true&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=10780&revision=1.0-SNAPSHOT&side=consumer&timestamp=1472122082901 dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=11484&side=provider&timestamp=1472122072162}, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ZkEventThread.java:64}-Starting ZkClient event thread.
+Logger--> INFO{Environment.java:100}-Client environment:zookeeper.version=3.4.6-1569965, built on 02/20/2014 09:09 GMT
+Logger--> INFO{Environment.java:100}-Client environment:host.name=Nature-PC
+Logger--> INFO{Environment.java:100}-Client environment:java.version=1.8.0_25
+Logger--> INFO{Environment.java:100}-Client environment:java.vendor=Oracle Corporation
+Logger--> INFO{Environment.java:100}-Client environment:java.home=D:\dev_software\java\jdk_8_25_x86\jre
+Logger--> INFO{Environment.java:100}-Client environment:java.class.path=D:\dev_data\workdata\Branch\Codes\Backend\framework\host\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\kem\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\kem\target\test-classes;D:\dev_data\repository\junit\junit\3.8.1\junit-3.8.1.jar;D:\dev_data\workdata\Branch\Codes\Backend\framework\app\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\app\target\test-classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\common\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\common\target\test-classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\util\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\util\target\test-classes;D:\dev_data\repository\com\alibaba\fastjson\1.2.13\fastjson-1.2.13.jar;D:\dev_data\repository\log4j\log4j\1.2.9\log4j-1.2.9.jar;D:\dev_data\repository\org\springframework\spring-context\4.3.0.RELEASE\spring-context-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-expression\4.3.0.RELEASE\spring-expression-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-context-support\4.3.0.RELEASE\spring-context-support-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-core\4.3.0.RELEASE\spring-core-4.3.0.RELEASE.jar;D:\dev_data\repository\commons-logging\commons-logging\1.2\commons-logging-1.2.jar;D:\dev_data\repository\org\springframework\spring-beans\4.3.0.RELEASE\spring-beans-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-jdbc\4.3.0.RELEASE\spring-jdbc-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-tx\4.3.0.RELEASE\spring-tx-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-aop\4.3.0.RELEASE\spring-aop-4.3.0.RELEASE.jar;D:\dev_data\repository\org\apache\activemq\activemq-all\5.9.0\activemq-all-5.9.0.jar;D:\dev_data\repository\org\apache\commons\commons-pool2\2.4.2\commons-pool2-2.4.2.jar;D:\dev_data\repository\redis\clients\jedis\2.9.0\jedis-2.9.0.jar;D:\dev_data\repository\cglib\cglib\3.2.4\cglib-3.2.4.jar;D:\dev_data\repository\org\ow2\asm\asm\5.1\asm-5.1.jar;D:\dev_data\repository\org\apache\ant\ant\1.9.6\ant-1.9.6.jar;D:\dev_data\repository\org\apache\ant\ant-launcher\1.9.6\ant-launcher-1.9.6.jar;D:\dev_data\repository\mysql\mysql-connector-java\5.1.6\mysql-connector-java-5.1.6.jar;D:\dev_data\repository\org\springframework\spring-webmvc\4.3.0.RELEASE\spring-webmvc-4.3.0.RELEASE.jar;D:\dev_data\repository\org\springframework\spring-web\4.3.0.RELEASE\spring-web-4.3.0.RELEASE.jar;D:\dev_data\repository\commons-codec\commons-codec\1.10\commons-codec-1.10.jar;D:\dev_data\workdata\Branch\Codes\Backend\framework\service\target\classes;D:\dev_data\workdata\Branch\Codes\Backend\framework\container\target\classes;D:\dev_data\repository\org\javassist\javassist\3.20.0-GA\javassist-3.20.0-GA.jar;D:\dev_data\repository\org\jboss\netty\netty\3.2.9.Final\netty-3.2.9.Final.jar;D:\dev_data\repository\com\alibaba\dubbo\2.4.10\dubbo-2.4.10.jar;D:\dev_data\repository\com\101tec\zkclient\0.7\zkclient-0.7.jar;D:\dev_data\repository\org\slf4j\slf4j-api\1.6.1\slf4j-api-1.6.1.jar;D:\dev_data\repository\org\slf4j\slf4j-log4j12\1.6.1\slf4j-log4j12-1.6.1.jar;D:\dev_data\repository\org\apache\zookeeper\zookeeper\3.4.6\zookeeper-3.4.6.jar;D:\dev_data\repository\jline\jline\0.9.94\jline-0.9.94.jar;D:\dev_data\repository\io\netty\netty\3.7.0.Final\netty-3.7.0.Final.jar;D:\dev_data\repository\org\springframework\spring\2.5.6\spring-2.5.6.jar
+Logger--> INFO{Environment.java:100}-Client environment:java.library.path=D:\dev_software\java\jdk_8_25_x86\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:/dev_software/java/jre_8_91(x86)/bin/client;D:/dev_software/java/jre_8_91(x86)/bin;D:/dev_software/java/jre_8_91(x86)/lib/i386;C:\Program Files (x86)\Common Files\NetSarang;C:\ProgramData\Oracle\Java\javapath;D:\dev_software\java\jdk_8_25_x86\bin;D:\dev_software\java\jdk_8_25_x86\jre\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\Program Files\TortoiseSVN\bin;D:\dev_software\apache-maven-3.3.9\bin;C:\Program Files\Git\cmd;D:\dev_software\eclipse;;.
+Logger--> INFO{Environment.java:100}-Client environment:java.io.tmpdir=C:\Users\Nature\AppData\Local\Temp\
+Logger--> INFO{Environment.java:100}-Client environment:java.compiler=<NA>
+Logger--> INFO{Environment.java:100}-Client environment:os.name=Windows 7
+Logger--> INFO{Environment.java:100}-Client environment:os.arch=x86
+Logger--> INFO{Environment.java:100}-Client environment:os.version=6.1
+Logger--> INFO{Environment.java:100}-Client environment:user.name=Nature
+Logger--> INFO{Environment.java:100}-Client environment:user.home=C:\Users\Nature
+Logger--> INFO{Environment.java:100}-Client environment:user.dir=D:\dev_data\workdata\Branch\Codes\Backend\framework\host
+Logger--> INFO{ZooKeeper.java:438}-Initiating client connection, connectString=127.0.0.1:2181 sessionTimeout=30000 watcher=org.I0Itec.zkclient.ZkClient@1cbd8c
+Logger--> INFO{ZkClient.java:934}-Waiting for keeper state SyncConnected
+Logger--> INFO{ClientCnxn.java:975}-Opening socket connection to server 127.0.0.1/127.0.0.1:2181. Will not attempt to authenticate using SASL (unknown error)
+Logger--> INFO{ClientCnxn.java:852}-Socket connection established to 127.0.0.1/127.0.0.1:2181, initiating session
+Logger--> INFO{ClientCnxn.java:1235}-Session establishment complete on server 127.0.0.1/127.0.0.1:2181, sessionid = 0x156c13265c60005, negotiated timeout = 30000
+Logger--> INFO{ZkClient.java:711}-zookeeper state changed (SyncConnected)
+Logger--> INFO{AbstractRegistry.java:302}- [DUBBO] Register: dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:325}- [DUBBO] Subscribe: provider://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{AbstractRegistry.java:422}- [DUBBO] Notify urls for subscribe url provider://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, urls: [empty://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&category=configurators&check=false&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235], dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ServerImpl.java:52}-end start server
+Logger--> INFO{App.java:23}-service started
+Logger--> WARN{AbstractServer.java:197}- [DUBBO] All clients has discontected from /192.168.1.146:20880. You can graceful shutdown now., dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{DubboProtocol.java:130}- [DUBBO] disconected from /192.168.1.228:41635,url:dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&channel.readonly.sent=true&codec=dubbo&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&heartbeat=60000&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{ServerImpl.java:42}-begin start server
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> WARN{TimeoutFilter.java:48}- [DUBBO] invoke time out. method: serviceJSONarguments: [http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys, {	"phoneNo":"13088292257",	"loginPwd":"123456"}] , url is dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, invoke elapsed 22921 ms., dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> INFO{ApplicationImpl.java:82}-new request location:http://kem/frontuser/userlogin?SessionId=520ef160-79d6-4501-9187-bfe60fb68fd8&ClientType=frontsys
+Logger--> INFO{ApplicationImpl.java:98}-construct new request success
+Logger--> INFO{ApplicationImpl.java:110}-begin invoke
+Logger--> INFO{FrontuserImpl.java:251}-开始用户前台用户登录处理
+Logger--> INFO{FrontuserImpl.java:257}-开始用户请求校验
+Logger--> INFO{FrontuserImpl.java:276}-校验当前会话状态
+Logger--> INFO{FrontuserImpl.java:302}-用户可登陆
+Logger--> INFO{FrontuserImpl.java:321}-用户登录成功
+Logger--> WARN{AbstractServer.java:197}- [DUBBO] All clients has discontected from /192.168.1.146:20880. You can graceful shutdown now., dubbo version: 2.4.10, current host: 127.0.0.1
+Logger--> INFO{DubboProtocol.java:130}- [DUBBO] disconected from /192.168.1.146:59649,url:dubbo://192.168.1.146:20880/cn.ilanhai.framework.service.AppService?anyhost=true&application=provider&channel.readonly.sent=true&codec=dubbo&default.delay=-1&default.retries=0&default.timeout=6000&delay=-1&dubbo=2.4.10&heartbeat=60000&interface=cn.ilanhai.framework.service.AppService&methods=serviceXML,service,serviceJSON&pid=2576&side=provider&timestamp=1472446528235, dubbo version: 2.4.10, current host: 127.0.0.1

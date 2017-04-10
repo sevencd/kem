@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.userRelationResourcelog">
+	<insert id="insertUserRelationResource" parameterType="cn.ilanhai.kem.domain.member.UserResourcesEntity">
+		INSERT
+		INTO
+		user_relation_resourcelog
+		(USER_ID,service_id,package_service_times,package_service_totalTimes,service_times,service_rotalTimes,createtime,actionName)
+		VALUES
+		(#{userId},#{serviceId},#{packageServiceTimes},#{packageServiceTotalTimes},#{serviceTimes},#{serviceTotalTimes},now(),'insert');
+	</insert>
+
+	<insert id="updateUserRelationResource" parameterType="cn.ilanhai.kem.domain.member.UserResourcesEntity">
+		INSERT
+		INTO
+		user_relation_resourcelog
+		(USER_ID,service_id,package_service_times,package_service_totalTimes,service_times,service_rotalTimes,createtime,actionName)
+		VALUES
+		(#{userId},#{serviceId},#{packageServiceTimes},#{packageServiceTotalTimes},#{serviceTimes},#{serviceTotalTimes},now(),'update');
+	</insert>
+
+
+	<insert id="deleteUserRelationPackageResource"
+		parameterType="cn.ilanhai.kem.domain.member.dto.DeleteUserResourceDto">
+			INSERT
+			INTO
+			user_relation_resourcelog
+			(USER_ID,service_id,package_service_times,package_service_totalTimes,service_times,service_rotalTimes,createtime,actionName)
+			VALUES
+			(#{userId},#{serviceId},0,0,0,0,now(),'delete');
+	</insert>
+
+</mapper>

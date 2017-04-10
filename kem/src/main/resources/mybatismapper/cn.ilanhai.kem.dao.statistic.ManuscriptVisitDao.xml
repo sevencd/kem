@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.kem.dao.statistic.ManuscriptVisitDao">
+	<resultMap type="cn.ilanhai.kem.domain.statistic.ManuscriptVisitEntity"
+		id="manuscriptVisitEntity">
+		<result property="id" column="visit_id" />
+		<result property="url" column="visit_url" />
+		<result property="ip" column="visit_ip" />
+		<result property="visitTime" column="visit_time" />
+		<result property="sessionId" column="visit_session_id" />
+		<result property="addTime" column="visit_add_time" />
+		<result property="ua" column="visit_ua" />
+	</resultMap>
+	<insert id="addManuscriptVisitEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptVisitEntity">
+		insert into prod_manuscript_visit(
+		visit_url,
+		visit_ip,
+		visit_time,
+		visit_session_id,
+		visit_add_time,
+		visit_ua
+		)values(  
+		#{url},
+		#{ip},
+		#{visitTime},
+		#{sessionId},
+		#{addTime},
+		#{ua});
+	</insert>
+	<select id="countSessionManuscriptVisitEntity" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.CountSessionManuscriptVisitDto">
+		select
+		count(*)
+		from
+		prod_manuscript_visit
+		where
+		visit_session_id=#{sessionId}
+	</select>
+	<select id="queryOneManuscriptVisitEntity" resultMap="manuscriptVisitEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryOneManuscriptVisitDto">
+		select
+		*
+		from
+		prod_manuscript_visit
+		where
+		visit_session_id=#{sessionId}
+		order by visit_add_time desc
+		limit 1
+	</select>
+</mapper>

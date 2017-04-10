@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.kem.dao.statistic.ManuscriptDataStatisticsDao">
+	<resultMap
+		type="cn.ilanhai.kem.domain.statistic.ManuscriptDataStatisticsEntity"
+		id="manuscriptDataStatisticsEntity">
+		<result property="id" column="data_id" />
+		<result property="visitUrl" column="visit_url" />
+		<result property="quantity" column="data_quantity" />
+		<result property="statisticsType" column="data_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="addTime" column="data_add_time" />
+		<result property="updateTime" column="data_update_time" />
+	</resultMap>
+	<!-- 添加 -->
+	<insert id="addManuscriptDataStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptDataStatisticsEntity">
+		insert into prod_manuscript_data_statistics(
+		visit_url,
+		data_quantity,
+		data_type,
+		data_add_time,
+		data_update_time
+		)values(
+		#{visitUrl},
+		#{quantity},
+		#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{addTime},
+		#{updateTime});    
+	</insert>   
+	<!-- 修改 -->
+	<update id="updateManuscriptDataStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptDataStatisticsEntity">
+		update
+		prod_manuscript_data_statistics
+		set
+		data_quantity=#{quantity},
+		data_update_time=#{updateTime}
+		where
+		data_id=#{id}
+	</update>
+	<!-- 是否存在,根据浏览url、数据类型、添加时间 -->
+	<select id="isExistsManuscriptDataStatisticsEntity" resultType="long"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptDataStatisticsEntity">
+		select
+		data_id
+		from
+		prod_manuscript_data_statistics
+		where
+		data_id=#{id}
+	</select>
+
+	<!--统计数量,根据浏览url（模糊匹配）、 数据类型 -->
+	<select id="totalManuscriptDataStatisticsEntity" resultType="Long"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryTotalManuscriptStatisticDto">
+		select
+		sum(data_quantity)
+		from
+		prod_manuscript_data_statistics
+		where
+		visit_url like
+		CONCAT('%',#{visitUrl},'%' )
+		and
+		data_type=#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+	</select>
+	<!-- 查询数据,根据浏览url、数据类型、添加时间 -->
+	<select id="oneManuscriptDataStatisticsEntity" resultMap="manuscriptDataStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryOneManuscriptStatisticDto">
+		select
+		*
+		from
+		prod_manuscript_data_statistics
+		where
+		visit_url=#{visitUrl}
+		and
+		data_type=#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		and
+		date(data_add_time)=DATE(#{addDateTime})
+		limit 1
+	</select>
+	<!-- 查询数据,根据浏览url、数据类型、添加时间 -->
+	<select id="countQuantityManuscriptDataStatisticsEntity" resultType="long"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.CountManuscriptDataStatisticsDto">
+		select
+		count(*)
+		from
+		prod_manuscript_data_statistics
+		where
+		visit_url=#{visitUrl}
+		and
+		data_type=#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		and
+		quantity
+		between #{minValue} and #{maxValue}
+	</select>
+	<!--查询数据,根据浏览url（模糊匹配）、 数据类型 -->
+	<select id="queryManuscriptDataStatisticsEntity" resultMap="manuscriptDataStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryManuscriptStatisticDto">
+		select
+		*
+		from
+		prod_manuscript_data_statistics
+		where
+		visit_url
+		like CONCAT('%',#{visitUrl},'%' )
+		and
+		data_type=#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		and
+		data_add_time
+		between #{beginDateTime} and #{endDateTime}
+		order by
+		data_add_time desc
+	</select>
+
+	<!--查询数据,根据浏览url（模糊匹配）、 数据类型 -->
+	<select id="query2ManuscriptDataStatisticsEntity" resultMap="manuscriptDataStatisticsEntity"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryLimitManuscriptStatisticDto">
+		select
+		*
+		from
+		prod_manuscript_data_statistics
+		where
+		visit_url
+		like CONCAT('%',#{visitUrl},'%' )
+		and
+		data_type=#{statisticsType,
+		typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		order by
+		data_add_time
+		desc
+		limit #{limit}
+	</select>
+</mapper>

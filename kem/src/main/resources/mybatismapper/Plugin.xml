@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Plugin">
+	<resultMap type="cn.ilanhai.kem.domain.plugin.PluginEntity"
+		id="pluginEntity">
+		<result property="createtime" column="create_time" />
+		<result property="pluginId" column="plugin_id" />
+		<result property="pluginType" column="plugin_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="relationId" column="relation_id" />
+		<result property="relationType" column="relation_type"
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="isUsed" column="is_used" />
+		<result property="userId" column="user_id" />
+	</resultMap>
+	<resultMap
+		type="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		id="activePluginEntity">
+		<result property="createtime" column="create_time" />
+		<result property="pluginId" column="plugin_id" />
+		<result property="pluginType" column="plugin_type" ,
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="relationId" column="relation_id" />
+		<result property="relationType" column="relation_type" ,
+			typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler" />
+		<result property="isUsed" column="is_used" />
+		<result property="userId" column="user_id" />
+		<result property="activePluginType" column="type" />
+	</resultMap>
+	<select id="activePluginIsExists" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		SELECT
+		upi.plugin_id
+		FROM
+		user_plugin_info as upi
+		left join
+		user_plugin_activeplugin as upa on upi.plugin_id = upa.plugin_id
+		WHERE
+		upi.relation_id=#{relationId}
+		AND
+		upi.relation_type=#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		AND
+		upi.plugin_type=2
+		AND
+		upa.type=#{activePluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler};
+	</select>
+	<select id="pluginIsExists" resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.plugin.PluginEntity">
+		SELECT
+		plugin_id
+		FROM
+		user_plugin_info
+		WHERE
+		relation_id=#{relationId}
+		AND
+		relation_type=#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		AND
+		plugin_type=1;
+	</select>
+	<update id="disablePlugin" parameterType="String">
+		UPDATE
+		user_plugin_info
+		SET
+		is_used=0
+		WHERE
+		relation_id=#{relationId};
+	</update>
+	<update id="update" parameterType="cn.ilanhai.kem.domain.plugin.PluginEntity">
+		UPDATE
+		user_plugin_info
+		SET
+		plugin_type=#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		create_time=#{createtime},
+		user_id=#{userId},
+		relation_id=#{relationId},
+		relation_type=#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		is_used=#{isUsed}
+		WHERE
+		plugin_id=#{pluginId};
+	</update>
+	<insert id="addPlugin" parameterType="cn.ilanhai.kem.domain.plugin.PluginEntity"
+		useGeneratedKeys="true">
+		INSERT INTO
+		user_plugin_info(
+		plugin_type,
+		create_time,
+		user_id,
+		relation_id,
+		relation_type,
+		is_used
+		)
+		VALUES(
+		#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{createtime},
+		#{userId},
+		#{relationId},
+		#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{isUsed});
+	</insert>
+	<!-- <insert id="addActivePlugin" parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity" 
+		useGeneratedKeys="true"> insert into user_plugin_info( plugin_type, create_time, 
+		user_id, relation_id, relation_type, is_used) values ( #{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, 
+		#{createtime}, #{userId}, #{relationId}, #{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}, 
+		#{isUsed}); </insert> -->
+	<insert id="addActivePlugin"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_info(
+		plugin_type,
+		create_time,
+		user_id,
+		relation_id,
+		relation_type,
+		is_used)
+		values (
+		#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{createtime},
+		#{userId},
+		#{relationId},
+		#{relationType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{isUsed});
+	</insert>
+	<insert id="addActivePlugin1"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity"
+		useGeneratedKeys="true">
+		insert into
+		user_plugin_activeplugin(
+		plugin_id,
+		type,
+		drawtime,
+		wintime,
+		intervaltime,
+		intervaltime_type,
+		prize_collect_info,
+		prize_collect_required_info,
+		outer_url,
+		merchant_phone)
+		values (
+		#{pluginId},
+		#{activePluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{drawTime},
+		#{winTime},
+		#{intervalTime},
+		#{intervalTimeType},
+		#{prizeCollectInfo,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		#{prizeCollectRequiredInfo,typeHandler=cn.ilanhai.kem.dao.typehandler.MapTypeHandler},
+		#{outerUrl},
+		#{merchantPhone});
+	</insert>
+	<select id="pluginQuery" resultMap="pluginEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.QueryPlugin">
+		SELECT
+		*
+		FROM
+		user_plugin_info
+		WHERE
+		relation_id=#{relationId}
+		AND
+		plugin_type=#{pluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		<if test="isUsed!=null">
+			AND
+			is_used=#{isUsed}
+		</if>
+	</select>
+	<select id="activePluginQuery" resultMap="activePluginEntity"
+		parameterType="cn.ilanhai.kem.domain.plugin.activeplugin.entity.ActivePluginEntity">
+		SELECT
+		*
+		FROM
+		user_plugin_info as upi
+		left join user_plugin_activeplugin
+		as upa on upi.plugin_id = upa.plugin_id
+		WHERE
+		upi.relation_id=#{relationId}
+		AND
+		upi.plugin_type=2
+		AND
+		upa.type=#{activePluginType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler}
+		<if test="isUsed!=null">
+			AND
+			is_used=#{isUsed}
+		</if>
+	</select>
+</mapper>

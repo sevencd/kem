@@ -1,0 +1,4 @@
+cn\ilanhai\framework\host\App.class
+cn\ilanhai\framework\host\provider\AppServiceImpl.class
+cn\ilanhai\framework\host\ServerImpl.class
+cn\ilanhai\framework\host\Server.class

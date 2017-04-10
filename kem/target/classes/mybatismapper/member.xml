@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="member">
+
+	<select id="queryMemberStatus"
+		parameterType="cn.ilanhai.kem.domain.member.QueryCondition.MemberStatusQCondition"
+		resultType="cn.ilanhai.kem.domain.member.dto.MemberStatusDto">
+		SELECT
+		IFNULL(`status`, 0) `status` -- 会员状态：0：非会员；1：会员
+		FROM
+		user_main_user umu
+		LEFT JOIN member_main mm ON umu.user_id = mm.user_id
+		WHERE
+		umu.user_id = #{userId};
+	</select>
+
+	<select id="getMemberInfoByUserId"
+		parameterType="cn.ilanhai.kem.domain.member.QueryCondition.GetMemberInfoByUserIdQCondition"
+		resultType="cn.ilanhai.kem.domain.member.MemberEntity">
+		SELECT
+		mm.member_id as memberId, -- 会员ID
+		mm.user_id as userId, -- 用户ID
+		mm.starttime as starttime, -- 开始时间
+		mm.endtime as endtime, -- 截止时间
+		mm.status as status, -- 会员服务状态：0：失效；1：有效
+		mm.package_service_id as packageServiceId, -- 套餐id
+		mm.package_service_price as packageServicePrice -- 购买套餐时的价格
+		FROM
+		member_main mm
+		where mm.user_id=#{userId};
+	</select>
+	<select id="getMemberInfoByMemberId"
+		parameterType="cn.ilanhai.kem.domain.member.QueryCondition.GetMemberInfoByMemberIdQCondition"
+		resultType="cn.ilanhai.kem.domain.member.MemberEntity">
+		SELECT
+		mm.member_id as memberId, -- 会员ID
+		mm.user_id as userId, -- 用户ID
+		mm.starttime as starttime, -- 开始时间
+		mm.endtime as endtime, -- 截止时间
+		mm.status as status, -- 会员服务状态：0：失效；1：有效
+		mm.package_service_id as packageServiceId, -- 套餐id
+		mm.package_service_price as packageServicePrice -- 购买套餐时的价格
+		FROM
+		member_main mm
+		where mm.member_id=#{memberId};
+	</select>
+	<select id="queryNewExpiredMemberQCondition" resultType="cn.ilanhai.kem.domain.member.MemberEntity">
+		SELECT
+		mm.member_id as memberId, -- 会员ID
+		mm.user_id as userId, -- 用户ID
+		mm.starttime as starttime, -- 开始时间
+		mm.endtime as endtime, -- 截止时间
+		mm.status as status, -- 会员服务状态：0：失效；1：有效
+		mm.package_service_id as packageServiceId, -- 套餐id
+		mm.package_service_price as packageServicePrice -- 购买套餐时的价格
+		FROM
+		member_main mm
+		where mm.status=1
+		<![CDATA[and mm.endtime < #{cutoffTime}]]>
+	</select>
+	
+	<!-- 查询一个月内的会员 -->
+	<select id="queryOneMonthCondition" resultType="cn.ilanhai.kem.domain.member.MemberEntity">
+		SELECT
+		mm.member_id as memberId, -- 会员ID
+		mm.user_id as userId, -- 用户ID
+		mm.starttime as starttime, -- 开始时间
+		mm.endtime as endtime, -- 截止时间
+		mm.status as status, -- 会员服务状态：0：失效；1：有效
+		mm.package_service_id as packageServiceId, -- 套餐id
+		mm.package_service_price as packageServicePrice -- 购买套餐时的价格
+		FROM
+		member_main mm
+		where mm.status=1 and
+		TIMESTAMPDIFF(day,now(),DATE_ADD(mm.starttime,INTERVAL 1 MONTH) )= 0 
+		and now()> DATE_ADD(mm.starttime,INTERVAL 1 MONTH);
+		</select>
+
+
+	<insert id="insertMemberEntity" parameterType="cn.ilanhai.kem.domain.member.MemberEntity">
+		INSERT INTO member_main (
+		member_id,user_id,starttime,endtime,status,package_service_id,package_service_price
+		)VALUES (
+		#{memberId},#{userId},#{starttime},#{endtime},#{status},#{packageServiceId},#{packageServicePrice}
+		);
+	</insert>
+	<insert id="updateMemberEntity" parameterType="cn.ilanhai.kem.domain.member.MemberEntity">
+		UPDATE member_main
+		SET user_id = #{userId},
+		starttime = #{starttime},
+		endtime = #{endtime},
+		status = #{status},
+		package_service_id = #{packageServiceId},
+		package_service_price = #{packageServicePrice}
+		WHERE
+		member_id = #{memberId};
+	</insert>
+</mapper>

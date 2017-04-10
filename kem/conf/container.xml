@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<settings />
+	<caches>
+		<cache>
+			<id>redis</id>
+			<host>192.168.1.228</host>
+			<port>6379</port>
+			<password></password>
+			<connectionTimeout>2048</connectionTimeout>
+			<osTimeout>2048</osTimeout>
+			<ssl>false</ssl>
+			<type>redis</type>
+			<quantity>16</quantity>
+			<sha1>f1c8c21a5ecfad60665f291492a99cba9a5bfb99</sha1>
+		</cache>
+	</caches>
+	<host>
+		<!-- name:不能空 confFile:默认值为context.xml -->
+		<context name="kemapp" confFile="context.xml" />
+	</host>
+
+</configuration>

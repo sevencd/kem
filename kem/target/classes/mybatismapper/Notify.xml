@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Notify">
+
+	<resultMap id="NotifyEntityMap" type="cn.ilanhai.kem.domain.notify.NotifyEntity" >
+		<id column="id" property="id"/>
+		<result column="addTime" property="addTime"/>
+		<result column="updateTime" property="updateTime"/>
+		<result column="read" property="read"/>
+		<result column="readTime" property="readTime"/>
+		<result column="content" property="content"/>
+		<result column="notifyType" property="notifyType" typeHandler="org.apache.ibatis.type.EnumOrdinalTypeHandler"/>
+		<result column="source" property="source"/>
+		<result column="target" property="target"/>
+	</resultMap>
+
+	<select id="searchidfromnotify"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.notify.NotifyEntity">
+	SELECT id FROM notify WHERE id = #{id}
+	</select>
+	
+	<insert id="insertnotify"
+		parameterType="cn.ilanhai.kem.domain.notify.NotifyEntity"
+		useGeneratedKeys="true" keyProperty="id">
+INSERT INTO notify (
+	add_time,
+	update_time,
+	is_read,
+	read_time,
+	content,
+	type,
+	source,
+	target
+)
+VALUES
+	(#{addTime},#{updateTime},#{read},#{readTime},#{content},#{notifyType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},#{source},#{target})
+	</insert>
+	
+	<update id="updatenotify"
+		parameterType="cn.ilanhai.kem.domain.notify.NotifyEntity"
+		useGeneratedKeys="true" keyProperty="id">
+UPDATE notify
+SET update_time =#{updateTime},
+ is_read =#{read},
+ read_time =#{readTime},
+ content =#{content},
+ type =#{notifyType,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+ source =#{source},
+ target =#{target}
+WHERE
+	id =#{id}
+	</update>
+	
+	<select id="searchnotifybyid"
+		resultMap="NotifyEntityMap"
+		parameterType="cn.ilanhai.kem.domain.IdDto">
+SELECT
+	n.id,
+	n.add_time AS addTime,
+	n.update_time AS updateTime,
+	n.is_read AS `read`,
+	n.read_time AS readTime,
+	n.content,
+	n.type AS notifyType,
+	n.source,
+	n.target
+FROM
+	notify n
+WHERE
+	id = #{id}
+	</select>
+	
+	<select id="searchtargetcount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.notify.UserNotifyCount">
+	SELECT COUNT(*) FROM notify WHERE target=#{target}
+	</select>
+	
+	<select id="searchtargerreadcount"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.notify.UserNotifyCount">
+	SELECT COUNT(*) FROM notify WHERE target=#{target} AND is_read=0
+	</select>
+	
+	<select id="searchnotifys"
+		resultMap="NotifyEntityMap"
+		parameterType="cn.ilanhai.kem.domain.notify.QueryUserNotifyData">
+SELECT
+	n.id,
+	n.add_time AS addTime,
+	n.update_time AS updateTime,
+	n.is_read AS `read`,
+	n.read_time AS readTime,
+	n.content,
+	n.type AS notifyType,
+	n.source,
+	n.target
+FROM
+	notify n
+WHERE
+	n.target = #{target}
+ORDER BY add_time DESC
+LIMIT #{startCount},#{pageSize}
+	</select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manuscript_collection">
+
+	<select id="queryCollection"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptCollectionEntity"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptCollectionEntity">
+		SELECT collection_id as collectionId ,template_id as
+		manuscriptId, user_id as userId, collection_state as collectionState
+		,createtime as createtime ,manuscript_type as manuscriptType FROM
+		template_collection WHERE template_id = #{manuscriptId} AND user_id =
+		#{userId} AND
+		manuscript_type = #{manuscriptType} limit 0,1;
+	</select>
+
+	<insert id="updateCollection"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptCollectionEntity">
+		UPDATE template_collection SET
+		template_id=#{manuscriptId}, user_id=#{userId},
+		collection_state=#{collectionState},createtime =now() WHERE
+		collection_id=#{collectionId};
+	</insert>
+
+	<insert id="saveCollection"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptCollectionEntity">
+		INSERT INTO template_collection (template_id, user_id,
+		collection_state,createtime,manuscript_type) VALUES (#{manuscriptId},
+		#{userId}, #{collectionState},now(),#{manuscriptType});
+	</insert>
+
+
+
+
+
+</mapper>

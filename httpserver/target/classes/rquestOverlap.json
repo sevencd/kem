@@ -1,0 +1,9 @@
+{
+	"ignoreCase":true,
+	"rules":[
+		{
+			"impreciseMatching":false,
+			"url":"payment"
+		}	
+	]
+}

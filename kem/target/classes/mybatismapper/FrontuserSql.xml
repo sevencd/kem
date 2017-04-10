@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ilanhai.mybatismapper.FrontuserSql">
+	<select id="queryuserinfo"
+		resultType="cn.ilanhai.kem.domain.user.frontuser.LoadReturnUserInfo"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.LoadUserInfoByType">
+
+		SELECT
+		u.user_id as userId, -- 用户ID
+		u.user_name as userName, -- 用户名
+		u.user_phone as userPhone, -- 电话
+		u.user_email as userEmail, -- 邮箱
+		u.`status` as status, -- 状态
+		ifnull(mm.`status`,0) as memberStatus, --
+		会员状态
+		<![CDATA[ifnull(datediff(mm.endtime,now()) < sc.sys_value and datediff(mm.endtime,now())>=0,0) nearlyExpired,]]>
+		-- 是否即将过期
+		<!-- 普通用户的话，则获取推广数量 -->
+		(
+		SELECT
+		count(1)
+		FROM
+		prod_extension
+		WHERE
+		user_id = u.user_id
+		) AS extensionCount,
+		<!-- 设计师的话，则获取模板数量 -->
+		(
+		SELECT
+		count(1)
+		FROM
+		prod_template
+		WHERE
+		template_state = 3
+		AND user_id = u.user_id
+		) AS templateCount
+		FROM
+		user_front_user u
+		left join member_main mm on
+		mm.user_id=u.user_id AND mm.status = 1
+
+		left join sys_config sc on sc.sys_key='member_nearly_expired'
+		WHERE
+		u.user_type = #{userType}
+		<!-- 如果搜索的关键词不为空，则对用户名、手机号、邮箱进行模糊匹配 -->
+		<if test="searchString != null and searchString != ''">
+			AND( u.user_name LIKE CONCAT('%',#{searchString},'%' ) or
+			u.user_phone
+			LIKE CONCAT('%',#{searchString},'%' ) or u.user_email
+			LIKE
+			CONCAT('%',#{searchString},'%' ))
+		</if>
+
+		<!-- 是否为会员 -->
+		<if test="memberStatus == 1">
+			AND mm.status = 1
+		</if>
+
+		<!-- 是否为会员 -->
+		<if test="memberStatus == 0">
+			AND ( mm.status = 0 OR mm.status is null)
+		</if>
+
+		ORDER BY
+		u.user_id -- 按照用户ID进行排序
+		LIMIT
+		#{startCount},
+		#{pageSize};
+	</select>
+	<select id="queryuserinfocount" resultType="java.lang.Integer"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.LoadUserInfoByType">
+		SELECT
+		count(1) AS counts
+		FROM
+		user_front_user u
+		left join member_main mm
+		on mm.user_id=u.user_id AND mm.status = 1
+		left join sys_config sc on
+		sc.sys_key='member_nearly_expired'
+		WHERE
+		u.user_type =
+		#{userType}
+		<if test="searchString != null and searchString != ''">
+			AND( u.user_name LIKE CONCAT('%',#{searchString},'%' ) or
+			u.user_phone
+			LIKE CONCAT('%',#{searchString},'%' ) or u.user_email
+			LIKE
+			CONCAT('%',#{searchString},'%' ))
+		</if>
+
+		<!-- 是否为会员 -->
+		<if test="memberStatus == 1">
+			AND mm.status = 1
+		</if>
+
+		<!-- 是否为会员 -->
+		<if test="memberStatus == 0">
+			AND ( mm.status = 0 OR mm.status is null)
+		</if>
+
+	</select>
+
+	<insert id="updateStatus"
+		parameterType="cn.ilanhai.kem.domain.user.frontuser.BackuserManageFromtUserInfoEntity">
+		update user_main_user set state = #{status} WHERE
+		user_id = #{user_id};
+	</insert>
+	
+		<select id="getUserDetail"
+		parameterType="cn.ilanhai.kem.domain.user.manageuser.QueryCondition.GetUserDetailQCondition"
+		resultType="java.util.HashMap">
+		SELECT
+		ufu.user_id AS userId,-- 用户ID
+		ifnull(ufu.user_name, '') AS userName,-- 用户账号
+		ifnull(ufu.user_phone, '') AS userPhone,-- 用户手机号
+		ifnull(ufu.user_email, '') AS userEmail,-- 用户邮箱
+		ufu.`status` AS `status`,-- 用户状态：0禁用，1正常
+		(
+		SELECT
+		count(1)
+		FROM
+		prod_extension
+		WHERE
+		user_id = ufu.user_id
+		) AS extensionCount,-- 会员发布推广数
+		(
+		SELECT
+		count(1)
+		FROM
+		prod_template
+		WHERE
+		template_state = 3
+		AND user_id = ufu.user_id
+		) AS templateCount,-- 设计师上架作品数
+		ifnull(mm.`status`, 0) AS memberStatus,-- 会员状态是否开通：0：未开通，1：已开通
+		mm.starttime AS memberStarttime,-- 会员开通时间
+		mm.endtime AS memberEndtime,-- 会员到期时间
+		ifnull(pu.total_times, 0) AS totalRightTimes,-- 历史购买去版权次数
+		ifnull(pu.unrights_times, 0) AS remainRightTimes,-- 剩余去版权次数
+		IFNULL(er.remaintimes, 0) AS emailTimes,-- 剩余邮件次数
+		IFNULL(sr.remaintimes, 0) AS smsTimes -- 短信剩余次数
+		FROM
+		user_front_user ufu
+		LEFT JOIN member_main mm ON mm.user_id = ufu.user_id
+		AND mm.`status` = 1
+		LEFT JOIN prod_unrights pu ON pu.user_id = ufu.user_id
+		LEFT JOIN email_right_state er ON er.user_id = ufu.user_id
+		LEFT JOIN sms_right_state sr ON sr.user_id = ufu.user_id
+		WHERE
+		ufu.user_id = #{userId}
+	</select>
+</mapper>

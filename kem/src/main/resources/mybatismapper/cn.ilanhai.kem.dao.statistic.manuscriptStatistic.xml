@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manuscriptStatistic">
+	<insert id="addData"
+		parameterType="cn.ilanhai.kem.domain.statistic.ManuscriptStatisticDataEntity">
+		INSERT INTO prod_manuscript_total(ip,
+		manuscript_id,url,request_time,stay_time,session_id
+		)values(#{ip},
+		#{manuscriptId},
+		#{url},
+		#{requestTime},
+		#{stayTime},
+		#{sessionId}
+		);
+	</insert>
+
+	<select id="queryNearestData"
+		parameterType="cn.ilanhai.kem.domain.statistic.dto.QueryStatsticDataDto"
+		resultType="cn.ilanhai.kem.domain.statistic.ManuscriptStatisticDataEntity">
+		select
+		ip,manuscript_id,url,request_time,stay_time,session_id from
+		prod_manuscript_total where request_time between
+		date_sub(request_time,interval 1 day) and request_time and
+		manuscript_id = #{manuscriptId} and session_id=#{sessionId} order by
+		request_time limit 1
+	</select>
+
+</mapper>

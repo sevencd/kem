@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- author huangyi -->
+<mapper namespace="cn.ilanhai.mybatismapper.collectionType">
+	<resultMap id="queryBascCollectionTypeResultMap"
+		type="cn.ilanhai.kem.domain.collectionType.CollectionTypeEntity">
+		<id property="typeId" column="type_id" />
+		<result property="typeNum" column="type_num" />
+		<result property="createtime" column="createtime" jdbcType="DATE" />
+		<result property="typeParentNum" column="type_parent_num" />
+		<result property="typeName" column="type_name" />
+
+		<association property="childrenType" select="queryCollectionTypeByParentNum"
+			column="type_num" />
+	</resultMap>
+
+	<select id="queryBascCollectionType"
+		resultType="cn.ilanhai.kem.domain.collectionType.CollectionTypeEntity">
+		select type_id as
+		typeId,type_num as typeNum ,type_name as
+		typeName
+		,type_parent_num as
+		typeParentNum,
+		createtime from
+		collection_type
+		where
+		type_parent_num = '';
+	</select>
+
+	<select id="queryCollectionTypeByParentNum" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.collectionType.CollectionTypeEntity">
+		select type_id as typeId,type_num as typeNum ,type_name as
+		typeName
+		,type_parent_num as
+		typeParentNum,
+		createtime from
+		collection_type
+		where
+		1 = 1
+		and type_parent_num = #{typeParentNum};
+	</select>
+
+	<select id="queryAllCollectionType"
+		parameterType="cn.ilanhai.kem.domain.collectionType.dto.LoadAllCollectionTypeDto"
+		resultType="cn.ilanhai.kem.domain.collectionType.CollectionTypeEntity">
+		select c.type_id as typeId,c.type_num as typeNum
+		,c.type_name as
+		typeName
+		,c.type_parent_num as
+		typeParentNum,
+		ct.type_name
+		as typeParentName,
+		ct.type_id as typeParentId,
+		c.createtime
+		from
+		collection_type c
+		left join
+		collection_type ct on c.type_parent_num
+		= ct.type_num
+		where
+		c.type_parent_num &lt;&gt; ''
+		limit
+		#{startCount},#{pageSize};
+	</select>
+
+	<select id="queryAllCollectionTypeCount"
+		parameterType="cn.ilanhai.kem.domain.collectionType.dto.LoadAllCollectionTypeDto"
+		resultType="java.lang.Integer">
+		select count(1)
+		from
+		collection_type c
+		where
+		c.type_parent_num
+		&lt;&gt; ''
+	</select>
+	<!-- 查二级行业的num和名称 start -->
+	<select id="queryAllChildCollectionType"
+		resultType="cn.ilanhai.kem.domain.collectionType.CollectionTypeEntity">
+		select c.type_num as typeNum
+		,c.type_name as
+		typeName
+		from
+		collection_type c
+		where
+		c.type_parent_num &lt;&gt; ''
+	</select>
+	<!-- 查二级行业的num和名称 end -->
+
+</mapper>

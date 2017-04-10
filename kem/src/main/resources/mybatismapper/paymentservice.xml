@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="paymentService">
+
+	<resultMap id="packageServiceMap" 
+		type="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceEntity">
+		
+        <id property="id" column="package_service_id"  />
+        <result property="name" column="package_service_name"  />
+        <result property="type" column="package_service_type"/>
+        <result property="price" column="package_service_price"  />
+        <result property="description" column="package_service_description"  />
+         <result property="timeMode" column="package_time_mode"  />
+        <collection property="info" 
+        	ofType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceInfoEntity">
+        	<id property="id" column="package_service_info_id"  />
+	        <result property="type" column="package_service_info_type"/>
+	        <result property="quantity" column="package_service_info_quantity"  />
+	        <result property="unit" column="package_service_info_unit"  />
+	        <result property="packageServiceId" column="package_service_id"  />
+	        <result property="serviceId" column="package_service_info_service_id"  />
+	        <result property="timeMode" column="time_mode"  />
+        </collection>  
+    </resultMap>
+    
+    <resultMap id="paymentOrderMap" 
+		type="cn.ilanhai.kem.domain.paymentservice.PaymentOrderEntity">
+		
+        <id property="orderId" column="orderId"  />
+        <result property="createTime" column="createTime" jdbcType="DATE" />
+        <result property="updateTime" column="updateTime" jdbcType="DATE"/>
+        <result property="userId" column="userId"  />
+        <result property="payStatus" column="payStatus"  />
+        <result property="payTime" column="payTime" jdbcType="DATE" />
+        <result property="payWay" column="payWay"  />
+        <result property="payAmount" column="payAmount"  />
+        <result property="amountPayable" column="amountPayable"  />
+        <result property="description" column="description"  />
+        <result property="packageServiceId" column="packageServiceId"  />
+        <collection property="orderInfo" 
+        	ofType="cn.ilanhai.kem.domain.paymentservice.PaymentOrderInfoEntity">
+        	<id property="id" column="orderInfoId"  />
+	        <result property="orderId" column="orderId"/>
+	        <result property="createTime" column="infoCreateTime" jdbcType="DATE" />
+	        <result property="updateTime" column="infoUpdateTime" jdbcType="DATE" />
+	        <result property="quantity" column="quantity"  />
+	        <result property="unit" column="unit"  />
+	        <result property="serviceId" column="serviceId"  />
+	        <result property="packageServiceId" column="packageServiceId"  />
+        </collection>  
+    </resultMap>
+    
+
+	<select id="packageServiceExist"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.QueryCondition.PackageServiceExistQCondtion" 
+		resultType="cn.ilanhai.kem.domain.BooleanEntity">
+		select count(1) as value from prod_package_service where id=#{packageServiceId};
+	</select>
+
+	<select id="getPackageServiceById"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.QueryCondition.GetPackageServiceByIdQCondition" 
+		resultMap="packageServiceMap">
+		SELECT
+			pps.id as package_service_id, -- 服务套餐ID
+			pps.name as package_service_name, -- 服务套餐名称
+			pps.type as package_service_type, -- 服务套餐类型：0 会员套餐 1 版权套餐
+			pps.fixed_price as package_service_price, -- 服务套餐总价
+			pps.description as package_service_description, -- 服务套餐描述
+			pps.time_mode as package_time_mode, -- 服务套餐支付模式
+			ppsi.id as package_service_info_id, -- 套餐详情ID
+			ppsi.type as package_service_info_type, -- 套餐服务类型：0 版权 1 会员(域名与外连)
+			ppsi.quantity as package_service_info_quantity, -- 数量
+			ppsi.unit as package_service_info_unit, -- 单位：0 月；1 次
+			ppsi.service_id as package_service_info_service_id, -- 服务ID
+			ppsi.time_mode as time_mode -- 支付模式
+		
+		FROM
+			prod_package_service pps
+		left join prod_package_service_info ppsi on pps.id=ppsi.package_service_id
+		where pps.id=#{packageServiceId} and pps.is_logic_delete = 0
+	</select>
+	<insert id="insertPaymentOrderEntity" parameterType="cn.ilanhai.kem.domain.paymentservice.PaymentOrderEntity">
+	INSERT INTO prod_order (
+	order_id,add_time,update_time,user_id,pay_status,pay_time,pay_way,pay_amount,amount_payable,description,package_service_id
+	) VALUES	(
+	#{orderId},#{createTime},#{updateTime},#{userId},#{payStatus},#{payTime},#{payWay},#{payAmount},#{amountPayable},#{description},#{packageServiceId}
+	);
+	</insert>
+	<insert id="updatePaymentOrderEntity" parameterType="cn.ilanhai.kem.domain.paymentservice.PaymentOrderEntity">
+	UPDATE `prod_order`
+	SET 
+	 `update_time` = #{updateTime},
+	 `pay_status` = #{payStatus},
+	 `pay_time` = #{payTime},
+	 `pay_way` = #{payWay}
+	WHERE	`order_id` = #{orderId};
+	</insert>
+	<insert id="savePaymentOrderInfoEntity" parameterType="cn.ilanhai.kem.domain.paymentservice.PaymentOrderInfoEntity">
+	INSERT INTO prod_order_info (
+	order_id,add_time,update_time,quantity,unit,service_id,package_service_id
+	) VALUES (
+	#{orderId},#{createTime},#{updateTime},#{quantity},#{unit},#{serviceId},#{packageServiceId}
+	);
+	</insert>
+
+	
+	<insert id="savepayinfo"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceEntity"
+		 useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO prod_package_service (
+	`name`,
+	add_time,
+	update_time,
+	fixed_price,
+	is_logic_delete,
+	description,
+	type,
+	time_mode
+)
+VALUES
+	(
+		#{name},
+		NOW(),
+		NOW(),
+		#{price},
+		0,
+		#{description},
+		#{type},
+		#{timeMode}
+	)
+	</insert>
+	
+	<insert id="savepayinfodetials"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceInfoEntity"
+		 useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO prod_package_service_info (
+	add_time,
+	update_time,
+	quantity,
+	package_service_id,
+	service_id,
+	unit,
+	type,
+	time_mode
+)
+VALUES
+	(
+		NOW(),
+		NOW(),
+		#{quantity},
+		#{packageServiceId},
+		#{serviceId},
+		#{unit},
+		#{type},
+		#{timeMode}
+	)
+	</insert>
+	
+	<update id="updatepayinfo"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceEntity"
+		useGeneratedKeys="true" keyProperty="id">
+	UPDATE prod_package_service
+SET `name` = #{name},
+ update_time = NOW(),
+ fixed_price = #{price},
+ description = #{description},
+ type = #{type},
+ is_logic_delete = 0,
+ time_mode = #{timeMode}
+WHERE
+	id = #{id}
+	</update>
+	
+	<update id="updatepayinfodetials"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoServiceInfoEntity"
+		useGeneratedKeys="true" keyProperty="id">
+	UPDATE prod_package_service_info
+SET update_time = NOW(),
+ quantity = #{quantity},
+ type = #{type},
+ time_mode = #{timeMode}
+WHERE
+	id = #{id}
+	AND package_service_id = #{packageServiceId}
+	</update>
+	
+	<update id="updatepayprice"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoRequestEntity">
+	UPDATE prod_service
+SET price = #{price},
+	`name` = #{name}
+WHERE
+	type = #{type}
+	</update>
+	
+	<update id="updateisdelete"
+		parameterType="Integer" >
+UPDATE prod_package_service
+SET is_logic_delete = 1
+WHERE
+	type = #{type}
+	</update>
+	
+	<select id="loadpayinfo"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoLoadEntity" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoResponseEntity">
+SELECT
+	S.type,
+	S.price,
+	S.unit,
+	S.`name`
+FROM
+	prod_service S
+WHERE
+	S.type = #{type}
+		
+	</select>
+	
+	<select id="loadpackageService"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoLoadEntity" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.PayInfo.payInfoServiceResponseEntity">
+SELECT
+	S.id,
+	S.`name`,
+	s.add_time AS addTime,
+	s.update_time AS updateTime,
+	s.fixed_price AS price,
+	s.description,
+	s.type,
+	s.time_mode as timeMode
+FROM
+	prod_package_service S
+WHERE
+	S.is_logic_delete = 0
+	and s.type in (0)
+	<if test="id != null and id!=''">
+		AND S.id = #{id}
+	</if>
+ORDER BY s.fixed_price
+	</select>
+	
+	<select id="loadpackageServiceinfo"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayInfo.PayInfoLoadEntity" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.PayInfo.payInfoServiceInfoResponseEitity">
+SELECT
+	S.id,
+	s.add_time AS addTime,
+	s.update_time AS updateTime,
+	s.quantity,
+	s.package_service_id AS packageServiceId,
+	s.service_id AS serviceId,
+	s.unit,
+	s.type,
+	s.time_mode as timeMode
+FROM
+	prod_package_service_info s
+WHERE
+	s.package_service_id = #{id}
+ORDER BY s.unit
+	</select>
+	
+	<insert id="savepayconfig"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayConfig.PayConfigDetailEntity"
+		 useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO sys_config (
+	`sys_key`,
+	`sys_value`,
+	`describe`,
+	`type`
+)
+VALUES
+	(#{sysKey}, #{sysValue}, #{describe}, #{type});
+	</insert>
+	
+	<update id="updatepayconfig"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayConfig.PayConfigDetailEntity">
+UPDATE sys_config
+SET `sys_value` = #{sysValue},
+ `describe` = #{describe},
+ `type` = #{type}
+WHERE
+	(`sys_key` = #{sysKey});
+	</update> 
+	
+	<select id="loadpayconfig"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.PayConfig.PayConfigloadRequestEntity" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.PayConfig.PayConfigResponseEntity">
+SELECT
+	s.id,
+	s.sys_key AS sysKey,
+	s.sys_value AS sysValue,
+	s.`describe`,
+	s.type
+FROM
+	sys_config s
+WHERE
+	s.type = #{type}
+	</select>
+	<select id="searchOrder"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.QueryCondition.SearchOrderQCondition" 
+		resultType="cn.ilanhai.kem.domain.paymentservice.dto.SearchOrderResponseItemDto">
+		SELECT
+			po.order_id as orderId,-- 订单号
+			po.user_id as userId, -- 用户ID
+			po.description as orderContent,-- 消费内容
+			po.add_time as createTime,-- 下单时间
+			po.amount_payable as amountPayable,-- 应付金额
+			po.pay_amount as payAmount,-- 实付金额
+			po.pay_way as payway, -- 支付方式
+			po.pay_status as payStatus -- 支付状态
+		FROM
+			prod_order po
+		where po.user_id in
+<foreach item="item" index="index" collection="userId" open="(" separator="," close=")">
+#{item}
+</foreach>
+		<if test="createtimeStart != null">
+			and po.add_time > #{createtimeStart}
+		</if>
+		<if test="createtimeEnd != null">
+			<![CDATA[and po.add_time < #{createtimeEnd}]]>
+		</if>
+		<if test="payway != null">
+		and po.pay_way in
+<foreach item="item" index="index" collection="payway" open="(" separator="," close=")">
+#{item}
+</foreach>
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and po.description like CONCAT('%',#{keyword},'%' )
+		</if>
+		<if test="payStatus != null and payStatus != ''">
+			and po.pay_status = #{payStatus}
+		</if>
+		order by po.add_time desc
+		LIMIT
+		#{startCount},
+		#{pageSize};
+	</select>
+	<select id="countSearchOrder"
+		parameterType="cn.ilanhai.kem.domain.paymentservice.QueryCondition.SearchOrderQCondition" 
+		resultType="cn.ilanhai.kem.domain.CountDto">
+		SELECT
+			count(1) as count
+		FROM
+			prod_order po
+		where po.user_id in
+<foreach item="item" index="index" collection="userId" open="(" separator="," close=")">  
+#{item}
+</foreach> 
+		<if test="createtimeStart != null">
+			and po.add_time > #{createtimeStart}
+		</if>
+		<if test="createtimeEnd != null">
+			<![CDATA[and po.add_time < #{createtimeEnd}]]>
+		</if>
+		<if test="payway != null">
+		and po.pay_way in
+<foreach item="item" index="index" collection="payway" open="(" separator="," close=")">
+#{item}
+</foreach>
+		</if>
+		<if test="keyword != null and keyword != ''">
+			and po.description like CONCAT('%',#{keyword},'%' )
+		</if>
+		<if test="payStatus != null and payStatus != ''">
+			and po.pay_status = #{payStatus}
+		</if>
+	</select>
+	
+	<select id="getPaymentOrderByOrderId"
+    	parameterType="cn.ilanhai.kem.domain.paymentservice.QueryCondition.GetPaymentOrderByOrderIdQCondition"
+    	resultMap="paymentOrderMap" >
+    	SELECT
+			po.order_id as orderId, -- 订单ID
+			po.add_time as createTime, -- 创建时间
+			po.update_time as updateTime, -- 修改时间
+			po.user_id as userId, -- 用户ID
+			po.pay_status as payStatus,	-- 支付状态
+			po.pay_way as payWay, -- 支付渠道
+			po.pay_amount as payAmount, -- 支付金额
+			po.amount_payable as amountPayable, -- 应付金额
+			po.package_service_id as packageServiceId, -- 服务套餐ID
+			po.description as description, -- 描述
+			poi.add_time as infoCreateTime,	-- 信息创建时间
+			poi.update_time as infoUpdateTime, -- 信息更新时间
+			poi.quantity as quantity, -- 数量
+			poi.unit as unit, -- 单位
+			poi.service_id as serviceId -- 服务ID
+		FROM
+			prod_order po
+		left join prod_order_info poi on poi.order_id =po.order_id
+		where po.order_id=#{orderId}
+    </select>
+    
+    
+    <delete id="deleteoldpricerange"
+    	parameterType="Integer">
+delete from prod_service_price_range where type = #{value};    
+    </delete>
+    
+    <insert id="insertnewpricerange"
+    	parameterType="cn.ilanhai.kem.domain.paymentservice.pricerange.PriveRangeRequest">
+    	INSERT INTO `prod_service_price_range`
+		(`package_service_id`, `max`,`type`,`add_time`,`price`)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.packageServiceId},#{item.max},#{type},#{item.createTime},#{item.price})
+		</foreach>
+    </insert>
+    
+    <select id="loadpricerange"
+    	parameterType="Integer"
+    	resultType="cn.ilanhai.kem.domain.paymentservice.pricerange.PriceRangeEntity">
+    SELECT DISTINCT
+	pps.`id` AS packageServiceId,
+	pps.`name`,
+	pspr.`type`,
+	pspr.`max`,
+	pspr.`add_time` AS createTime,
+	pspr.`price`
+FROM
+	prod_package_service pps
+LEFT JOIN prod_service_price_range pspr ON pspr.`package_service_id` = pps.id
+AND pspr.type = #{value}
+WHERE
+	1 = 1
+AND pps.is_logic_delete = 0
+AND pps.type = 0
+ORDER BY
+	pps.`id`
+    </select>
+    
+     <select id="querypricerange"
+    	parameterType="cn.ilanhai.kem.domain.paymentservice.pricerange.GetpriveEntity"
+    	resultType="cn.ilanhai.kem.domain.paymentservice.pricerange.PriceRangeEntity">
+    select `type`,`max`,`add_time` as createTime,`price`
+    from prod_service_price_range pspr
+    where 
+    1=1
+    <if test="packageServiceId != null">
+    and `package_service_id` = #{packageServiceId}
+    </if>
+    <if test="type != null">
+    and `type` = #{type}
+    </if>
+    ORDER BY `price` DESC
+    </select>
+</mapper>

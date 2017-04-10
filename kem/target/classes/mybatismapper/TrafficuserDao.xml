@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ilanhai.mybatismapper.TrafficuserDao">
+	<resultMap id="BaseResultMap"
+		type="cn.ilanhai.kem.domain.user.trafficuser.TrafficuserEntity">
+		<result column="trafficuserId" property="trafficuserId"
+			jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="phoneNo" property="phoneNo" jdbcType="VARCHAR" />
+		<result column="qqNo" property="qqNo" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="trafficuserType" property="trafficuserType"
+			typeHandler="cn.ilanhai.kem.domain.enums.TrafficuserTypeHandler" />
+		<result column="wechatNo" property="wechatNo" jdbcType="VARCHAR" />
+		<result column="vocation" property="vocation" jdbcType="VARCHAR" />
+		<result column="industry" property="industry" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="extensionId" property="extensionId" jdbcType="VARCHAR" />
+		<result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="trafficfrom" property="trafficfrom" jdbcType="INTEGER" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+
+	</resultMap>
+	<insert id="insert"
+		parameterType="cn.ilanhai.kem.domain.user.trafficuser.TrafficuserEntity" useGeneratedKeys="true" keyProperty="trafficuserId">
+		INSERT INTO user_traffic_user (name, phoneNo, qqNo,
+		email, trafficuserType, wechatNo, vocation, industry,
+		remark,extensionId,createtime,address,trafficfrom) VALUES
+		(#{name},
+		#{phoneNo},#{qqNo},
+		#{email},#{trafficuserType,typeHandler=cn.ilanhai.kem.domain.enums.TrafficuserTypeHandler},#{wechatNo},#{vocation},#{industry},#{remark},#{extensionId},#{createtime},#{address},#{trafficfrom}
+		)
+	</insert>
+	<update id="updateTrafficuser">
+		UPDATE user_traffic_user
+		<trim prefix="set" prefixOverrides=",">
+			<if test="name!=null">
+				name=#{name}
+			</if>
+			<if test="phoneNo!=null">
+				,phoneNo=#{phoneNo}
+			</if>
+			<if test="qqNo!=null">
+				,qqNo=#{qqNo}
+			</if>
+			<if test="email!=null">
+				email=#{email}
+			</if>
+			<if test="trafficuserType!=null">
+				,trafficuserType=#{trafficuserType,typeHandler=cn.ilanhai.kem.domain.enums.TrafficuserTypeHandler}
+			</if>
+			<if test="wechatNo!=null">
+				,wechatNo=#{wechatNo}
+			</if>
+			<if test="vocation!=null">
+				vocation=#{vocation}
+			</if>
+			<if test="industry!=null">
+				,industry=#{industry}
+			</if>
+			<if test="remark!=null">
+				,remark=#{remark}
+			</if>
+			<if test="extensionId!=null">
+				,extensionId=#{extensionId}
+			</if>
+			<if test="createtime!=null">
+				,createtime=#{createtime}
+			</if>
+			<if test="address!=null">
+				,address=#{address}
+			</if>
+			<if test="trafficfrom!=null">
+				,trafficfrom=#{trafficfrom}
+			</if>
+		</trim>
+		<trim prefix="where" prefixOverrides="and">
+			<if test="trafficuserId!=null">
+				and trafficuserId=#{trafficuserId}
+			</if>
+		</trim>
+	</update>
+	<delete id="deleteByPrimaryKey" parameterType="cn.ilanhai.kem.domain.IdEntity">
+		DELETE FROM
+		user_traffic_user WHERE trafficuserId =#{id}
+	</delete>
+
+	<select id="queryTrafficuserForPage"
+		parameterType="cn.ilanhai.kem.domain.user.trafficuser.QueryTrafficUserEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM user_traffic_user
+		<trim prefix="where" prefixOverrides="and">
+			<if test="extensionId!=null and extensionId!=''">
+				extensionId=#{extensionId}
+			</if>
+			<if test="trafficuserType!=null">
+				and trafficuserType=#{trafficuserType}
+			</if>
+			<if test="searchInfo!=null and searchInfo!=''">
+				AND phoneNo like CONCAT('%',#{searchInfo},'%') OR qqNo
+				like
+				CONCAT('%',#{searchInfo},'%') OR email like
+				CONCAT('%',#{searchInfo},'%')
+			</if>
+		</trim>
+		ORDER BY CREATETIME DESC
+		<if test="startCount!=null">
+			limit
+			${startCount},${pageSize}
+		</if>
+	</select>
+	<select id="queryTrafficuserForCount"
+		parameterType="cn.ilanhai.kem.domain.user.trafficuser.QueryTrafficUserEntity"
+		resultType="int">
+		SELECT count(1) as count FROM user_traffic_user
+		<trim prefix="where" prefixOverrides="and">
+			<if test="extensionId!=null and extensionId!=''">
+				AND extensionId=#{extensionId}
+			</if>
+			<if test="trafficuserType!=null">
+				AND trafficuserType=#{trafficuserType}
+			</if>
+			<if test="searchInfo!=null and searchInfo!=''">
+				AND phoneNo like CONCAT('%',#{searchInfo},'%') OR qqNo
+				like
+				CONCAT('%',#{searchInfo},'%') OR email like
+				CONCAT('%',#{searchInfo},'%')
+			</if>
+		</trim>
+	</select>
+	<select id="queryTrafficuserById" parameterType="cn.ilanhai.kem.domain.IdEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM user_traffic_user
+		<trim prefix="where" prefixOverrides="and">
+			<if test="id!=null and id!=''">
+				AND trafficuserId=#{id}
+			</if>	
+		</trim>
+	</select>
+	<select id="queryTrafficuser"
+		parameterType="cn.ilanhai.kem.domain.user.trafficuser.TrafficuserEntity"
+		resultMap="BaseResultMap">
+		SELECT * FROM user_traffic_user
+		<trim prefix="where" prefixOverrides="and">
+			<if test="extensionId!=null and extensionId!=''">
+				AND extensionId=#{extensionId}
+			</if>
+			<if test="phoneNo!=null and phoneNo!=''">
+				AND phoneNo =#{phoneNo}
+			</if>
+		</trim>
+	</select>
+</mapper>

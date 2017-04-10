@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserBound">
+
+	<select id="searchuserboundid"
+		resultType="Integer"
+		parameterType="cn.ilanhai.kem.domain.auth.UserBoundEntity">
+SELECT
+	`id`
+FROM
+	user_front_user_bound
+WHERE
+	`id` = #{id}
+	</select>
+	
+	<insert id="insertuserbound"
+		parameterType="cn.ilanhai.kem.domain.auth.UserBoundEntity">
+INSERT INTO user_front_user_bound (
+	user_id,
+	add_time,
+	update_time,
+	auth_data,
+	type,
+	tag,
+	`AT`,
+	at_expired_time,
+	at_data,
+	at_expiry_date,
+	at_update_time
+)
+VALUES
+	(#{userId},#{addTime},#{updateTime},#{authData},#{type},#{tag},#{at},#{atExpiredTime},#{atData},#{atExpiryDate},#{atUpdateTime})
+	
+	</insert>
+	
+	<update id="updateuserbound"
+		parameterType="cn.ilanhai.kem.domain.auth.UserBoundEntity">
+UPDATE user_front_user_bound
+SET user_id =#{userId},
+ update_time =#{updateTime},
+ auth_data =#{authData},
+ type =#{type},
+ tag =#{tag},
+ `AT` =#{at},
+ at_expired_time =#{atExpiredTime},
+ at_data =#{atData},
+ at_expiry_date =#{atExpiryDate},
+ at_update_time =#{atUpdateTime},
+WHERE
+	id =#{id},
+	</update>
+	
+	<select id="searchuserboundbytype"
+		resultType="cn.ilanhai.kem.domain.auth.UserBoundEntity"
+		parameterType="cn.ilanhai.kem.domain.auth.QueryUserBound">
+SELECT
+	ub.id,
+	ub.user_id AS userId,
+	ub.add_time AS addTime,
+	ub.update_time AS updateTime,
+	ub.auth_data AS authData,
+	ub.type,
+	ub.tag,
+	ub.`at`,
+	ub.at_update_time AS atUpdateTime,
+	ub.at_expired_time AS atExpiredTime,
+	ub.at_data AS atData,
+	ub.at_expiry_date AS atExpiryDate
+FROM
+	user_front_user_bound ub
+WHERE
+	type = #{type}
+AND tag =#{tag}
+	</select>
+</mapper>

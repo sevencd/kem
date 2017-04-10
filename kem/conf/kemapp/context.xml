@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<context>
+	<id>kem</id>
+	<name>kem</name>
+	<jarFileName>kem.jar</jarFileName>
+	<packageName>cn.ilanhai.kem</packageName>
+	<enable>true</enable>
+	<beansConfPath>kem.xml</beansConfPath>
+	<startupClassName>cn.ilanhai.kem.App</startupClassName>
+	<mqs>
+		<mq>
+			<id>id</id>
+			<userName>admin</userName>
+			<password>admin</password>
+			<brokerUrl>tcp://192.168.1.228:61616</brokerUrl>
+			<producerClassName>producerClassName</producerClassName>
+			<consumerClassName>consumerClassName</consumerClassName>
+		</mq>
+	</mqs>
+	<dss>
+		<dataSource>
+			<id>kem</id>
+			<name>kem</name>
+			<className><![CDATA[org.springframework.jdbc.datasource.DriverManagerDataSource]]></className>
+			<driverClassName>com.mysql.jdbc.Driver</driverClassName>
+			<url><![CDATA[jdbc:mysql://192.168.1.228:3306/kem_dev?user=root&password=123456&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]>
+			</url>
+			<dataBaseName><![CDATA[kem_dev]]></dataBaseName> 
+			<!-- <url><![CDATA[jdbc:mysql://182.61.41.100:3306/kem_beta?user=root&password=123456&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false]]></url>
+			<dataBaseName><![CDATA[kem_beta]]></dataBaseName>-->
+		</dataSource>
+	</dss>
+	<settings>
+		<add key="preViewDeployUrl" value="http://192.168.1.228:9001/api/tpl/%s?type=%s" />
+		<add key="publishDeployUrl" value="http://192.168.1.228:9000/api/tpl/%s?type=%s" />
+		<add key="deployPreViewUrl" value="http://%s.%s.kem.pre.dev.cn:9001" />
+		<add key="deployPublishUrl" value="http://%s.%s.kem.dev.cn:9000" />
+		<add key="hostUrl" value="http://kemdesign.dev.cn" />
+		<add key="serviceName" value="http://image.kem.dev.cn" />
+		<add key="pcurl" value=".pc.kem.dev.cn" />
+		<add key="wapurl" value=".wap.kem.dev.cn" />
+		<add key="pcpreurl" value=".pc.kem.pre.dev.cn" />
+		<add key="wappreurl" value=".wap.kem.pre.dev.cn" />
+		<add key="apihost" value="192.168.1.228:8666" />
+		<add key="smsUrl" value="123558121.kid.ilhjy.cn" />
+		<add key="interfaceurl" value="http://192.168.1.225:8083/#/search?1=1" />
+		<add key="dointerface" value="true" />
+		<add key="cacheIndex" value="0" />
+		<add key="aliPayNodifyUrl" value="http://localhost/httpserver/kem/payment/alipaynodify" />
+		<add key="weixinPayNodifyUrl" value="http://localhost/httpserver/kem/payment/weixinpaynodify" />
+		<!-- mail -->
+		<add key="shouApiKey" value="8arwHp7IGJG01AOQ" />
+		<add key="shouApiUser" value="cloudmarkee" />
+		<add key="shouFrom" value="cloudmarkee@ifaxin.com" />
+		<add key="groupAddress" value="@mail.cloudmarkee.com" />
+		<!-- sms -->
+		<add key="tosmsUsername" value="JKYX" />
+		<add key="tosmsPassword" value="CC71B86D53B35B1A1568109D51BA8E48" />
+		<!-- solr请求url  -->
+		<add key="solrApiUrl" value="http://182.61.58.248:3000/" />
+		<!-- ykd -->
+		<add key="app_key" value="4a12ffb4a9980a2e30c0e89c630e8733" />
+		<add key="app_secret" value="a06bc630f2c9b8a50e79f9f459537b03" />
+		<add key="app_api_register" value="http://wxapp.cloudmarkee.com/api/createuser/" />
+		<add key="app_api_login" value="http://wxapp.cloudmarkee.com/" />
+
+		
+
+	</settings>
+</context>
+

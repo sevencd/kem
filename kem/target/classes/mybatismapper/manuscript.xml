@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC   
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manuscript">
+
+	<resultMap id="queryManuscriptResultMap"
+		type="cn.ilanhai.kem.domain.manuscript.ManuscriptEntity">
+		<id property="manuscriptId" column="manuscript_id" />
+		<result property="userId" column="user_id" />
+		<result property="createTime" column="createtime" jdbcType="DATE" />
+		<result property="manuscriptType" column="manuscript_type" />
+		<result property="enableState" column="enable" />
+		<result property="manuscriptState" column="state" />
+		<result property="terminalType" column="terminal_type" />
+		<result property="isCollection" column="collection_state" />
+		<association property="manuscriptSetting"
+			javaType="cn.ilanhai.kem.domain.manuscript.ManuscriptSettingEntity"
+			resultMap="settingResultMap" />
+	</resultMap>
+
+	<resultMap id="settingResultMap"
+		type="cn.ilanhai.kem.domain.manuscript.ManuscriptSettingEntity">
+		<id property="settingId" column="setting_id" />
+		<result property="manuscriptId" column="manuscript_id" />
+		<result property="manuscriptName" column="manuscript_name" />
+		<result property="manuscriptImg" column="manuscript_img" />
+		<result property="manuscriptMainColor" column="manuscript_maincolor" />
+		<result property="manuscriptSummary" column="manuscript_summary" />
+		<result property="enableState" column="enable" />
+	</resultMap>
+
+	<insert id="saveManuscript" parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptEntity">
+		insert into
+		prod_manuscript
+		(manuscript_id,user_id,createtime,manuscript_type,terminal_type,enable,state)
+		values
+		(#{manuscriptId},#{userId},#{createTime},#{manuscriptType},#{terminalType},#{enableState},#{manuscriptState});
+	</insert>
+
+	<insert id="updateManuscript" parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptEntity">
+		update
+		prod_manuscript set user_id = #{userId} , manuscript_type =
+		#{manuscriptType}, enable = #{enableState},state =
+		#{manuscriptState},terminal_type = #{terminalType} where manuscript_id
+		= #{manuscriptId};
+	</insert>
+
+	<select id="queryManuscriptById" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptEntity">
+		select manuscript_id as manuscriptId ,user_id as userId
+		,createtime as createTime ,manuscript_type as
+		manuscriptType,terminal_type as terminalType ,terminal_type as
+		terminalType ,enable as enableState,state as manuscriptState
+		from
+		prod_manuscript where manuscript_id = #{id};
+	</select>
+
+	<insert id="saveSetting"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptSettingEntity">
+		insert into
+		prod_setting
+		(manuscript_id,manuscript_name,manuscript_img,manuscript_maincolor,manuscript_summary,createtime,enable)
+		values
+		(#{manuscriptId},#{manuscriptName},#{manuscriptImg},#{manuscriptMainColor},#{manuscriptSummary},#{createTime},#{enableState});
+	</insert>
+
+	<insert id="updateSetting"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptSettingEntity">
+		update prod_setting set manuscript_name =
+		#{manuscriptName}, manuscript_img =
+		#{manuscriptImg},manuscript_maincolor = #{manuscriptMainColor}
+		,manuscript_summary = #{manuscriptSummary},enable = #{enableState}
+		where manuscript_id = #{manuscriptId};
+	</insert>
+
+	<select id="querySettingByManuscriptId" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptSettingEntity">
+		select setting_id as settingId, manuscript_id as
+		manuscriptId ,manuscript_name as manuscriptName ,manuscript_img as
+		manuscriptImg ,manuscript_maincolor as manuscriptMainColor
+		,manuscript_summary as manuscriptSummary ,enable as enableState
+		from
+		prod_setting where manuscript_id = #{id};
+	</select>
+
+	<select id="queryCollection"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchManuscriptCollectionDto"
+		resultMap="queryManuscriptResultMap">
+		select DISTINCT * from (select B.manuscript_id ,B.user_id ,
+		A.createtime as collectiontime ,B.createtime ,B.manuscript_type
+		,B.terminal_type ,B.enable ,B.state,
+		s.setting_id
+		,s.manuscript_name,s.manuscript_img,s.manuscript_maincolor,s.manuscript_summary
+		FROM template_collection A LEFT JOIN prod_manuscript B ON
+		A.template_id = B.manuscript_id and B.enable = 0 left join
+		prod_setting s on S.manuscript_id = B.manuscript_id and s.enable = 0
+		LEFT JOIN user_front_user C ON B.user_id = C.user_id WHERE
+		A.collection_state =1
+		AND A.manuscript_type = 4
+		AND A.user_id =
+		#{userId}
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			AND s.manuscript_name like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND B.terminal_type = #{terminalType}
+		</if>
+		)as temp
+		ORDER BY collectiontime DESC LIMIT #{startCount},#{pageSize}
+	</select>
+
+	<select id="queryCollectionCount"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchManuscriptCollectionDto"
+		resultType="java.lang.Integer">
+		select count(DISTINCT manuscript_id) as count from (select
+		B.manuscript_id ,B.user_id ,B.createtime ,B.manuscript_type
+		,B.terminal_type ,B.enable ,B.state,
+		s.setting_id
+		,s.manuscript_name,s.manuscript_img,s.manuscript_maincolor,s.manuscript_summary
+		FROM template_collection A LEFT JOIN prod_manuscript B ON
+		A.template_id = B.manuscript_id and B.enable = 0 left join
+		prod_setting s on S.manuscript_id = B.manuscript_id and s.enable = 0
+		LEFT JOIN user_front_user C ON B.user_id = C.user_id WHERE
+		A.collection_state =1
+		AND A.manuscript_type = 4
+		AND A.user_id =
+		#{userId}
+		<if test="manuscriptName !=null and manuscriptName !='' ">
+			AND s.manuscript_name like
+			concat('%',#{manuscriptName},'%')
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			AND B.terminal_type = #{terminalType}
+		</if>
+		)as temp
+
+	</select>
+
+
+
+	<select id="queryManuscriptByTag"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchManuscriptDto"
+		resultMap="queryManuscriptResultMap">
+		select DISTINCT * from (select a.manuscript_id ,a.user_id
+		,a.createtime ,a.manuscript_type ,a.terminal_type ,a.enable ,a.state,
+		s.setting_id
+		,s.manuscript_name,s.manuscript_img,s.manuscript_maincolor,s.manuscript_summary
+		<if test="userId !=null and userId !='' ">
+			,d.collection_state
+		</if>
+		from prod_manuscript a left join prod_parameter p on a.manuscript_id =
+		p.manuscript_id and p.parameter_type = 1 and p.enable = 0 left join
+		prod_setting s on s.manuscript_id = a.manuscript_id and s.enable = 0
+
+		<if test="userId !=null and userId !='' "> LEFT JOIN template_collection D ON A.manuscript_id =
+			D.template_id AND D.user_id =#{userId}
+		</if>
+
+		where a.enable = 0 and a.manuscript_type = 4
+		<if test="tag !=null and tag !='' "> and p.parameter = #{tag}  </if>
+		<if test="terminalType !=null and terminalType !='' "> and a.terminal_type = #{terminalType}  </if>
+		<if test="searchstr !=null and searchstr !='' "> and s.manuscript_name like concat('%',#{searchstr},'%')
+		</if>
+		)as temp
+		ORDER BY createtime DESC LIMIT #{startCount},#{pageSize}
+	</select>
+
+	<select id="queryManuscriptByTagCount"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchManuscriptDto"
+		resultType="java.lang.Integer">
+		select count(DISTINCT manuscript_id) as count from (select
+		a.manuscript_id ,a.user_id ,a.createtime ,a.manuscript_type
+		,a.terminal_type ,a.enable ,a.state,
+		s.setting_id
+		,s.manuscript_name,s.manuscript_img,s.manuscript_maincolor,s.manuscript_summary
+		<if test="userId !=null and userId !='' ">
+			,d.collection_state
+		</if>
+		from prod_manuscript a left join prod_parameter p on a.manuscript_id =
+		p.manuscript_id and p.parameter_type = 1 and p.enable = 0 left join
+		prod_setting s on s.manuscript_id = a.manuscript_id and s.enable = 0
+		<if test="userId !=null and userId !='' "> LEFT JOIN template_collection D ON A.manuscript_id =
+			D.template_id AND D.user_id =#{userId}
+		</if>
+		where a.enable = 0 and a.manuscript_type = 4
+		<if test="tag !=null and tag !='' "> and p.parameter = #{tag}  </if>
+		<if test="terminalType !=null and terminalType !='' "> and a.terminal_type = #{terminalType}  </if>
+		<if test="searchstr !=null and searchstr !='' "> and s.manuscript_name like concat('%',#{searchstr},'%')
+		</if>
+		)as temp
+	</select>
+
+
+	<insert id="saveParameter"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity">
+		insert into
+		prod_parameter
+		(manuscript_id,createtime,parameter_type,parameter,enable) values
+		(#{manuscriptId},#{createTime},#{parameterType},#{parameter},#{enableState});
+	</insert>
+
+	<insert id="updateParameter"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity">
+		update prod_parameter set manuscript_id =
+		#{manuscriptId} , parameter_type = #{parameterType}, parameter =
+		#{parameter},enable = #{enableState} where parameter_id =
+		#{parameterId};
+	</insert>
+
+	<delete id="deleteParameter"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.SaveManuscriptParamsDto">
+		DELETE FROM prod_parameter where trim(manuscript_id) =
+		trim(#{manuscriptId}) and parameter_type = #{paramType};
+	</delete>
+
+	<delete id="deleteParameterById" parameterType="java.lang.String">
+		DELETE FROM
+		prod_parameter where trim(manuscript_id) = trim(#{manuscriptId});
+	</delete>
+
+	<delete id="deleteContentById" parameterType="java.lang.String">
+		DELETE FROM
+		prod_content where trim(manuscript_id) = trim(#{manuscriptId});
+	</delete>
+
+	<delete id="deleteSettingById" parameterType="java.lang.String">
+		DELETE FROM
+		prod_setting where trim(manuscript_id) = trim(#{manuscriptId});
+	</delete>
+	<delete id="deleteManuscriptById" parameterType="java.lang.String">
+		DELETE FROM
+		prod_manuscript where trim(manuscript_id) = trim(#{manuscriptId});
+	</delete>
+
+
+
+
+	<select id="queryParameterByManuscriptId" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity">
+		select parameter_id as parameterId ,parameter_id as
+		parameterId ,manuscript_id as manuscriptId ,createtime as createTime
+		,parameter_type as parameterType ,parameter as parameter ,enable as
+		enableState
+		from prod_parameter where trim(manuscript_id) = trim(#{id})
+		and enable =
+		0;
+	</select>
+
+	<select id="getParameter"
+		parameterType="cn.ilanhai.kem.domain.manuscript.dto.GetManuscriptParameterDto"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity">
+		select parameter_id as parameterId ,parameter_id as
+		parameterId ,manuscript_id as manuscriptId ,createtime as createTime
+		,parameter_type as parameterType ,parameter as parameter ,enable as
+		enableState
+		from prod_parameter where trim(manuscript_id) = trim(#{id})
+		and
+		parameter_type = #{parameterType} and enable = 0;
+	</select>
+
+
+	<select id="queryParameterByManuscriptIdAndType"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptParameterEntity">
+		select parameter_id as parameterId ,parameter_id as
+		parameterId ,manuscript_id as manuscriptId ,createtime as createTime
+		,parameter_type as parameterType ,parameter as parameter ,enable as
+		enableState
+		from prod_parameter where trim(manuscript_id) =
+		trim(#{manuscriptId}) and
+		parameter_type = #{parameterType} and enable
+		= 0;
+	</select>
+
+	<select id="queryParameterByManuscriptType" parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchTagsDto"
+		resultType="java.lang.String">
+		select distinct a.parameter from prod_parameter a left join
+		prod_manuscript b on b.manuscript_id = a.manuscript_id
+		where
+		a.parameter_type = #{parameterType}
+		and
+		b.manuscript_type =
+		#{manuscriptType} and b.enable = 0
+		<if test="terminalType !=null and terminalType !='' ">
+			and b.terminal_type = #{terminalType}
+		</if>
+		<if test="userId !=null and userId !='' ">
+			and b.user_id =
+			#{userId}
+		</if>
+		<if test="parameterType == 8">
+			and b.state = 3
+		</if>
+
+	</select>
+
+	<select id="queryParameterByCollection" parameterType="cn.ilanhai.kem.domain.manuscript.dto.SearchTagsDto"
+		resultType="java.lang.String">
+		select distinct a.parameter from prod_parameter a left join
+		template_collection b on b.template_id = a.manuscript_id and b.user_id
+		=
+		#{userId}
+		left join
+		prod_manuscript C on C.manuscript_id = a.manuscript_id
+		where
+		b.collection_state = 1
+		<if test="parameterType !=null and parameterType !='' ">
+			and a.parameter_type = #{parameterType}
+		</if>
+		<if test="manuscriptType !=null and manuscriptType !='' ">
+			and
+			b.manuscript_type = #{manuscriptType}
+		</if>
+		<if test="terminalType !=null and terminalType !='' ">
+			and c.terminal_type = #{terminalType}
+		</if>
+	</select>
+
+	<insert id="saveContent"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptContentEntity">
+		insert into
+		prod_content
+		(manuscript_id,createtime,content,enable) values
+		(#{manuscriptId},#{createTime},#{content},#{enableState});
+	</insert>
+
+	<insert id="updateContent"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptContentEntity">
+		update prod_content set manuscript_id = #{manuscriptId}
+		, content = #{content}, enable = #{enableState} where content_id =
+		#{contentId};
+	</insert>
+
+	<select id="queryContentByManuscriptId" parameterType="java.lang.String"
+		resultType="cn.ilanhai.kem.domain.manuscript.ManuscriptContentEntity">
+		select content_id as contentId,manuscript_id as
+		manuscriptId ,createtime as createTime ,content as content ,enable as
+		enableState
+		from prod_content where trim(manuscript_id) = trim(#{id})
+		and enable = 0;
+	</select>
+
+	<insert id="saveDisablelog"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptDisableLogEntity">
+		insert into
+		prod_disablelog
+		(manuscript_id,createtime,log,enable) values
+		(#{manuscriptId},#{createTime},#{log},#{enableState});
+	</insert>
+
+	<insert id="saveUselog"
+		parameterType="cn.ilanhai.kem.domain.manuscript.ManuscriptUseLogEntity">
+		insert into
+		prod_uselog
+		(manuscript_id,createtime,log,enable) values
+		(#{manuscriptId},#{createTime},#{log},#{enableState});
+	</insert>
+
+
+
+
+
+</mapper>
